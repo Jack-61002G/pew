@@ -1,5 +1,5 @@
 #include "main.h"
-#include "lib/diffy.h"
+#include "lib/lib.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -75,8 +75,5 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-
-	lib::Diffy drive = lib::Diffy({1, 2, 3, -4, 5, 6});
-	drive.spinDiffy(12, -12);
 
 }
