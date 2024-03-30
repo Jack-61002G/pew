@@ -1,5 +1,6 @@
 #include "main.h"
 #include "lib/lib.h"
+#include "pros/adi.hpp"
 
 /**
  * A callback function for LLEMU's center button.
@@ -75,5 +76,5 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-
+	
 }
