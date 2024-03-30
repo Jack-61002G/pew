@@ -1,15 +1,11 @@
 #pragma once
-#include "main.h"
-#include <vector>
+#include "pros/motors.hpp"
 
 namespace lib {
 
 class Diffy {
 
 private:
-  pros::motor_brake_mode_e returnBrakeType(char brakeMode);
-
-protected:
   std::vector<pros::Motor> motors;
   int size;
 
@@ -18,10 +14,15 @@ public:
   Diffy(const std::vector<int> &ports,
         const std::vector<pros::MotorGear> &gearset);
 
-  void spinDiffy(double rvolt, double lvolt);
+  void spinDiffy(double lvolt, double rvolt);
   void spinDiffy(std::vector<double> voltages);
-  std::vector<double> getDiffy();
+  void zero();
+  std::vector<double> getDiffyPos();
+  std::vector<double> getDiffyVel();
+  void setBrakeMode(pros::MotorBrake brakeMode);
+  void stop();
+  std::vector<pros::Motor> getMotors();
+
 };
 
 } // namespace lib
-  // Input number split in half and put each half into a motor group
