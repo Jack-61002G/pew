@@ -41,4 +41,6 @@ void Chassis::arcadeMod(double forward, double turn, std::vector<double> curves,
       forward = speedCap;
     }
   }
+
+  motors->spinDiffy(forward + turn, forward - turn);
 }
