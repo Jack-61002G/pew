@@ -1,0 +1,7 @@
+- [x] implement diffy motorgroup
+- [x] implement pd move/turn
+- [x] implement 1d motion profiles
+- [ ] implement swing turns
+- [ ] test non-odom based motion
+- [ ] implement and test odom
+- [ ] implement pure pursuit
