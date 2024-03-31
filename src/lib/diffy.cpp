@@ -87,3 +87,13 @@ void Diffy::stop() {
 std::vector<pros::Motor> Diffy::getMotors() {
   return motors;
 }
+
+void Diffy::spinVelocity(double lvel, double rvel) {
+  for (int i = 0; i < size; i++) {
+    if (i < size / 2) {
+      motors[i].move_velocity(lvel);
+    } else {
+      motors[i].move_velocity(rvel);
+    }
+  }
+}

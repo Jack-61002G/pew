@@ -3,8 +3,6 @@
 
 using namespace lib;
 
-template <typename T> int sgn(T val) { return (T(0) < val) - (val < T(0)); }
-
 int Chassis::inputCurve(int input, double t) {
   return std::pow(input, t) / std::pow(127, t - 1);
 }

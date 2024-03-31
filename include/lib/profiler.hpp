@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 
 namespace lib {
@@ -18,14 +19,12 @@ public:
 
 class Profiler {
 public:
-  static double max_vel;
-  static double max_accel;
-  static double max_decel;
+  double max_vel;
+  double max_accel;
+  double max_decel;
 
   std::vector<std::pair<double, double>>
-  generateProfile(double target_position, double max_velocity = max_vel,
-                  double max_acceleration = max_accel,
-                  double max_deceleration = max_decel);
+  generateProfile(double target_position);
 
   Profiler(double max_velocity, double max_acceleration,
            double max_deceleration) {

@@ -1,4 +1,4 @@
-#include "lib/motion/trapevel.h"
+#include "lib/trapevel.h"
 
 trapevel::trapevel(double UP, double DOWN, double ff, double kp) {
   this->k_UP = UP;

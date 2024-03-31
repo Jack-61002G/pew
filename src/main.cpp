@@ -1,6 +1,6 @@
 #include "main.h"
-#include "lib/lib.h"
-#include "pros/adi.hpp"
+#include "lib/chassis.h"
+#include "constants.hpp"
 
 /**
  * A callback function for LLEMU's center button.
@@ -76,5 +76,8 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	
+	lib::Chassis chassis = lib::Chassis({1, 2, 3, 4}, 5);
+	chassis.moveProfiled(24, physicalConstraints);
+	chassis.pdMove(-24, 110, 1000, moveConstants);
+	chassis.pdTurn(90, 110, 1000, turnConstants);
 }

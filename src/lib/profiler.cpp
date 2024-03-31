@@ -2,38 +2,34 @@
 #include <cmath>
 #include "lib/profiler.hpp"
 
-namespace lib {
+using namespace lib;
 
-double max_velocity = 61;
-double max_acceleration = 120;
-double max_deceleration = 120;
-
-std::vector<std::pair<double, double>> Profiler::generateProfile(double target_position, double max_velocity, double max_acceleration ,double max_deceleration) {
+std::vector<std::pair<double, double>> Profiler::generateProfile(double target_position) {
     std::vector<std::pair<double, double>> profile;
     double time_step = 0.01; // Time step in seconds (10 ms)
 
     // Calculate the time it takes to accelerate to max velocity
-    double acceleration_dt = max_velocity / max_acceleration;
+    double acceleration_dt = max_vel / max_accel;
 
     // If we can't accelerate to max velocity in the given distance, we'll accelerate as much as possible
     double halfway_distance = target_position / 2;
-    double acceleration_distance = 0.5 * max_acceleration * pow(acceleration_dt, 2);
+    double acceleration_distance = 0.5 * max_accel * pow(acceleration_dt, 2);
 
     if (acceleration_distance > halfway_distance) {
-        acceleration_dt = sqrt(halfway_distance / (0.5 * max_acceleration));
+        acceleration_dt = sqrt(halfway_distance / (0.5 * max_accel));
     }
 
-    acceleration_distance = 0.5 * max_acceleration * pow(acceleration_dt, 2);
+    acceleration_distance = 0.5 * max_accel * pow(acceleration_dt, 2);
 
     // Recalculate max velocity based on the time we have to accelerate and decelerate
-    max_velocity = max_acceleration * acceleration_dt;
+    max_vel = max_accel * acceleration_dt;
 
     // We decelerate at a different rate than we accelerate
-    double deceleration_dt = max_velocity / max_deceleration;
+    double deceleration_dt = max_vel / max_decel;
 
     // Calculate the time that we're at max velocity
-    double cruise_distance = target_position - acceleration_distance - 0.5 * max_deceleration * pow(deceleration_dt, 2);
-    double cruise_dt = cruise_distance / max_velocity;
+    double cruise_distance = target_position - acceleration_distance - 0.5 * max_decel * pow(deceleration_dt, 2);
+    double cruise_dt = cruise_distance / max_vel;
     double deceleration_time = acceleration_dt + cruise_dt;
 
     // Check if we're still in the motion profile
@@ -46,14 +42,14 @@ std::vector<std::pair<double, double>> Profiler::generateProfile(double target_p
 
         // If we're accelerating
         if (elapsed_time < acceleration_dt) {
-            velocity += max_acceleration * time_step;
-            if (velocity > max_velocity) {
-                velocity = max_velocity;
+            velocity += max_accel * time_step;
+            if (velocity > max_vel) {
+                velocity = max_vel;
             }
         }
         // If we're decelerating
         else if (elapsed_time >= deceleration_time) {
-            velocity -= max_deceleration * time_step;
+            velocity -= max_decel * time_step;
             if (velocity < 0) {
                 velocity = 0;
             }
@@ -65,5 +61,3 @@ std::vector<std::pair<double, double>> Profiler::generateProfile(double target_p
 
     return profile;
 }
-
-} // namespace lib
