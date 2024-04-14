@@ -9,6 +9,15 @@ PDconstants::PDconstants(std::vector<double> constants) {
 void PDconstants::setConstants(std::vector<double> constants) {
   kP = constants[0];
   kD = constants[1];
+
+  if (constants.size() > 2) {
+    errorThreshold = constants[2];
+    velocityThreshold = constants[3];
+  }
+  else {
+    errorThreshold = 0;
+    velocityThreshold = 0;
+  }
 }
 
 std::vector<double> PDconstants::getConstants() { return {kP, kD}; }

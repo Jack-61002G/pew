@@ -8,6 +8,8 @@ class PDconstants {
 private:
   double kP;
   double kD;
+  double errorThreshold;
+  double velocityThreshold;
 
 public:
   PDconstants(std::vector<double> constants);

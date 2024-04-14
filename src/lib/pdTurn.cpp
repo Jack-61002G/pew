@@ -19,7 +19,7 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout,
                      PDconstants constants, bool async) {
   PD pd(constants.getConstants());
   double speed;
-  double error;
+  double error = angleWrap(target - imu->get_rotation());
 
   if (async) {
     while(this->getState() == DriveState::MOVING) {
@@ -31,7 +31,7 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout,
 
   int start = pros::millis();
   state = DriveState::MOVING;
-  while (pros::millis() - start < timeout) {
+  while (pros::millis() - start < timeout || error < constants.getConstants()[2] && motors->getDiffyVel()[0] < constants.getConstants()[3]){
 
     error = angleWrap(target - imu->get_rotation());
 

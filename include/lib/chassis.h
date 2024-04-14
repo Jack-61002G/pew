@@ -5,7 +5,10 @@
 #include "lib/pd.h"
 #include "lib/profiler.hpp"
 #include "pros/imu.hpp"
+#include "tracers.h"
+#include <utility>
 #include <vector>
+#include "lib/odom.hpp"
 
 namespace lib {
 
@@ -16,8 +19,12 @@ private:
   Diffy *motors;
   pros::Imu *imu;
   DriveState state;
+  std::pair<Tracer, Tracer> *tracers = nullptr;
 
 public:
+
+  Odom *odom = nullptr;
+
   DriveState getState() { return state; }
 
   // constructors
@@ -32,6 +39,10 @@ public:
     this->imu = new pros::Imu(imu);
     this->state = DriveState::IDLE;
   }
+
+//tracking
+  void addOdom(std::pair<Tracer, Tracer> *tracers);
+  void startOdom();
 
   // driver functions
   int inputCurve(int input, double t = 1);
