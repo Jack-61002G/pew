@@ -20,6 +20,8 @@ private:
   pros::Imu *imu;
   DriveState state;
   std::pair<Tracer, Tracer> *tracers = nullptr;
+  int headingTarget;
+  bool correctHeading{false};
 
 public:
 
@@ -56,6 +58,12 @@ public:
                     bool async = false);
 
   // 1d pd movements
+
+  /*
+  * heading correction task 
+  * @param constants: PDconstants struct with kP and kD values
+  */
+  void headingTask(PDconstants constants);
 
   /*
    * absolute turning

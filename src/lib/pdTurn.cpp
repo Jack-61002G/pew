@@ -1,5 +1,6 @@
 #include "lib/chassis.h"
 #include "lib/pd.h"
+#include "pros/rtos.hpp"
 
 using namespace lib;
 
@@ -21,8 +22,9 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout,
   double speed;
   double error = angleWrap(target - imu->get_rotation());
 
+
   if (async) {
-    while(this->getState() == DriveState::MOVING) {
+    while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
     pros::Task task(
@@ -31,7 +33,10 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout,
 
   int start = pros::millis();
   state = DriveState::MOVING;
-  while (pros::millis() - start < timeout || error < constants.getConstants()[2] && motors->getDiffyVel()[0] < constants.getConstants()[3]){
+  correctHeading = false;
+  while (pros::millis() - start < timeout ||
+         error < constants.getConstants()[2] &&
+             motors->getDiffyVel()[0] < constants.getConstants()[3]) {
 
     error = angleWrap(target - imu->get_rotation());
 
@@ -45,4 +50,24 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout,
   }
   motors->spinDiffy(0, 0);
   state = DriveState::IDLE;
+}
+
+void Chassis::headingTask(PDconstants constants) {
+
+  pros::Task task([&]() {
+    PD pd(constants.getConstants());
+    double speed;
+    double error = angleWrap(headingTarget - imu->get_rotation());
+
+    while (correctHeading) {
+      error = angleWrap(headingTarget - imu->get_rotation());
+
+      speed = pd.calculate(error);
+
+      motors->spinDiffy(motors->getDiffyVel()[0] + speed,
+                        motors->getDiffyVel()[1] - speed);
+      pros::delay(20);
+    }
+    pros::delay(20);
+  });
 }

@@ -21,6 +21,10 @@ void Chassis::moveProfiled(double target, profileConstraints constraints,
   }
 
   uint32_t now = pros::millis();
+
+  state = DriveState::MOVING;
+  correctHeading = true;
+
   for (std::pair<double, double> point : profile) {
     motors->spinVelocity(point.first, point.first);
 
