@@ -38,6 +38,8 @@ public:
 
   double calculate(double input);
 
+  double update(double error);
+
   void reset();
 };
 } // namespace lib

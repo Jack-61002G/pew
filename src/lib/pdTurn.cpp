@@ -16,9 +16,8 @@ double angleWrap(double angle) {
 
 template <typename T> int sgn(T val) { return (T(0) < val) - (val < T(0)); }
 
-void Chassis::pdTurn(double target, int maxSpeed, double timeout,
-                     PDconstants constants, bool async) {
-  PD pd(constants.getConstants());
+void Chassis::pdTurn(double target, int maxSpeed, double timeout, bool async) {
+  PD pd(angularConstants->getConstants());
   double speed;
   double error = angleWrap(target - imu->get_rotation());
 
@@ -28,15 +27,15 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout,
       pros::delay(20);
     }
     pros::Task task(
-        [&]() { pdTurn(target, maxSpeed, timeout, constants, false); });
+        [&]() { pdTurn(target, maxSpeed, timeout, false); });
   }
 
   int start = pros::millis();
   state = DriveState::MOVING;
   correctHeading = false;
   while (pros::millis() - start < timeout ||
-         error < constants.getConstants()[2] &&
-             motors->getDiffyVel()[0] < constants.getConstants()[3]) {
+         error < angularConstants->getConstants()[2] &&
+             motors->getDiffyVel()[0] < angularConstants->getConstants()[3]) {
 
     error = angleWrap(target - imu->get_rotation());
 
@@ -55,7 +54,7 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout,
 void Chassis::headingTask(PDconstants constants) {
 
   pros::Task task([&]() {
-    PD pd(constants.getConstants());
+    PD pd(angularConstants->getConstants());
     double speed;
     double error = angleWrap(headingTarget - imu->get_rotation());
 

@@ -2,9 +2,8 @@
 
 using namespace lib;
 
-void Chassis::pdMove(double target, int maxSpeed, double timeout,
-                     PDconstants constants, bool async) {
-  PD pd(constants.getConstants());
+void Chassis::pdMove(double target, int maxSpeed, double timeout, bool async) {
+  PD pd(linearConstants->getConstants());
   double speed;
   double error = target - (motors->getDiffyPos()[0] + motors->getDiffyPos()[1]) / 2;
 
@@ -13,13 +12,13 @@ void Chassis::pdMove(double target, int maxSpeed, double timeout,
       pros::delay(20);
     }
     pros::Task task(
-        [&]() { pdMove(target, maxSpeed, timeout, constants, false); });
+        [&]() { pdMove(target, maxSpeed, timeout,false); });
   }
 
   int start = pros::millis();
   state = DriveState::MOVING;
   correctHeading = true;
-  while (pros::millis() - start < timeout || error < constants.getConstants()[2] && motors->getDiffyVel()[0] < constants.getConstants()[3]){
+  while (pros::millis() - start < timeout || error < linearConstants->getConstants()[2] && motors->getDiffyVel()[0] < linearConstants->getConstants()[3]){
 
     error = target - (motors->getDiffyPos()[0] + motors->getDiffyPos()[1]) / 2;
 

@@ -23,6 +23,6 @@ void lib::Chassis::startOdom() {
 // encoders)
 void Odom::startTracking() {}
 
-void Odom::getPose() {}
+Point Odom::getPose() { return currentPose; }
 
 void Odom::setPose() {}

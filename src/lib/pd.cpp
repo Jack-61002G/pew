@@ -38,3 +38,13 @@ double PD::calculate(double input) {
   return constants.getConstants()[0] * error +
          constants.getConstants()[1] * derivative;
 }
+
+double PD::update(double error) {
+
+  derivative = error - prevError;
+
+  prevError = error;
+
+  return constants.getConstants()[0] * error +
+         constants.getConstants()[1] * derivative;
+}

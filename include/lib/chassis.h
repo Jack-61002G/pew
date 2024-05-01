@@ -2,13 +2,13 @@
 
 #include "asset.hpp"
 #include "lib/diffy.h"
+#include "lib/odom.hpp"
 #include "lib/pd.h"
 #include "lib/profiler.hpp"
 #include "pros/imu.hpp"
 #include "tracers.h"
 #include <utility>
 #include <vector>
-#include "lib/odom.hpp"
 
 namespace lib {
 
@@ -23,8 +23,10 @@ private:
   int headingTarget;
   bool correctHeading{false};
 
-public:
+  PDconstants *angularConstants;
+  PDconstants *linearConstants;
 
+public:
   Odom *odom = nullptr;
 
   DriveState getState() { return state; }
@@ -42,7 +44,13 @@ public:
     this->state = DriveState::IDLE;
   }
 
-//tracking
+  void setConstants(PDconstants *angularConstants,
+                    PDconstants *linearConstants) {
+    this->angularConstants = angularConstants;
+    this->linearConstants = linearConstants;
+  }
+
+  // tracking
   void addOdom(std::pair<Tracer, Tracer> *tracers);
   void startOdom();
 
@@ -60,9 +68,9 @@ public:
   // 1d pd movements
 
   /*
-  * heading correction task 
-  * @param constants: PDconstants struct with kP and kD values
-  */
+   * heading correction task
+   * @param constants: PDconstants struct with kP and kD values
+   */
   void headingTask(PDconstants constants);
 
   /*
@@ -71,8 +79,7 @@ public:
    * @param timeout: time in milliseconds to stop the movement
    * @param constants: PDconstants struct with kP and kD values
    */
-  void pdTurn(double target, int maxSpeed, double timeout,
-              PDconstants constants, bool async = false);
+  void pdTurn(double target, int maxSpeed, double timeout, bool async = false);
 
   /*
    * relative linear movement
@@ -80,8 +87,7 @@ public:
    * @param timeout: time in milliseconds to stop the movement
    * @param constants: PDconstants struct with kP and kD values
    */
-  void pdMove(double target, int maxSpeed, double timeout,
-              PDconstants constants, bool async = false);
+  void pdMove(double target, int maxSpeed, double timeout, bool async = false);
 
   /*
    * swing turn
@@ -91,18 +97,18 @@ public:
    * @param timeout: time in milliseconds to stop the movement
    * @param constants: PDconstants struct with kP and kD values
    */
-  void swing(double target, std::vector<int> speeds, double timeout,
-             PDconstants constants, bool async = false);
+  void swing(double target, std::vector<int> speeds, double timeout, bool async = false);
 
   // 2d movements
 
   /*
-   * pure pursuit
+   * boomerang
    * @param path: asset struct with path data
    * @param lookahead: distance in inches to look ahead
    * @param timeout: time in milliseconds to stop the movement
    */
-  void purePursuit(asset path, double lookahead, double timeout);
+  void boomerang(double x, double y, double theta, int timeout = 2000,
+                 double dLead = 0.6, double gLead = 0, bool async = false);
 };
 
 } // namespace lib
