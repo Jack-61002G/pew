@@ -38,15 +38,14 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
 
   while (true) {
 
-
     if (pros::millis() - now > timeout) {
       break;
     }
-    //if the robot is no longer getting closer to the target we should exit
-    if (pros::millis() - now > 100 && (start.distanceTo(target)) >= previousD) {
+    // if the robot is no longer getting closer to the target we should exit
+    if ((odom->getPose().distanceTo(target)) < 5 &&
+        (odom->getPose().distanceTo(target)) >= previousD) {
       break;
     }
-
 
     Point carrot(target.x - d * cos(theta) * dLead,
                  target.y - d * sin(theta) * dLead);
@@ -55,13 +54,14 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
     angularError = odom->getPose().angleError(target);
     angularPower = angularPD.update(angularError);
 
-    double previousD = start.distanceTo(target);
+    double previousD = odom->getPose().distanceTo(target);
 
     float leftPower = linearPower + angularPower;
     float rightPower = linearPower - angularPower;
+    
 
     motors->spinDiffy(leftPower, rightPower);
   }
-    motors->spinDiffy(0, 0);
-    state = DriveState::IDLE;
+  motors->spinDiffy(0, 0);
+  state = DriveState::IDLE;
 }
