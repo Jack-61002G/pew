@@ -7,7 +7,7 @@ using namespace lib;
 #define degreesToRadians(angleDegrees) ((angleDegrees)*M_PI / 180.0)
 
 void Chassis::boomerang(double x, double y, double theta, int timeout,
-                        double dLead, double gLead, bool async) {
+                        double dLead, double gLead, bool async, double exitRange) {
 
   PD linearPD(linearConstants->getConstants());
   PD angularPD(angularConstants->getConstants());
@@ -47,7 +47,7 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
       break;
     }
     // if the robot is no longer getting closer to the target we should exit
-    if ((odom->getPose().distanceTo(target)) < 5 &&
+    if ((odom->getPose().distanceTo(target)) < exitRange &&
         (odom->getPose().distanceTo(target)) >= previousD) {
       break;
     }
@@ -57,7 +57,7 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
 
     Point garrot(startCarrot + (carrot - startCarrot) * (1 - gLead));
 
-    linearError = odom->getPose().distanceTo(garrot);
+    linearError = ((2<sqrt(pow(garrot.x - odom->getPose().x, 2) + pow(garrot.y - odom->getPose().y, 2)))) ? odom->getPose().distanceTo(garrot) : odom->getPose().distanceTo(carrot);
     linearPower = linearPD.update(linearError);
     angularError = odom->getPose().angleError(target);
     angularPower = angularPD.update(angularError);
