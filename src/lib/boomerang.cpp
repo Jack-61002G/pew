@@ -1,5 +1,6 @@
 #include "lib/chassis.h"
 #include "pd.h"
+#include <cmath>
 
 using namespace lib;
 
@@ -22,7 +23,11 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
   Point start = odom->getPose();
 
   double d = start.distanceTo(target);
+
   double previousD = d;
+
+  Point startCarrot(target.x - d * cos(theta) * dLead,
+                    target.y - d * sin(theta) * dLead);
 
   if (async) {
     while (this->getState() == DriveState::MOVING) {
@@ -49,7 +54,10 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
 
     Point carrot(target.x - d * cos(theta) * dLead,
                  target.y - d * sin(theta) * dLead);
-    linearError = odom->getPose().distanceTo(carrot);
+
+    Point garrot(startCarrot + (carrot - startCarrot) * (1 - gLead));
+
+    linearError = odom->getPose().distanceTo(garrot);
     linearPower = linearPD.update(linearError);
     angularError = odom->getPose().angleError(target);
     angularPower = angularPD.update(angularError);
@@ -58,7 +66,6 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
 
     float leftPower = linearPower + angularPower;
     float rightPower = linearPower - angularPower;
-    
 
     motors->spinDiffy(leftPower, rightPower);
   }

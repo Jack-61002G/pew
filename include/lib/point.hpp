@@ -26,4 +26,14 @@ public:
 
   // angular error
   float angleError(const Point &other) { return other.theta - theta; }
+
+  Point operator-(const Point &other) const {
+    return Point(this->x - other.x, this->y - other.y, this->theta);
+  }
+  Point operator+(const Point &other) const {
+    return Point(this->x + other.x, this->y + other.y, this->theta);
+  }
+  Point operator*(const float &other) const {
+    return Point(this->x * other, this->y * other, this->theta);
+  }
 };
