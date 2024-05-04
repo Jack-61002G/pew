@@ -35,7 +35,7 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
       pros::delay(20);
     }
     pros::Task task(
-        [&]() { boomerang(x, y, theta, timeout, dLead, gLead, false); });
+        [&]() { boomerang(x, y, theta, timeout, dLead, gLead, false, exitRange); });
   }
 
   int now = pros::millis();
