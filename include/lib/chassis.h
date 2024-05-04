@@ -21,10 +21,10 @@ private:
   DriveState state;
   std::pair<Tracer, Tracer> *tracers = nullptr;
   int headingTarget;
-  bool correctHeading{false};
 
   PDconstants *angularConstants;
   PDconstants *linearConstants;
+  PDconstants *headingConstants;
 
 public:
   Odom *odom = nullptr;
@@ -44,10 +44,11 @@ public:
     this->state = DriveState::IDLE;
   }
 
-  void setConstants(PDconstants *angularConstants,
-                    PDconstants *linearConstants) {
+  void setConstants(PDconstants *angularConstants, PDconstants *linearConstants,
+                    PDconstants *headingConstants) {
     this->angularConstants = angularConstants;
     this->linearConstants = linearConstants;
+    this->headingConstants = headingConstants;
   }
 
   // tracking
@@ -66,12 +67,6 @@ public:
                     bool async = false);
 
   // 1d pd movements
-
-  /*
-   * heading correction task
-   * @param constants: PDconstants struct with kP and kD values
-   */
-  void headingTask(PDconstants constants);
 
   /*
    * absolute turning
@@ -112,7 +107,8 @@ public:
                  double dLead = 0.6, double gLead = 0.3, bool async = false,
                  double exitRange = .5);
 
-  void boomerang(std::vector<Point> waypoints, int timeout = 2000, double dLead = 0.6,
-                 double gLead = 0.3, bool async = false, double exitRange = 3, double endExitRange = .5);
+  void boomerang(std::vector<Point> waypoints, int timeout = 2000,
+                 double dLead = 0.6, double gLead = 0.3, bool async = false,
+                 double exitRange = 3, double endExitRange = .5);
 };
 } // namespace lib

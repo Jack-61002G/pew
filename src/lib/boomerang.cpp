@@ -41,7 +41,6 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
 
   int now = pros::millis();
   state = DriveState::MOVING;
-  correctHeading = false;
 
   while (true) {
 

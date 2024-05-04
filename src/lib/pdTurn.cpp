@@ -34,7 +34,6 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout, bool async) {
 
   int start = pros::millis();
   state = DriveState::MOVING;
-  correctHeading = false;
   while (pros::millis() - start < timeout ||
          error < angularConstants->getConstants()[2] &&
              motors->getDiffyVel()[0] < angularConstants->getConstants()[3]) {
@@ -51,24 +50,4 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout, bool async) {
   }
   motors->spinDiffy(0, 0);
   state = DriveState::IDLE;
-}
-
-void Chassis::headingTask(PDconstants constants) {
-
-  pros::Task task([&]() {
-    PD pd(angularConstants->getConstants());
-    double speed;
-    double error = angleWrap(headingTarget - imu->get_rotation());
-
-    while (correctHeading) {
-      error = angleWrap(headingTarget - imu->get_rotation());
-
-      speed = pd.calculate(degreesToRadians(error));
-
-      motors->spinDiffy(motors->getDiffyVel()[0] + speed,
-                        motors->getDiffyVel()[1] - speed);
-      pros::delay(20);
-    }
-    pros::delay(20);
-  });
 }

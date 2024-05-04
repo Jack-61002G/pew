@@ -12,10 +12,19 @@ private:
   double velocityThreshold;
 
 public:
+  /*
+  kp, kd, errorThreshold, velocityThreshold
+  */
   PDconstants(std::vector<double> constants);
 
+  /*
+  kp, kd, errorThreshold, velocityThreshold
+  */
   void setConstants(std::vector<double> constants);
 
+  /*
+  kp, kd, errorThreshold, velocityThreshold
+  */
   std::vector<double> getConstants();
 };
 
