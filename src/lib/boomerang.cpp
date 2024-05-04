@@ -34,8 +34,9 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
-    pros::Task task(
-        [&]() { boomerang(x, y, theta, timeout, dLead, gLead, false, exitRange); });
+    pros::Task task([&]() {
+      boomerang(x, y, theta, timeout, dLead, gLead, false, exitRange);
+    });
   }
 
   int now = pros::millis();
@@ -48,7 +49,8 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
       break;
     }
     // semicircle exit condition
-    if ((odom->getPose().y - target.y) * -cos(target.theta) <= sin(target.theta) * (odom->getPose().x - target.x) + exitRange) {
+    if ((odom->getPose().y - target.y) * -cos(target.theta) <=
+        sin(target.theta) * (odom->getPose().x - target.x) + exitRange) {
       break;
     }
 
@@ -79,4 +81,19 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
   }
   motors->spinDiffy(0, 0);
   state = DriveState::IDLE;
+}
+
+void Chassis::boomerang(std::vector<Point> waypoints, int timeout, double dLead,
+                        double gLead, bool async, double exitRange,
+                        double endExitRange) {
+  // call boomerang with exitRange except for the last element in the vector,
+  // then call the last one with endExitRange
+  for (int i = 0; i < waypoints.size() - 2; i++) {
+    boomerang(waypoints[i].x, waypoints[i].y, waypoints[i].theta, timeout,
+              dLead, gLead, async, exitRange);
+  }
+  boomerang(waypoints[waypoints.size() - 1].x,
+            waypoints[waypoints.size() - 1].y,
+            waypoints[waypoints.size() - 1].theta, timeout, dLead, gLead, async,
+            endExitRange);
 }

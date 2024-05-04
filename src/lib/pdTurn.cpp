@@ -14,6 +14,8 @@ double angleWrap(double angle) {
   return angle;
 }
 
+#define degreesToRadians(angleDegrees) ((angleDegrees)*M_PI / 180.0)
+
 template <typename T> int sgn(T val) { return (T(0) < val) - (val < T(0)); }
 
 void Chassis::pdTurn(double target, int maxSpeed, double timeout, bool async) {
@@ -39,7 +41,7 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout, bool async) {
 
     error = angleWrap(target - imu->get_rotation());
 
-    speed = pd.calculate(error);
+    speed = pd.calculate(degreesToRadians(error));
     if (speed > maxSpeed) {
       speed = maxSpeed;
     } else if (speed < -maxSpeed) {
@@ -61,7 +63,7 @@ void Chassis::headingTask(PDconstants constants) {
     while (correctHeading) {
       error = angleWrap(headingTarget - imu->get_rotation());
 
-      speed = pd.calculate(error);
+      speed = pd.calculate(degreesToRadians(error));
 
       motors->spinDiffy(motors->getDiffyVel()[0] + speed,
                         motors->getDiffyVel()[1] - speed);

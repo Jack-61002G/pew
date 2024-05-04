@@ -97,7 +97,8 @@ public:
    * @param timeout: time in milliseconds to stop the movement
    * @param constants: PDconstants struct with kP and kD values
    */
-  void swing(double target, std::vector<int> speeds, double timeout, bool async = false);
+  void swing(double target, std::vector<int> speeds, double timeout,
+             bool async = false);
 
   // 2d movements
 
@@ -108,7 +109,10 @@ public:
    * @param timeout: time in milliseconds to stop the movement
    */
   void boomerang(double x, double y, double theta, int timeout = 2000,
-                 double dLead = 0.6, double gLead = 0.3, bool async = false, double exitRange = 2);
-};
+                 double dLead = 0.6, double gLead = 0.3, bool async = false,
+                 double exitRange = .5);
 
+  void boomerang(std::vector<Point> waypoints, int timeout = 2000, double dLead = 0.6,
+                 double gLead = 0.3, bool async = false, double exitRange = 3, double endExitRange = .5);
+};
 } // namespace lib
