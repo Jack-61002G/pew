@@ -7,7 +7,8 @@ using namespace lib;
 #define degreesToRadians(angleDegrees) ((angleDegrees)*M_PI / 180.0)
 
 void Chassis::boomerang(double x, double y, double theta, int timeout,
-                        double dLead, double gLead, bool async, double exitRange) {
+                        double dLead, double gLead, bool async,
+                        double exitRange) {
 
   PD linearPD(linearConstants->getConstants());
   PD angularPD(angularConstants->getConstants());
@@ -46,9 +47,8 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
     if (pros::millis() - now > timeout) {
       break;
     }
-    // if the robot is no longer getting closer to the target we should exit
-    if ((odom->getPose().distanceTo(target)) < exitRange &&
-        (odom->getPose().distanceTo(target)) >= previousD) {
+    // semicircle exit condition
+    if ((odom->getPose().y - target.y) * -cos(target.theta) <= sin(target.theta) * (odom->getPose().x - target.x) + exitRange) {
       break;
     }
 
@@ -57,9 +57,17 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
 
     Point garrot(startCarrot + (carrot - startCarrot) * (1 - gLead));
 
-    linearError = ((2<sqrt(pow(garrot.x - odom->getPose().x, 2) + pow(garrot.y - odom->getPose().y, 2)))) ? odom->getPose().distanceTo(garrot) : odom->getPose().distanceTo(carrot);
+    linearError = (odom->getPose().distanceTo(garrot) > 2)
+                      ? odom->getPose().distanceTo(garrot)
+                      : odom->getPose().distanceTo(carrot);
     linearPower = linearPD.update(linearError);
-    angularError = odom->getPose().angleError(target);
+    // if close to garrot, use carrot as heading target, if close to carrot, use
+    // target as heading target
+    angularError = (odom->getPose().distanceTo(garrot) > 2)
+                       ? odom->getPose(true).angleTo(garrot)
+                   : (odom->getPose().distanceTo(carrot) > 2)
+                       ? odom->getPose(true).angleTo(carrot)
+                       : odom->getPose(true).angleError(target);
     angularPower = angularPD.update(angularError);
 
     double previousD = odom->getPose().distanceTo(target);

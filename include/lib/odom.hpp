@@ -18,7 +18,7 @@ public:
 
     //tracking
     void startTracking();
-    Point getPose();
+    Point getPose(bool radians = false);
     void setPose();
 
 };

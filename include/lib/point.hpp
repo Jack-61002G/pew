@@ -27,6 +27,11 @@ public:
   // angular error
   float angleError(const Point &other) { return other.theta - theta; }
 
+  float angleTo(const Point &other) {
+    float angle = atan2(other.y - y, other.x - x);
+    return angle - theta;
+  }
+
   Point operator-(const Point &other) const {
     return Point(this->x - other.x, this->y - other.y, this->theta);
   }
