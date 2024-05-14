@@ -32,6 +32,9 @@ public:
     this->max_accel = max_acceleration;
     this->max_decel = max_deceleration;
   }
+  Profiler(profileConstraints constraints)
+      : Profiler(constraints.max_velocity, constraints.max_acceleration,
+                 constraints.max_deceleration) {}
 };
 
 } // namespace lib

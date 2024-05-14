@@ -36,6 +36,12 @@ void Diffy::spinDiffy(std::vector<double> voltages) {
   }
 }
 
+void Diffy::spinDiffy(double voltage) {
+  for (int i = 0; i < size; i++) {
+    motors[i].move(voltage);
+  }
+}
+
 
 void Diffy::zero() {
   for (int i = 0; i < size; i++) {

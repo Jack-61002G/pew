@@ -16,6 +16,7 @@ public:
 
   void spinDiffy(double lvolt, double rvolt);
   void spinDiffy(std::vector<double> voltages);
+  void spinDiffy(double voltage);
   void spinVelocity(double lvel, double rvel);
   void zero();
   std::vector<double> getDiffyPos();
