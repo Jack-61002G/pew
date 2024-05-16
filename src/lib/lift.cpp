@@ -1,6 +1,6 @@
 #include "lib/lift.hpp"
 #include "liblvgl/llemu.hpp"
-#include "velControl.h"
+#include "lib/velControl.h"
 
 using namespace lib;
 
