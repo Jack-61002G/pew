@@ -51,91 +51,31 @@ class Motor : public AbstractMotor, public Device {
 	 * 		  A reversed motor will reverse the input or output movement functions and movement related
 	 * 		  telemetry in order to produce consistant behavior with non-reversed motors
 	 * 
-	 * \param gearset =  pros::v5::MotorGears::green
+	 * \param gearset = pros::v5::MotorGears::green
 	 * 		  Optional parameter for the gearset for the motor.
-	 * 		  set to pros::v5::MotorGears::green if not specifed. 
+	 * 		  Does not explicitly set the gearset if not specified or if the gearset is invalid
 	 * 
 	 * \param encoder_units = pros::v5::MotorUnits::degrees
 	 * 		  Optional parameter for the encoder units of the motor
-	 * 		  set to pros::v5::MotorUnits::degrees if not specified by the user
+	 * 		  Does not explicitly set the gearset if not specified or if the gearset is invalid
 	 * 
-	 *  \b Example
+	 * \b Example
  	 * \code
  	 * void opcontrol() {
-	 * 	Motor first_motor(1); //Creates a motor on port 1 with green gearset and degrees as the encoder units
-	 *  Motor reversed_motor(-2); //Creates a reversed motor on port 1 with standard gearset and encoder units
-	 *  Motor blue_motor(3, pros::v5::MotorGears::blue); //Creates a motor on port 3 with blue gear set and degrees
+	 * 	Motor first_motor(1); //Creates a motor on port 1 without altering gearset or encoder units
+	 *  Motor reversed_motor(-2); //Creates a reversed motor on port 1 port 1 without altering gearset or encoder units
+	 *  Motor blue_motor(3, pros::v5::MotorGears::blue); //Creates a motor on port 3 with blue gear set
 	 *  Motor rotations_motor(4, pros::v5::MotorGears::green, pros::v5::MotorUnits::rotations); port 4 w/ rotations
  	 *  
  	 * }
  	 * \endcode
 	 * 
 	 */
-	explicit Motor(const std::int8_t port, const pros::v5::MotorGears gearset = pros::v5::MotorGears::green,
-	               const pros::v5::MotorUnits encoder_units = pros::v5::MotorUnits::degrees);
+	Motor(const std::int8_t port, const pros::v5::MotorGears gearset = pros::v5::MotorGears::invalid,
+	               const pros::v5::MotorUnits encoder_units = pros::v5::MotorUnits::invalid);
 
-	
-
-	/**
-	 * Constructs a new Motor object.
-	 * 
-	 * This function uses the following values of errno when an error state is
- 	 * reached:
- 	 * ENXIO - The given value is not within the range of V5 ports |1-21|.
- 	 * ENODEV - The port cannot be configured as a motor
-	 * 
-	 * \param The abstract motor to create into a motor
- 	 *        Creates a new motor on the port of abstract_motor.get_port(), maintaining it's reversal status.
-	 * 
-	 * 
-	 *  \b Example
- 	 * \code
- 	 * void opcontrol() {
-	 * 	Motor first_motor(1); //Creates a motor on port 1 with green gearset and degrees as the encoder units
-	 * 	AbstractMotor abs_motor = first_motor;
-	 * 	Motor new_motor = (Motor) abs_motor;
- 	 *  
- 	 * }
- 	 * \endcode
-	 * 
-	 */
-	Motor(AbstractMotor& abstract_motor);
-
-
-	/// \name Motor movement functions
-	/// These functions allow programmers to make motors move
-	///@{
-
-	/**
-	 * Sets the voltage for the motor from -128 to 127.
-	 *
-	 * This is designed to map easily to the input from the controller's analog
-	 * stick for simple opcontrol use. The actual behavior of the motor is
-	 * analogous to use of pros::Motor::move().
-	 *
-	 * This function uses the following values of errno when an error state is
-	 * reached:
-	 * ENODEV - The port cannot be configured as a motor
-	 *
-	 * \param voltage
-	 *        The new motor voltage from -127 to 127
-	 *
-	 * \return 1 if the operation was successful or PROS_ERR if the operation
-	 * failed, setting errno.
-	 *
-	 * \b Example
-	 * \code
-	 * void opcontrol() {
-	 *   pros::Motor motor (1, E_MOTOR_GEARSET_18);
-	 *   pros::Controller master (E_CONTROLLER_MASTER);
-	 *   while (true) {
-	 *     motor = master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y);
-	 *     pros::delay(2);
-	 *   }
-	 * }
-	 * \endcode
-	 */
-	std::int32_t operator=(std::int32_t voltage) const;
+	Motor(const Device& device)
+		: Motor(device.get_port()) {};
 
 	/**
 	 * Sets the voltage for the motor from -127 to 127.
@@ -982,7 +922,7 @@ class Motor : public AbstractMotor, public Device {
 	 * 		  The zero-indexed index of the motor to get the target position of.
 	 * 		  By default index is 0, and will return an error for a non-zero index
 	 *
-	 * \return One of Motor_Brake, according to what was set for the
+	 * \return One of MotorBrake, according to what was set for the
 	 * motor, or E_MOTOR_BRAKE_INVALID if the operation failed, setting errno.
 	 *
 	 * \b Example
@@ -1048,7 +988,7 @@ class Motor : public AbstractMotor, public Device {
 	 * 		  The zero-indexed index of the motor to get the target position of.
 	 * 		  By default index is 0, and will return an error for a non-zero index
 	 *
-	 * \return One of Motor_Units according to what is set for the
+	 * \return One of MotorUnits according to what is set for the
 	 * motor or E_MOTOR_ENCODER_INVALID if the operation failed.
 	 *
 	 * \b Example
@@ -1079,8 +1019,8 @@ class Motor : public AbstractMotor, public Device {
 	 * 		  The zero-indexed index of the motor to get the target position of.
 	 * 		  By default index is 0, and will return an error for a non-zero index
 	 *
-	 * \return One of Motor_Gears according to what is set for the motor,
-	 * or pros::Motor_Gears::invalid if the operation failed.
+	 * \return One of MotorGears according to what is set for the motor,
+	 * or pros::MotorGears::invalid if the operation failed.
 	 *
 	 * \b Example
 	 * \code
@@ -1168,7 +1108,7 @@ class Motor : public AbstractMotor, public Device {
 	 * 
 	 * 
 	 * \param mode
-	 *        The Motor_Brake to set for the motor
+	 *        The MotorBrake to set for the motor
 	 * 
 	 * \param index Optional parameter. 
 	 * 		  The zero-indexed index of the motor to get the target position of.
@@ -1188,7 +1128,7 @@ class Motor : public AbstractMotor, public Device {
 	 */
 	std::int32_t set_brake_mode(const MotorBrake mode, const std::uint8_t index = 0) const;
 	/**
-	 * Sets one of Motor_Brake to the motor.
+	 * Sets one of MotorBrake to the motor.
 	 * \note This is one of many Motor functions that takes in an optional index parameter. 
 	 * 		 This parameter can be ignored by most users but exists to give a shared base class
 	 * 		 for motors and motor groups
@@ -1202,7 +1142,7 @@ class Motor : public AbstractMotor, public Device {
 	 * 
 	 * 
 	 * \param mode
-	 *        The Motor_Brake to set for the motor
+	 *        The MotorBrake to set for the motor
 	 * 
 	 * \param index Optional parameter. 
 	 * 		  The zero-indexed index of the motor to get the target position of.
@@ -1221,7 +1161,6 @@ class Motor : public AbstractMotor, public Device {
 	 * \endcode
 	 */
 	std::int32_t set_brake_mode(const pros::motor_brake_mode_e_t mode, const std::uint8_t index = 0) const;
-
 	/**
 	 * Sets the current limit for the motor in mA.
 	 *
@@ -1236,7 +1175,7 @@ class Motor : public AbstractMotor, public Device {
 	 * 
 	 * EOVERFLOW - The index is non 0
 	 * 
-	 *  * \param limit
+	 * \param limit
 	 *        The new current limit in mA
 	 * 
 	 * \param index Optional parameter. 
@@ -1264,7 +1203,7 @@ class Motor : public AbstractMotor, public Device {
 	std::int32_t set_current_limit(const std::int32_t limit, const std::uint8_t index = 0) const;
 
 	/**
-	 * Sets one of Motor_Units for the motor encoder. Works with the C
+	 * Sets one of MotorUnits for the motor encoder. Works with the C
 	 * enum and the C++ enum class.
 	 *
 	 * This function uses the following values of errno when an error state is
@@ -1288,7 +1227,7 @@ class Motor : public AbstractMotor, public Device {
 	 */
 	std::int32_t set_encoder_units(const MotorUnits units, const std::uint8_t index = 0) const;
 	/**
-	 * Sets one of Motor_Units for the motor encoder. Works with the C
+	 * Sets one of MotorUnits for the motor encoder. Works with the C
 	 * enum and the C++ enum class.
 	 *
 	 * \note This is one of many Motor functions that takes in an optional index parameter. 
@@ -1322,7 +1261,6 @@ class Motor : public AbstractMotor, public Device {
 	 * \endcode
 	 */
 	std::int32_t set_encoder_units(const pros::motor_encoder_units_e_t units, const std::uint8_t index = 0) const;
-
 	/**
 	 * Sets one of the gear cartridge (red, green, blue) for the motor. Usable with
 	 * the C++ enum class and the C enum.
@@ -1545,6 +1483,8 @@ class Motor : public AbstractMotor, public Device {
 	 *  
 	 */
 	std::int8_t size(void) const;
+
+	static std::vector<Motor> get_all_devices();
 
 	/**
 	 * gets the port number of the motor

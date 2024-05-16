@@ -2,16 +2,6 @@
 
 using namespace lib;
 
-double angleWrap(double angle) {
-  while (angle > 360) {
-    angle -= 360;
-  }
-  while (angle < -360) {
-    angle += 360;
-  }
-  return angle;
-}
-
 #define degreesToRadians(angleDegrees) ((angleDegrees)*M_PI / 180.0)
 
 void Chassis::pdMove(double target, int maxSpeed, double timeout, bool async) {

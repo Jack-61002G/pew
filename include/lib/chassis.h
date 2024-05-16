@@ -26,6 +26,16 @@ private:
   PDconstants *linearConstants;
   PDconstants *headingConstants;
 
+  double angleWrap(double angle) {
+  while (angle > 360) {
+    angle -= 360;
+  }
+  while (angle < -360) {
+    angle += 360;
+  }
+  return angle;
+}
+
 public:
   Odom *odom = nullptr;
 

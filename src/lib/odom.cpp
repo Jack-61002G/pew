@@ -1,4 +1,4 @@
-#include "chassis.h"
+#include "lib/chassis.h"
 using namespace lib;
 
 void lib::Chassis::addOdom(std::pair<Tracer, Tracer> *tracers) {
@@ -23,6 +23,6 @@ void lib::Chassis::startOdom() {
 // encoders)
 void Odom::startTracking() {}
 
-Point Odom::getPose() { return currentPose; }
+Point Odom::getPose(bool radians) { return currentPose; }
 
 void Odom::setPose() {}

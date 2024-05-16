@@ -1,6 +1,7 @@
 #include "main.h"
-#include "constants.hpp"
-#include "lift.hpp"
+#include "lib/diffy.h"
+#include "lib/lift.hpp"
+#include "lib/velControl.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -9,13 +10,13 @@
  * "I was pressed!" and nothing.
  */
 void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
+  static bool pressed = false;
+  pressed = !pressed;
+  if (pressed) {
+    pros::lcd::set_text(2, "I was pressed!");
+  } else {
+    pros::lcd::clear_line(2);
+  }
 }
 
 /**
@@ -25,10 +26,10 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+  pros::lcd::initialize();
+  pros::lcd::set_text(1, "Hello PROS User!");
 
-	pros::lcd::register_btn1_cb(on_center_button);
+  pros::lcd::register_btn1_cb(on_center_button);
 }
 
 /**
@@ -76,12 +77,14 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	Lift lift = Lift({1}, {200, 400, 400}, .25, .45, .003, 5);
+  lib::velController controller(.25, .005, .005);
+  lib::Diffy motors({1});
 
-	lift.startTask();
-	lift.setLift(90);
-	lift.setLift(180);
-	lift.setLift(270);
-	lift.setLift(-90);
+  lib::Lift *lift = new lib::Lift(&motors, {0, 0, 0}, &controller, 1);
+  lift->startTask();
+  pros::delay(50);
 
+  lift->setAngle(90);
+  lift->waitUntilSettled();
+  lift->setAngle(-90);
 }
