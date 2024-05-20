@@ -22,6 +22,7 @@ void Chassis::pdMove(double target, int maxSpeed, double timeout, bool async) {
   const double targetHeading = odom->getPose().theta;
   double angleError = angleWrap(targetHeading - imu->get_rotation());
 
+
   int start = pros::millis();
   state = DriveState::MOVING;
 
@@ -40,7 +41,7 @@ void Chassis::pdMove(double target, int maxSpeed, double timeout, bool async) {
     }
 
     // heading correction
-    angleError = angleWrap(target - imu->get_rotation());
+    angleError = angleWrap(targetHeading - imu->get_rotation());
     double headingSpeed = pdHeading.calculate(degreesToRadians(angleError));
 
     leftMotors->move(speed + headingSpeed);

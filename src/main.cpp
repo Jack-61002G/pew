@@ -89,7 +89,7 @@ void opcontrol() {
   pros::lcd::set_text(2, "Hello PROS User!");
 
   pros::delay(1000);
-  drive->moveProfiled((180.0/6), {120, 250, 250});
+  drive->moveProfiled(48, {62.1, 120, 120});
 
   /*
   pros::Motor motors(1);

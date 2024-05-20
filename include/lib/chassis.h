@@ -25,7 +25,6 @@ private:
   std::shared_ptr<pros::Imu> imu;
   DriveState state;
   std::pair<Tracer, Tracer> *tracers = nullptr;
-  int headingTarget;
   const int rpm;
   const double wheel;
   const double tpr;
