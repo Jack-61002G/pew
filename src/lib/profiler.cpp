@@ -6,7 +6,7 @@ using namespace lib;
 
 std::vector<std::pair<double, double>> Profiler::generateProfile(double target_position) {
     std::vector<std::pair<double, double>> profile;
-    double time_step = 0.01; // Time step in seconds (10 ms)
+    double time_step = 0.015; // Time step in seconds (10 ms)
 
     // Calculate the time it takes to accelerate to max velocity
     double acceleration_dt = max_vel / max_accel;

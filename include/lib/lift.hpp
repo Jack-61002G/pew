@@ -1,31 +1,36 @@
 #pragma once
 #include "StateMachine.hpp"
-#include "diffy.h"
 #include "lib/TaskWrapper.hpp"
-#include "profiler.hpp"
-#include "velControl.h"
+#include "pros/motors.hpp"
 
 namespace lib {
 
-enum class LiftState { MOVE, HOLD, IDLE };
+enum class LiftState { MOVE, IDLE };
+
+  //pid constant struct
+  struct PIDConstants {
+    double kP;
+    double kI;
+    double kD;
+  };
 
 class Lift : public StateMachine<LiftState, LiftState::IDLE>,
               public ryan::TaskWrapper {
 
 private:
-  lib::Diffy *motors;
-  const profileConstraints constraints;
-  velController *controller;
+  pros::Motor motors;
+  
   const double gearRatio;
 
-  Profiler *profiler;
-  std::vector<std::pair<double, double>> profile;
+  const PIDConstants constants;
+
+  double target;
+
+  bool moving = false;
+
 
 public:
-  Lift(lib::Diffy *motors, profileConstraints constraints, velController *controller, double gearRatio = 1)
-      : motors(motors), constraints(constraints), controller(controller), gearRatio(gearRatio) {
-    profiler = new Profiler(constraints);
-  }
+  Lift(pros::Motor motor, double gearRatio, PIDConstants constants) : motors(motor), gearRatio(gearRatio), constants(constants) {  motors.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);}
 
   void setAngle(double angle);
   void waitUntilSettled();

@@ -26,7 +26,7 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout, bool async) {
   state = DriveState::MOVING;
   while (pros::millis() - start < timeout ||
          error < angularConstants->getConstants()[2] &&
-             motors->getDiffyVel()[0] < angularConstants->getConstants()[3]) {
+             motors.getDiffyVel()[0] < angularConstants->getConstants()[3]) {
 
     error = angleWrap(target - imu->get_rotation());
 
@@ -36,8 +36,8 @@ void Chassis::pdTurn(double target, int maxSpeed, double timeout, bool async) {
     } else if (speed < -maxSpeed) {
       speed = -maxSpeed;
     }
-    motors->spinDiffy(speed, -speed);
+    motors.spinDiffy(speed, -speed);
   }
-  motors->spinDiffy(0, 0);
+  motors.spinDiffy(0, 0);
   state = DriveState::IDLE;
 }

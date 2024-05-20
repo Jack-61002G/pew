@@ -1,7 +1,10 @@
 #include "main.h"
+#include "lib/chassis.h"
 #include "lib/diffy.h"
 #include "lib/lift.hpp"
 #include "lib/velControl.h"
+#include "pros/motor_group.hpp"
+#include "pros/rtos.hpp"
 
 /**
  * A callback function for LLEMU's center button.
@@ -77,14 +80,23 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  lib::velController controller(.25, .005, .005);
-  lib::Diffy motors({1});
 
-  lib::Lift *lift = new lib::Lift(&motors, {0, 0, 0}, &controller, 1);
+  lib::Chassis *drive = new lib::Chassis({1, 2}, 3); 
+  lib::velController *controller = new lib::velController(1.5, 0.3, 0.25);
+  drive->setController(controller);
+  pros::lcd::set_text(2, "Hello PROS User!");
+
+  pros::delay(1000);
+  drive->moveProfiled((180.0/6), {120, 250, 250});
+
+  /*
+  pros::Motor motors(1);
+
+  lib::Lift *lift = new lib::Lift(motors, 1, {1.5, 0.3, .25});
   lift->startTask();
-  pros::delay(50);
-
-  lift->setAngle(90);
+  lift->setAngle(150);
   lift->waitUntilSettled();
-  lift->setAngle(-90);
-}
+  lift->setAngle(0);
+  lift->waitUntilSettled();
+  */
+  }

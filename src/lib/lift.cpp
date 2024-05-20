@@ -1,11 +1,11 @@
 #include "lib/lift.hpp"
 #include "liblvgl/llemu.hpp"
-#include "lib/velControl.h"
+#include <cstdint>
 
 using namespace lib;
 
 void Lift::waitUntilSettled() {
-  while (getState() != LiftState::IDLE) {
+  while (moving) {
     pros::delay(15);
   }
 }
@@ -13,12 +13,10 @@ void Lift::waitUntilSettled() {
 void Lift::setAngle(double angle) {
 
   setState(LiftState::IDLE);
-  pros::lcd::set_text(1, "setting");
 
-  double target = (angle / 6) / gearRatio;
+  this->target = angle / gearRatio;
 
-  profile = profiler->generateProfile(target);
-
+  moving = true;
   setState(LiftState::MOVE);
 }
 
@@ -30,24 +28,43 @@ void Lift::loop() {
 
     case LiftState::IDLE:
       break;
-      pros::lcd::set_text(1, "idle");
 
     case LiftState::MOVE:
-    pros::lcd::set_text(1, "moving");
-      for (auto &point : profile) {
-        controller->step(point.second, point.first, motors->getDiffyPos()[0],
-                         motors->getDiffyVel()[0]);
-        motors->spinDiffy(controller->getTargetPower());
-        pros::Task::delay_until(&now, 15);
-      }
-      setState(LiftState::HOLD);
-      break;
+      uint32_t start = pros::millis();
+      double integral = 0;
+      double prevError = 0;
+      double integralMax = 70; // Adjust this value as needed
 
-    case LiftState::HOLD:
-    pros::lcd::set_text(1, "holding");
-      controller->step(profile.back().second, profile.back().first,
-                       motors->getDiffyPos()[0], motors->getDiffyVel()[0]);
-      motors->spinDiffy(controller->getTargetPower());
+      while (true) {
+
+        double error = target - motors.get_position();
+        double derivative = error - prevError;
+
+        integral += error;
+
+        // Anti-windup: Limit the integral term
+        if (integral > integralMax) {
+          integral = integralMax;
+        } else if (integral < -integralMax) {
+          integral = -integralMax;
+        }
+
+        double output = constants.kP * error + constants.kI * integral +
+                        constants.kD * derivative;
+
+        motors.move(output);
+
+        prevError = error;
+
+        if (error < 1 && motors.get_actual_velocity() < 5 &&
+            pros::millis() - start > 1000) {
+          moving = false;
+        }
+
+        pros::Task::delay_until(&now, 25);
+        pros::lcd::set_text(2, std::to_string(motors.get_position()));
+        std::cout << motors.get_position() << std::endl;
+      }
       break;
     }
     pros::Task::delay_until(&now, 15);

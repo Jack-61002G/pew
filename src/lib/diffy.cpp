@@ -51,36 +51,20 @@ void Diffy::zero() {
 
 
 std::vector<double> Diffy::getDiffyPos() {
-  double left = 0;
-  double right = 0;
-  int half = size / 2;
+  std::vector<double> positions; // Declare the 'positions' vector
 
-  for (int i = 0; i < motors.size(); i++) {
-    if (i < half) {
-      left += motors[i].get_position();
-    } else {
-      right += motors[i].get_position();
-    }
+  for (int i = 0; i < size; i++) {
+    positions.push_back(motors[i].get_position());
   }
-  std::vector<double> positions = {left / half, right / half};
-  return positions;
+
+  return positions; // Return the 'positions' vector
 }
 
 
 std::vector<double> Diffy::getDiffyVel() {
-  double left = 0;
-  double right = 0;
   int half = size / 2;
 
-  for (int i = 0; i < motors.size(); i++) {
-    if (i < half) {
-      left += motors[i].get_actual_velocity();
-    } else {
-      right += motors[i].get_actual_velocity();
-    }
-  }
-  std::vector<double> velocities = {left / half, right / half};
-  return velocities;
+  return {0};
 }
 
 
@@ -105,9 +89,9 @@ std::vector<pros::Motor> Diffy::getMotors() {
 void Diffy::spinVelocity(double lvel, double rvel) {
   for (int i = 0; i < size; i++) {
     if (i < size / 2) {
-      motors[i].move_velocity(lvel);
+      motors[i].move(lvel);
     } else {
-      motors[i].move_velocity(rvel);
+      motors[i].move(rvel);
     }
   }
 }

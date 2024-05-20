@@ -1,6 +1,7 @@
 #include "lib/chassis.h"
 #include "pros/rtos.hpp"
 #include <cstdint>
+#include "pros/llemu.hpp"
 
 using namespace lib;
 
@@ -24,9 +25,16 @@ void Chassis::moveProfiled(double target, profileConstraints constraints,
 
   state = DriveState::MOVING;
 
+  //print out the profile to terminal without text
   for (std::pair<double, double> point : profile) {
-    motors->spinVelocity(point.first, point.first);
+    printf("%f, %f\n", point.first, point.second);}
 
-    pros::Task::delay_until(&now, 10);
+  pros::lcd::set_text(3, "Hello PROS User!");
+  for (std::pair<double, double> point : profile) {
+    int target = controller->step(point.second, point.first, motors.getDiffyPos()[0], motors.getDiffyVel()[0]);
+    motors.spinDiffy(target, target);
+
+    pros::Task::delay_until(&now, 15);
   }
+  pros::lcd::set_text(4, "Hello PROS User!");
 }

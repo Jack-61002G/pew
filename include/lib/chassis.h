@@ -7,6 +7,7 @@
 #include "lib/profiler.hpp"
 #include "pros/imu.hpp"
 #include "tracers.h"
+#include "velControl.h"
 #include <utility>
 #include <vector>
 
@@ -16,11 +17,13 @@ class Chassis {
 
 private:
   enum class DriveState { IDLE, MOVING };
-  Diffy *motors;
+  Diffy motors;
   pros::Imu *imu;
   DriveState state;
   std::pair<Tracer, Tracer> *tracers = nullptr;
   int headingTarget;
+
+  velController *controller;
 
   PDconstants *angularConstants;
   PDconstants *linearConstants;
@@ -42,17 +45,18 @@ public:
   DriveState getState() { return state; }
 
   // constructors
-  Chassis(Diffy *motors, pros::Imu *imu) {
-    this->motors = motors;
+  Chassis(Diffy motors, pros::Imu *imu) : motors(motors){
     this->imu = imu;
     this->state = DriveState::IDLE;
   }
 
-  Chassis(std::vector<int> ports, int imu) {
-    this->motors = new Diffy(ports);
+  Chassis(std::vector<int> ports, int imu) : motors(Diffy(ports)){
+
     this->imu = new pros::Imu(imu);
     this->state = DriveState::IDLE;
   }
+
+  void setController(velController *controller) { this->controller = controller; }
 
   void setConstants(PDconstants *angularConstants, PDconstants *linearConstants,
                     PDconstants *headingConstants) {

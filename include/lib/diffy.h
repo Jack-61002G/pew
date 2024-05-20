@@ -1,5 +1,6 @@
 #pragma once
 #include "pros/motors.hpp"
+#include "velControl.h"
 
 namespace lib {
 
