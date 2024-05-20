@@ -1,13 +1,16 @@
 #pragma once
 
 #include "asset.hpp"
-#include "lib/diffy.h"
 #include "lib/odom.hpp"
 #include "lib/pd.h"
 #include "lib/profiler.hpp"
 #include "pros/imu.hpp"
+#include "pros/motor_group.hpp"
+#include "pros/motors.h"
 #include "tracers.h"
 #include "velControl.h"
+#include <math.h>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -17,11 +20,15 @@ class Chassis {
 
 private:
   enum class DriveState { IDLE, MOVING };
-  Diffy motors;
-  pros::Imu *imu;
+  std::shared_ptr<pros::MotorGroup> leftMotors;
+  std::shared_ptr<pros::MotorGroup> rightMotors;
+  std::shared_ptr<pros::Imu> imu;
   DriveState state;
   std::pair<Tracer, Tracer> *tracers = nullptr;
   int headingTarget;
+  const int rpm;
+  const double wheel;
+  const double tpr;
 
   velController *controller;
 
@@ -44,16 +51,14 @@ public:
 
   DriveState getState() { return state; }
 
-  // constructors
-  Chassis(Diffy motors, pros::Imu *imu) : motors(motors){
-    this->imu = imu;
-    this->state = DriveState::IDLE;
-  }
+  // constructor
+  Chassis(pros::MotorGroup *leftMotors, pros::MotorGroup *rightMotors,
+          pros::Imu *imu, int rpm, double wheel)
+      : leftMotors(leftMotors), rightMotors(rightMotors), imu(imu), rpm(rpm), wheel(wheel), tpr(50 / (2*M_PI*(wheel/2))){
 
-  Chassis(std::vector<int> ports, int imu) : motors(Diffy(ports)){
-
-    this->imu = new pros::Imu(imu);
-    this->state = DriveState::IDLE;
+    leftMotors->set_encoder_units_all(pros::E_MOTOR_ENCODER_COUNTS);
+    rightMotors->set_encoder_units_all(pros::E_MOTOR_ENCODER_COUNTS);    
+    state = DriveState::IDLE;
   }
 
   void setController(velController *controller) { this->controller = controller; }

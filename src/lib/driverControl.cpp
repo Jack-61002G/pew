@@ -13,7 +13,8 @@ void Chassis::arcade(double forward, double turn, std::vector<double> curves) {
   turn = inputCurve(turn, curves[1]);
 
   // arcade drive
-  motors.spinDiffy(forward + turn, forward - turn);
+  leftMotors->move(forward + turn);
+  rightMotors->move(forward - turn);
 }
 
 void Chassis::tank(double left, double right, std::vector<double> curves) {
@@ -22,7 +23,8 @@ void Chassis::tank(double left, double right, std::vector<double> curves) {
   right = inputCurve(right, curves[1]);
 
   // tank drive
-  motors.spinDiffy(left, right);
+  leftMotors->move(left);
+  rightMotors->move(right);
 }
 
 void Chassis::arcadeMod(double forward, double turn, std::vector<double> curves,
@@ -40,5 +42,7 @@ void Chassis::arcadeMod(double forward, double turn, std::vector<double> curves,
     }
   }
 
-  motors.spinDiffy(forward + turn, forward - turn);
+  // arcade drive
+  leftMotors->move(forward + turn);
+  rightMotors->move(forward - turn);
 }

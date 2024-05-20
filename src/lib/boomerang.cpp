@@ -76,9 +76,11 @@ void Chassis::boomerang(double x, double y, double theta, int timeout,
     float leftPower = linearPower + angularPower;
     float rightPower = linearPower - angularPower;
 
-    motors.spinDiffy(leftPower, rightPower);
+    leftMotors->move(leftPower);
+    rightMotors->move(rightPower);
   }
-  motors.spinDiffy(0, 0);
+  leftMotors->brake();
+  rightMotors->brake();
   state = DriveState::IDLE;
 }
 

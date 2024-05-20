@@ -2,7 +2,7 @@
 
 using namespace lib;
 
-#define degreesToRadians(angleDegrees) ((angleDegrees)*M_PI / 180.0)
+#define degreesToRadians(angleDegrees) ((angleDegrees) * M_PI / 180.0)
 
 void Chassis::pdMove(double target, int maxSpeed, double timeout, bool async) {
   PD pd(linearConstants->getConstants());
@@ -17,7 +17,7 @@ void Chassis::pdMove(double target, int maxSpeed, double timeout, bool async) {
   }
 
   double error =
-      target - (motors.getDiffyPos()[0] + motors.getDiffyPos()[1]) / 2;
+      target - (leftMotors->get_position(0) + rightMotors->get_position(0)) / 2;
 
   const double targetHeading = odom->getPose().theta;
   double angleError = angleWrap(targetHeading - imu->get_rotation());
@@ -27,9 +27,10 @@ void Chassis::pdMove(double target, int maxSpeed, double timeout, bool async) {
 
   while (pros::millis() - start < timeout ||
          error < linearConstants->getConstants()[2] &&
-             motors.getDiffyVel()[0] < linearConstants->getConstants()[3]) {
+             leftMotors->get_actual_velocity(0) <
+                 linearConstants->getConstants()[3]) {
 
-    error = target - (motors.getDiffyPos()[0] + motors.getDiffyPos()[1]) / 2;
+    error = target - (leftMotors->get_position(0) + rightMotors->get_position(0)) / 2;
 
     speed = pd.calculate(error);
     if (speed > maxSpeed) {
@@ -42,8 +43,10 @@ void Chassis::pdMove(double target, int maxSpeed, double timeout, bool async) {
     angleError = angleWrap(target - imu->get_rotation());
     double headingSpeed = pdHeading.calculate(degreesToRadians(angleError));
 
-    motors.spinDiffy(speed + headingSpeed, speed - headingSpeed);
+    leftMotors->move(speed + headingSpeed);
+    rightMotors->move(speed - headingSpeed);
   }
-  motors.spinDiffy(0, 0);
+  leftMotors->brake();
+  rightMotors->brake();
   state = DriveState::IDLE;
 }

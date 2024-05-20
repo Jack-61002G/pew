@@ -1,6 +1,5 @@
 #include "main.h"
 #include "lib/chassis.h"
-#include "lib/diffy.h"
 #include "lib/lift.hpp"
 #include "lib/velControl.h"
 #include "pros/motor_group.hpp"
@@ -81,7 +80,10 @@ void autonomous() {}
  */
 void opcontrol() {
 
-  lib::Chassis *drive = new lib::Chassis({1, 2}, 3); 
+  pros::v5::MotorGroup leftMotors({1,2});
+  pros::v5::MotorGroup rightMotors({3,4});
+  pros::v5::Imu imu(5);
+  lib::Chassis *drive = new lib::Chassis(&leftMotors, &rightMotors, &imu, 450, 3.25);
   lib::velController *controller = new lib::velController(1.5, 0.3, 0.25);
   drive->setController(controller);
   pros::lcd::set_text(2, "Hello PROS User!");

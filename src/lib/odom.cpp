@@ -3,7 +3,7 @@ using namespace lib;
 
 void lib::Chassis::addOdom(std::pair<Tracer, Tracer> *tracers) {
   this->tracers = tracers;
-  this->odom = new Odom(tracers, imu);
+  this->odom = new Odom(tracers);
 }
 
 void lib::Chassis::startOdom() {
