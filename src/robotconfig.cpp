@@ -1,19 +1,12 @@
 #include "robotconfig.h"
 
-pros::Motor leftFront(1);
-pros::Motor leftMid(2);
-pros::Motor leftBack(3);
-pros::Motorgroup leftMotors({leftFront, leftMid, leftBack});
+pros::MotorGroup leftMotors({1,2,3});
 
-pros::Motor rightFront(4);
-pros::Motor rightMid(5);
-pros::Motor rightBack(6);
-pros::Motorgroup rightMotors({rightFront, rightMid, rightBack});
-
+pros::MotorGroup rightMotors({4,5,6});
 
 pros::Imu imu(7);
 
 
-lib::Chassis chassis = lib::Chassis(&leftMotors, &rightMotors, &imu, 450, 3.25);
+lib::Chassis chassis = lib::Chassis(&leftMotors, &rightMotors, &imu, 450, 2.75);
 
 
