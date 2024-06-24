@@ -1,4 +1,3 @@
-#include "lib/pd.h"
 #include "pros/misc.h"
 #include "robotconfig.h"
 

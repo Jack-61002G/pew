@@ -1,4 +1,3 @@
-#include "tracers.h"
 #include "pros/imu.hpp"
 #include "lib/point.hpp"
 namespace lib {
@@ -6,11 +5,10 @@ namespace lib {
 
 class Odom {
 private:
-    std::pair<Tracer, Tracer> *tracers;
     Point currentPose = Point(0, 0, 0);
 public:
     //constructor
-    Odom(std::pair<Tracer, Tracer> *tracers) : tracers(tracers) {}
+    Odom();
 
     //tracking
     void startTracking();

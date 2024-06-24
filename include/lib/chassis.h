@@ -1,18 +1,6 @@
 #pragma once
-
-#include "asset.hpp"
-#include "lib/odom.hpp"
-#include "lib/pd.h"
-#include "lib/profiler.hpp"
-#include "pros/imu.hpp"
-#include "pros/motor_group.hpp"
-#include "pros/motors.h"
-#include "tracers.h"
-#include "velControl.h"
-#include <math.h>
-#include <memory>
-#include <utility>
-#include <vector>
+#include "main.h"
+#include "odom.hpp"
 
 namespace lib {
 
@@ -24,54 +12,37 @@ private:
   std::shared_ptr<pros::MotorGroup> rightMotors;
   std::shared_ptr<pros::Imu> imu;
   DriveState state;
-  std::pair<Tracer, Tracer> *tracers = nullptr;
+
   const int rpm;
   const double wheel;
   const double tpr;
 
-  velController *controller;
-
-  PDconstants *angularConstants;
-  PDconstants *linearConstants;
-  PDconstants *headingConstants;
-
   double angleWrap(double angle) {
-  while (angle > 360) {
-    angle -= 360;
+    while (angle > 360) {
+      angle -= 360;
+    }
+    while (angle < -360) {
+      angle += 360;
+    }
+    return angle;
   }
-  while (angle < -360) {
-    angle += 360;
-  }
-  return angle;
-}
 
 public:
-  Odom *odom = nullptr;
-
   DriveState getState() { return state; }
 
   // constructor
   Chassis(pros::MotorGroup *leftMotors, pros::MotorGroup *rightMotors,
           pros::Imu *imu, int rpm, double wheel)
-      : leftMotors(leftMotors), rightMotors(rightMotors), imu(imu), rpm(rpm), wheel(wheel), tpr(50 / (2*M_PI*(wheel/2))){
+      : leftMotors(leftMotors), rightMotors(rightMotors), imu(imu), rpm(rpm),
+        wheel(wheel), tpr(50 / (2 * M_PI * (wheel / 2))) {
 
     leftMotors->set_encoder_units_all(pros::E_MOTOR_ENCODER_COUNTS);
-    rightMotors->set_encoder_units_all(pros::E_MOTOR_ENCODER_COUNTS);    
+    rightMotors->set_encoder_units_all(pros::E_MOTOR_ENCODER_COUNTS);
     state = DriveState::IDLE;
   }
 
-  void setController(velController *controller) { this->controller = controller; }
-
-  void setConstants(PDconstants *angularConstants, PDconstants *linearConstants,
-                    PDconstants *headingConstants) {
-    this->angularConstants = angularConstants;
-    this->linearConstants = linearConstants;
-    this->headingConstants = headingConstants;
-  }
-
   // tracking
-  void addOdom(std::pair<Tracer, Tracer> *tracers);
-  void startOdom();
+  void startOdom(Odom *odom);
 
   // driver functions
   int inputCurve(int input, double t = 1);
@@ -79,10 +50,6 @@ public:
                  int speedThreshold, int speedCap);
   void arcade(double forward, double turn, std::vector<double> curves = {0, 0});
   void tank(double left, double right, std::vector<double> curves = {0, 0});
-
-  // motion profiling
-  void moveProfiled(double target, profileConstraints constraints,
-                    bool async = false);
 
   // 1d pd movements
 
@@ -124,9 +91,5 @@ public:
   void boomerang(double x, double y, double theta, int timeout = 2000,
                  double dLead = 0.6, double gLead = 0.3, bool async = false,
                  double exitRange = .5);
-
-  void boomerang(std::vector<Point> waypoints, int timeout = 2000,
-                 double dLead = 0.6, double gLead = 0.3, bool async = false,
-                 double exitRange = 3, double endExitRange = .5);
 };
 } // namespace lib
