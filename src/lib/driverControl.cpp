@@ -4,7 +4,7 @@
 using namespace lib;
 
 int Chassis::inputCurve(int input, double t) {
-  return std::pow(input, t) / std::pow(127, t - 1);
+  return std::pow(input, t) / std::pow(127 * (input / std::abs(input)), t - 1);
 }
 
 void Chassis::arcade(double forward, double turn, std::vector<double> curves) {
