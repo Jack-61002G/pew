@@ -1,6 +1,7 @@
 #pragma once
 #include "main.h"
-#include "odom.hpp"
+#include "lib/odom.hpp"
+#include "lib/pid.h"
 
 namespace lib {
 
@@ -59,7 +60,7 @@ public:
    * @param timeout: time in milliseconds to stop the movement
    * @param constants: PDconstants struct with kP and kD values
    */
-  void pdTurn(double target, int maxSpeed, double timeout, bool async = false);
+  void turn(double target, PID pid, int maxSpeed = 127, double timeout = 800, bool async = false);
 
   /*
    * relative linear movement
@@ -67,7 +68,7 @@ public:
    * @param timeout: time in milliseconds to stop the movement
    * @param constants: PDconstants struct with kP and kD values
    */
-  void pdMove(double target, int maxSpeed, double timeout, bool async = false);
+  void move(double target, PID pid, int maxSpeed = 127, double slewRate = 127, double timeout = 1000, bool async = true);
 
   /*
    * swing turn
