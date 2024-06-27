@@ -21,8 +21,8 @@ void autonomous() {}
 
 
 void opcontrol() {
-  chassis.move(-12, linear);
-  chassis.move(12, linear);
+  chassis.move(-18, 5, 100);
+  chassis.move(18, 5, 100);
 
   while (true) {
     chassis.arcade(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), {1, 1});
