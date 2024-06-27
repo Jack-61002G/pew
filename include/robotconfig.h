@@ -18,3 +18,4 @@ lib::Chassis chassis = lib::Chassis(&leftMotors, &rightMotors, &imu, 450, 2.75);
 pros::Motor intake(1);
 
 PID linear(15,0,5);
+PID heading(15, 0, 5);

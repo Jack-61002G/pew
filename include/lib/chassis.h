@@ -67,7 +67,7 @@ public:
    * @param constants: PDconstants struct with kP and kD values
    */
   //void move(double target, PID pid, int maxSpeed = 127, double slewRate = 127, double timeout = 1000, bool async = true);
-  void move(float target, float speedMultiplier, float maxSpeed);
+  void move(float target, PID linearPid, PID headingPid, float maxSpeed);
 
   /*
    * swing turn

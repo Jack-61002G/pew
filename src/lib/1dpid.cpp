@@ -108,46 +108,46 @@ void Chassis::move(double target, PID pid, int maxSpeed, double slewRate, double
 */
 
 
-void Chassis::move(float target, float speedMultiplier, float maxSpeed) {
-  float lStart;
-  float rStart;
+void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed) {
+  float startPos;
+  float startHeading;
 
   state = DriveState::MOVING;
 
 
   while (true) {
+
     std::vector<double> lPositions = leftMotors->get_position_all();
     std::vector<float> lDistances;
     for (int i = 0; i < lPositions.size(); i++) {
       lDistances.push_back(lPositions[i] * (wheel * M_PI) * (rpm / 600.0)); // assumes blue gear cartridges
     }
+
     std::vector<double> rPositions = rightMotors->get_position_all();
     std::vector<float> rDistances;
     for (int i = 0; i< rPositions.size(); i++) {
       rDistances.push_back(rPositions[i] * (wheel * M_PI) * (rpm / 600.0));
     }
 
-    if (lStart == 0) {
-      lStart = avg(lDistances);
-      rStart = avg(rDistances);
+
+    if (startPos == 0) {
+      startPos = (avg(lDistances) + avg(rDistances)) * 0.5;
+      startHeading = avg(lDistances) - avg(rDistances);
     }
 
 
-    double lError = lStart + target - avg(lDistances);
-    double rError = rStart + target - avg(rDistances);
+    double linearError = startPos + target - (avg(lDistances) + avg(rDistances)) * 0.5;
+    double headingError = startHeading - (avg(lDistances) - avg(rDistances));
 
-    pros::lcd::print(1, "error: %f", lError);
+    pros::lcd::print(1, "error: %f", linearError);
 
-    if (std::abs(lError) < 0.5 && std::abs(rError) < 0.5 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
+    if (std::abs(linearError) < 0.5 && std::abs(headingError) < 0.5 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
       leftMotors->move(0);
       rightMotors->move(0);
       state = DriveState::IDLE;
       return;
     }
     
-    leftMotors->move(fmin(lError * speedMultiplier, maxSpeed));
-    rightMotors->move(fmin(rError * speedMultiplier, maxSpeed));
+    arcade(fmin(linearPid.update(linearError), maxSpeed), headingPid.update(headingError));
   }
-
-
 }
