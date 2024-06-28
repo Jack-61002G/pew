@@ -62,24 +62,21 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
 
 
 
-void Chassis::turn(double relative, PID headingPid, int timeout, float maxSpeed) {
-  double startHeading;
-  double target = startHeading + relative;
+void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed) {
+  double startHeading = imu->get_rotation();
+
+  while (target - startHeading > 360) {
+    target -= 360;
+  } while (target - startHeading < 0) {
+    target += 360;
+  }
 
   state = DriveState::MOVING;
 
 
   while (true) {
 
-    double heading = imu->get_rotation();
-
-
-    if (startHeading == 0) {
-      startHeading = heading;
-    }
-
-
-    double headingError = startHeading - heading;
+    double headingError = target + startHeading - imu->get_rotation();
 
     pros::lcd::print(1, "error: %f", headingError);
 
@@ -100,24 +97,21 @@ void Chassis::turn(double relative, PID headingPid, int timeout, float maxSpeed)
 
 
 
-void Chassis::swing(double relative, bool side, float multiplier, PID headingPid, int timeout, float maxSpeed) {
-  double startHeading;
-  double target = startHeading + relative;
+void Chassis::swing(double target, bool side, float multiplier, PID headingPid, int timeout, float maxSpeed) {
+  double startHeading = imu->get_rotation();
+
+  while (target - startHeading > 360) {
+    target -= 360;
+  } while (target - startHeading < 0) {
+    target += 360;
+  }
 
   state = DriveState::MOVING;
 
 
   while (true) {
 
-    double heading = imu->get_rotation();
-
-
-    if (startHeading == 0) {
-      startHeading = heading;
-    }
-
-
-    double headingError = startHeading - heading;
+    double headingError = target + startHeading - imu->get_rotation();
 
     pros::lcd::print(1, "error: %f", headingError);
 
