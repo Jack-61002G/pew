@@ -1,9 +1,12 @@
 #include "pros/misc.h"
+#include "pros/rtos.hpp"
 #include "robotconfig.h"
 
 
 void initialize() {
   pros::lcd::initialize();
+  imu.reset(true);
+
 }
 
 
