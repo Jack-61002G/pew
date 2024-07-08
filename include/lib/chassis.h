@@ -54,11 +54,11 @@ public:
 
 
   // basic pd movements
-  void move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed = 127);
+  void move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed = 127, bool async = false);
 
-  void turn(double relative, PID headingPid, int timeout, float maxSpeed = 127);
+  void turn(double relative, PID headingPid, int timeout, float maxSpeed = 127, bool async = false);
 
-  void swing(double relative, bool side, float multiplier, PID headingPid, int timeout, float maxSpeed);
+  void swing(double relative, bool side, float multiplier, PID headingPid, int timeout, float maxSpeed, bool async = false);
  
 
   // 2d movements

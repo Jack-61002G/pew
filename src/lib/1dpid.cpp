@@ -13,7 +13,15 @@ using namespace lib;
 
 
 
-void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed) {
+void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed, bool async) {
+  if (async) {
+    while (this->getState() == DriveState::MOVING) {
+      pros::delay(20);
+    }
+    pros::Task task([&]() { move(target, linearPid, headingPid, timeout, maxSpeed); });
+  }
+
+
   float startPos;
   double startHeading;
 
@@ -62,7 +70,15 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
 
 
 
-void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed) {
+void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed, bool async) {
+  if (async) {
+    while (this->getState() == DriveState::MOVING) {
+      pros::delay(20);
+    }
+    pros::Task task([&]() { turn(target, headingPid, timeout, maxSpeed); });
+  }
+
+
   double startHeading = imu->get_rotation();
 
   while (target - startHeading > 360) {
@@ -97,7 +113,15 @@ void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed) {
 
 
 
-void Chassis::swing(double target, bool side, float multiplier, PID headingPid, int timeout, float maxSpeed) {
+void Chassis::swing(double target, bool side, float multiplier, PID headingPid, int timeout, float maxSpeed, bool async) {
+  if (async) {
+    while (this->getState() == DriveState::MOVING) {
+      pros::delay(20);
+    }
+    pros::Task task([&]() { swing(target, side, multiplier, headingPid, timeout, maxSpeed); });
+  }
+
+
   double startHeading = imu->get_rotation();
 
   while (target - startHeading > 360) {
