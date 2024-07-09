@@ -11,7 +11,8 @@ void Chassis::arcade(double forward, double turn, std::vector<double> curves) {
   // curve input
   forward = inputCurve(forward, curves[0]);
   turn = inputCurve(turn, curves[1]);
-
+}
+void Chassis::arcade(double forward, double turn){
   // arcade drive
   leftMotors->move(forward + turn);
   rightMotors->move(forward - turn);

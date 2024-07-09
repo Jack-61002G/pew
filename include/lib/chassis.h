@@ -49,7 +49,8 @@ public:
   // driver functions
   int inputCurve(int input, double t = 1);
   void arcadeMod(double forward, double turn, std::vector<double> curves, int speedThreshold, int speedCap);
-  void arcade(double forward, double turn, std::vector<double> curves = {0, 0});
+  void arcade(double forward, double turn, std::vector<double> curves);
+  void arcade(double forward, double turn);
   void tank(double left, double right, std::vector<double> curves = {0, 0});
 
 

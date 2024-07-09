@@ -36,9 +36,7 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
     for (int i = 0; i < lPositions.size(); i++) {
       distances.push_back(lPositions[i] * (wheel * M_PI) * (rpm / 600.0)); // assumes blue gear cartridges
     }
-    for (int i = 0; i< rPositions.size(); i++) {
-      distances.push_back(rPositions[i] * (wheel * M_PI) * (rpm / 600.0));
-    }
+
 
 
     double heading = imu->get_rotation();
@@ -53,9 +51,8 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
     double linearError = startPos + target - avg(distances);
     double headingError = startHeading - heading;
 
-    pros::lcd::print(1, "error: %f", linearError);
 
-    if (std::abs(linearError) < 0.5 && std::abs(headingError) < 1.0 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
+    if (std::abs(linearError) < 0.5 && std::abs(leftMotors->get_actual_velocity()) < 10 && std::abs(rightMotors->get_actual_velocity()) < 10) {
       leftMotors->move(0);
       rightMotors->move(0);
       state = DriveState::IDLE;
@@ -63,8 +60,8 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
       headingPid.reset();
       return;
     }
-    
-    arcade(fmin(linearPid.update(linearError), maxSpeed), headingPid.update(headingError));
+
+    arcade(linearPid.update(linearError), headingPid.update(headingError));
   }
 }
 
