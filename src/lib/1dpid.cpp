@@ -30,25 +30,17 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
 
   while (true) {
 
-    std::vector<double> lPositions = leftMotors->get_position_all();
-    std::vector<double> rPositions = rightMotors->get_position_all();
-    std::vector<float> distances;
-    for (int i = 0; i < lPositions.size(); i++) {
-      distances.push_back(lPositions[i] * (wheel * M_PI) * (rpm / 600.0)); // assumes blue gear cartridges
-    }
-
-
-
+    double distance = track->getDistance();
     double heading = imu->get_rotation();
 
 
     if (startPos == 0) {
-      startPos = avg(distances);
+      startPos = distance;
       startHeading = heading;
     }
 
 
-    double linearError = startPos + target - avg(distances);
+    double linearError = startPos + target - distance;
     double headingError = startHeading - heading;
 
 
@@ -62,6 +54,8 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
     }
 
     arcade(linearPid.update(linearError), headingPid.update(headingError));
+
+    pros::delay(10);
   }
 }
 
@@ -93,7 +87,7 @@ void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed, b
 
     pros::lcd::print(1, "error: %f", headingError);
 
-    if (std::abs(headingError) < 1.0 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
+    if (std::abs(headingError) < 2 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
       leftMotors->move(0);
       rightMotors->move(0);
       state = DriveState::IDLE;
@@ -105,6 +99,8 @@ void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed, b
 
     leftMotors->move(output);
     rightMotors->move(-output);
+
+    pros::delay(10);
   }
 }
 
@@ -136,7 +132,7 @@ void Chassis::swing(double target, bool side, float multiplier, PID headingPid, 
 
     pros::lcd::print(1, "error: %f", headingError);
 
-    if (std::abs(headingError) < 1.0 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
+    if (std::abs(headingError) < 2.0 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
       leftMotors->move(0);
       rightMotors->move(0);
       state = DriveState::IDLE;
@@ -153,5 +149,7 @@ void Chassis::swing(double target, bool side, float multiplier, PID headingPid, 
       leftMotors->move(output);
       rightMotors->move(-output * multiplier);
     }
+
+    pros::delay(10);
   }
 }
