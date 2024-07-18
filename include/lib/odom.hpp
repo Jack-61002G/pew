@@ -1,20 +1,28 @@
-#include "pros/imu.hpp"
+#pragma once
 #include "lib/point.hpp"
-namespace lib {
+#include "lib/trackwheel.h"
+#include "pros/imu.hpp"
+#include <memory>
 
+namespace lib {
 
 class Odom {
 private:
-    Point currentPose = Point(0, 0, 0);
+  Point currentPose = Point(0, 0, 0);
+  std::shared_ptr<TrackingWheel> vertiTracker;
+  std::shared_ptr<pros::Imu> imu;
+
 public:
-    //constructor
-    Odom();
+  // constructor
+  Odom(TrackingWheel vertiTracker, pros::Imu imu) {
+    this->vertiTracker = std::make_shared<TrackingWheel>(vertiTracker);
+    this->imu = std::make_shared<pros::Imu>(imu);
+  };
 
-    //tracking
-    void startTracking();
-    Point getPose(bool radians = false);
-    void setPose();
-
+  // tracking
+  void startTracking();
+  Point getPose(bool radians = false);
+  void setPose(Point newPose);
 };
 
-} // namespace tracking
+} // namespace lib

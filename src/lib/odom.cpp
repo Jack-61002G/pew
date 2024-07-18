@@ -9,18 +9,38 @@ void lib::Chassis::startOdom(Odom *odom) {
 //constructor
 void Odom();
 
-// if both encoders in the pair are nullptr -> use imu + motors
+//odom with only vertical tracking wheel and imu
+void Odom::startTracking() {
 
-// if the first encoder in the pair is nullptr -> use second encoder as
-// forwards/backwards +imu
+  double lastAngle = imu->get_rotation();
+  double lastPosition = vertiTracker->getDistance();
 
-// if the second encoder in the pair is nullptr -> use
-//  first encoder as horizontal tracking + motors for forwards/backwards +imu
+  while (true) {
 
-// if both encoders are not nullptr -> use both encoders + imu (no motor
-// encoders)
-void Odom::startTracking() {}
+    double currentAngle = imu->get_rotation();
+    double currentPosition = vertiTracker->getDistance();
+
+    double deltaAngle = currentAngle - lastAngle;
+    double deltaPosition = currentPosition - lastPosition;
+
+    //calculate the change in x and y
+    double deltaX = deltaPosition * cos(deltaAngle);
+    double deltaY = deltaPosition * sin(deltaAngle);
+
+    //update the current pose
+    currentPose.x += deltaX;
+    currentPose.y += deltaY;
+    currentPose.theta = currentAngle;
+
+    //update the last angle and position
+    lastAngle = currentAngle;
+    lastPosition = currentPosition;
+
+    //delay
+    pros::delay(10);
+  }
+
+}
 
 Point Odom::getPose(bool radians) { return currentPose; }
-
-void Odom::setPose() {}
+void Odom::setPose(Point newPose) { currentPose = newPose; }

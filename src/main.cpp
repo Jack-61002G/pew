@@ -4,12 +4,15 @@
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include "robotconfig.h"
+#include <string>
 
-
+rd::Console console;
 
 void initialize() {
   imu.reset(true);
-  imu.tare();
+  track.reset();
+  
+  odom.startTracking();
 
 }
 
@@ -37,6 +40,9 @@ void opcontrol() {
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
   while (true) {
+    std::string str = std::to_string(odom.getPose().x) + " " + std::to_string(odom.getPose().y) + " " + std::to_string(odom.getPose().theta) + "\n";
+    console.println(str);
+
     chassis.arcade(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
     intake.move( (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) ? -127 : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) ? 127 : 0 );
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {pisstake.toggle();}

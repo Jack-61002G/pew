@@ -8,6 +8,7 @@
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "pros/rotation.hpp"
+#include "lib/odom.hpp"
 
 pros::MotorGroup leftMotors({17,-18,-20}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
 
@@ -29,3 +30,5 @@ pros::adi::Pneumatics clamp('G', false);
 PID linear(11,0,6, 45);
 PID heading(0.2, 0.0001, 0.15);
 PID turning(2.5, 0.005, 15);
+
+lib::Odom odom(track, imu);
