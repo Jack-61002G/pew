@@ -1,18 +1,38 @@
-#include "lib/pid.h"
-#include "pros/llemu.hpp"
+
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include "robotconfig.h"
+#include "robodash/api.h"
 #include <string>
 
+
+// ============================= Example autons ============================= //
+
+void best_auton() { std::cout << "Running best auton" << std::endl; }
+void simple_auton() { std::cout << "Running simple auton " << std::endl; }
+void good_auton() { std::cout << "Running good auton" << std::endl; }
+
+// ================================= Views ================================= //
+
+// Create robodash selector
+rd::Selector selector({
+    {"Best auton", &best_auton},
+    {"Simple auton", &simple_auton},
+    {"Good auton", &good_auton},
+});
+
+// Create robodash console
 rd::Console console;
 
+// ========================= Competition Functions ========================= //
+
+
 void initialize() {
+  
   imu.reset(true);
   track.reset();
-  
-  odom.startTracking();
+  odom.startTask();
 
 }
 
@@ -31,20 +51,23 @@ void autonomous() {}
 
 
 void opcontrol() {
+  
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-  chassis.swing(90, false, 0.6, turning, 10000, 127);
+  //chassis.swing(90, false, 0.6, turning, 10000, 127);
+ // chassis.boomerang(12, 24, 90, linear, turning);
 
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
   while (true) {
+    console.clear();
     std::string str = std::to_string(odom.getPose().x) + " " + std::to_string(odom.getPose().y) + " " + std::to_string(odom.getPose().theta) + "\n";
     console.println(str);
 
     chassis.arcade(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
-    intake.move( (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) ? -127 : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) ? 127 : 0 );
+    intake.move((controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) ? -127 : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) ? 127 : 0 );
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {pisstake.toggle();}
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {clamp.toggle();}
     pros::delay(10);

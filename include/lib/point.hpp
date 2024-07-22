@@ -12,8 +12,7 @@ public:
   float theta = std::numeric_limits<float>::quiet_NaN();
 
   // Constructor
-  Point(float x, float y, float theta = std::numeric_limits<float>::quiet_NaN())
-      : x(x), y(y), theta(theta) {}
+  Point(float x, float y, float theta = std::numeric_limits<float>::quiet_NaN()): x(x), y(y), theta(theta) {}
 
   // Method to calculate distance between two points
   float distanceTo(const Point &other) const {

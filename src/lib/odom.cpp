@@ -1,46 +1,51 @@
-#include "lib/chassis.h"
+#include "lib/odom.hpp"
+
+
+
 using namespace lib;
 
-void lib::Chassis::startOdom(Odom *odom) {
-  if (odom != nullptr) {
-    odom->startTracking();
-  }
-}
-//constructor
-void Odom();
+
 
 //odom with only vertical tracking wheel and imu
-void Odom::startTracking() {
+void Odom::loop() {
 
-  double lastAngle = imu->get_rotation();
+  double lastAngle = imu->get_rotation() * M_PI / 180.0;
   double lastPosition = vertiTracker->getDistance();
 
   while (true) {
 
-    double currentAngle = imu->get_rotation();
-    double currentPosition = vertiTracker->getDistance();
+    double rawAngle = imu->get_rotation() * M_PI / 180.0;
+    double rawPosition = vertiTracker->getDistance();
 
-    double deltaAngle = currentAngle - lastAngle;
-    double deltaPosition = currentPosition - lastPosition;
+    // Calculate the change in sensor values
+    float deltaVertical = rawPosition - lastPosition;
+    float deltaImu = rawAngle - lastAngle;
 
-    //calculate the change in x and y
-    double deltaX = deltaPosition * cos(deltaAngle);
-    double deltaY = deltaPosition * sin(deltaAngle);
+    // Update the previous sensor values
+    lastPosition = rawPosition;
+    lastAngle = rawAngle;
 
-    //update the current pose
-    currentPose.x += deltaX;
-    currentPose.y += deltaY;
-    currentPose.theta = currentAngle;
 
-    //update the last angle and position
-    lastAngle = currentAngle;
-    lastPosition = currentPosition;
+    // Calculate change in x and y
+    float deltaY = deltaVertical;
+
+    // Calculate local x and y
+    float localX = 0;
+    float localY = deltaY;
+
+
+    // Calculate global x and y
+    currentPose.x += localY * sin(rawAngle);
+    currentPose.y += localY * cos(rawAngle);
+    currentPose.theta = rawAngle;
 
     //delay
     pros::delay(10);
   }
-
 }
 
 Point Odom::getPose(bool radians) { return currentPose; }
+
+
+
 void Odom::setPose(Point newPose) { currentPose = newPose; }

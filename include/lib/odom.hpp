@@ -1,4 +1,5 @@
 #pragma once
+#include "lib/TaskWrapper.hpp"
 #include "lib/point.hpp"
 #include "lib/trackwheel.h"
 #include "pros/imu.hpp"
@@ -6,11 +7,13 @@
 
 namespace lib {
 
-class Odom {
+class Odom : public ryan::TaskWrapper {
 private:
   Point currentPose = Point(0, 0, 0);
-  std::shared_ptr<TrackingWheel> vertiTracker;
-  std::shared_ptr<pros::Imu> imu;
+    std::shared_ptr<TrackingWheel> vertiTracker;
+    std::shared_ptr<pros::Imu> imu;
+  
+  
 
 public:
   // constructor
@@ -20,7 +23,7 @@ public:
   };
 
   // tracking
-  void startTracking();
+  void loop() override;
   Point getPose(bool radians = false);
   void setPose(Point newPose);
 };

@@ -4,6 +4,7 @@
 #include "lib/pid.h"
 #include "lib/trackwheel.h"
 #include "pros/motors.h"
+#include <memory>
 
 namespace lib {
 
@@ -15,6 +16,9 @@ private:
   std::shared_ptr<pros::MotorGroup> rightMotors;
   std::shared_ptr<pros::Imu> imu;
   std::shared_ptr<lib::TrackingWheel> track;
+
+  
+
   DriveState state;
 
   const int rpm;
@@ -32,6 +36,7 @@ private:
 
 public:
   DriveState getState() { return state; }
+  std::shared_ptr<Odom> odom;
 
   // constructor
   Chassis(pros::MotorGroup *leftMotors, pros::MotorGroup *rightMotors, pros::Imu *imu, lib::TrackingWheel *track, int rpm, double wheel)
@@ -42,10 +47,10 @@ public:
     state = DriveState::IDLE;
   }
 
+  void setOdom(Odom odom) {
 
-  // tracking
-  void startOdom(Odom *odom);
-
+    this->odom = std::make_shared<Odom>(odom);
+  }
 
   // driver functions
   int inputCurve(int input, double t = 1);
@@ -64,6 +69,6 @@ public:
  
 
   // 2d movements
-  void boomerang(double x, double y, double theta, int timeout = 2000, double dLead = 0.6, double gLead = 0.3, bool async = false, double exitRange = .5);
+  void boomerang(double x, double y, double theta, PID linearPid, PID headingPid, int timeout = 2000, double dLead = 0.6, double gLead = 0.3, bool async = false, double exitRange = .5);
 };
 } // namespace lib

@@ -1,12 +1,4 @@
 #include "lib/chassis.h"
-#include "lib/util.h"
-#include "pros/llemu.h"
-#include "pros/llemu.hpp"
-#include "pros/motors.h"
-#include "pros/rtos.hpp"
-#include <cstdint>
-#include <vector>
-
 
 
 using namespace lib;
@@ -85,8 +77,6 @@ void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed, b
 
     double headingError = target + startHeading - imu->get_rotation();
 
-    pros::lcd::print(1, "error: %f", headingError);
-
     if (std::abs(headingError) < 2 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
       leftMotors->move(0);
       rightMotors->move(0);
@@ -130,8 +120,6 @@ void Chassis::swing(double target, bool side, float multiplier, PID headingPid, 
 
     double headingError = target + startHeading - imu->get_rotation();
 
-    pros::lcd::print(1, "error: %f", headingError);
-
     if (std::abs(headingError) < 2.0 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
       leftMotors->move(0);
       rightMotors->move(0);
@@ -144,10 +132,10 @@ void Chassis::swing(double target, bool side, float multiplier, PID headingPid, 
 
     if (side) {
       leftMotors->move(output * multiplier);
-      rightMotors->move(-output);
+      rightMotors->move(output);
     } else {
       leftMotors->move(output);
-      rightMotors->move(-output * multiplier);
+      rightMotors->move(output * multiplier);
     }
 
     pros::delay(10);
