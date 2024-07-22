@@ -1,4 +1,4 @@
-#include "lib/odom.hpp"
+#include "lib/chassis.h"
 
 
 
@@ -6,16 +6,16 @@ using namespace lib;
 
 
 
-//odom with only vertical tracking wheel and imu
-void Odom::loop() {
+//Chassis with only vertical tracking wheel and imu
+void Chassis::loop() {
 
   double lastAngle = imu->get_rotation() * M_PI / 180.0;
-  double lastPosition = vertiTracker->getDistance();
+  double lastPosition = track->getDistance();
 
   while (true) {
 
     double rawAngle = imu->get_rotation() * M_PI / 180.0;
-    double rawPosition = vertiTracker->getDistance();
+    double rawPosition = track->getDistance();
 
     // Calculate the change in sensor values
     float deltaVertical = rawPosition - lastPosition;
@@ -44,8 +44,15 @@ void Odom::loop() {
   }
 }
 
-Point Odom::getPose(bool radians) { return currentPose; }
+Point Chassis::getPose(bool radians) { 
+  if (radians) {return currentPose;}
+  else {return Point(currentPose.x, currentPose.y, currentPose.theta * 180.0 / M_PI); }
+}
 
 
 
-void Odom::setPose(Point newPose) { currentPose = newPose; }
+void Chassis::setPose(Point newPose, bool radians) {
+   currentPose = newPose;
+   if (!radians) {currentPose.theta *= M_PI / 180.0;}
+   headingTarget = newPose.theta;
+ }

@@ -1,6 +1,7 @@
 #pragma once
+#include "lib/TaskWrapper.hpp"
 #include "main.h"
-#include "lib/odom.hpp"
+#include "lib/point.hpp"
 #include "lib/pid.h"
 #include "lib/trackwheel.h"
 #include "pros/motors.h"
@@ -8,7 +9,7 @@
 
 namespace lib {
 
-class Chassis {
+class Chassis : public ryan::TaskWrapper{
 
 private:
   enum class DriveState { IDLE, MOVING };
@@ -17,9 +18,10 @@ private:
   std::shared_ptr<pros::Imu> imu;
   std::shared_ptr<lib::TrackingWheel> track;
 
-  
+  Point currentPose = Point(0, 0, 0);
 
   DriveState state;
+  float headingTarget;
 
   const int rpm;
   const double wheel;
@@ -36,7 +38,6 @@ private:
 
 public:
   DriveState getState() { return state; }
-  std::shared_ptr<Odom> odom;
 
   // constructor
   Chassis(pros::MotorGroup *leftMotors, pros::MotorGroup *rightMotors, pros::Imu *imu, lib::TrackingWheel *track, int rpm, double wheel)
@@ -47,10 +48,13 @@ public:
     state = DriveState::IDLE;
   }
 
-  void setOdom(Odom odom) {
+  //tracking
 
-    this->odom = std::make_shared<Odom>(odom);
-  }
+  
+  // tracking
+  void loop() override;
+  Point getPose(bool radians = false);
+  void setPose(Point newPose, bool radians = false);
 
   // driver functions
   int inputCurve(int input, double t = 1);

@@ -14,8 +14,8 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
   }
 
 
-  float startPos;
-  double startHeading;
+  float startPos{0};
+  double startHeading = headingTarget;
 
   state = DriveState::MOVING;
 
@@ -28,7 +28,6 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
 
     if (startPos == 0) {
       startPos = distance;
-      startHeading = heading;
     }
 
 
@@ -82,6 +81,7 @@ void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed, b
       rightMotors->move(0);
       state = DriveState::IDLE;
       headingPid.reset();
+      headingTarget = target;
       return;
     }
     

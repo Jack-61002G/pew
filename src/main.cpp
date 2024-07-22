@@ -32,7 +32,7 @@ void initialize() {
   
   imu.reset(true);
   track.reset();
-  odom.startTask();
+  chassis.startTask();
 
 }
 
@@ -56,14 +56,14 @@ void opcontrol() {
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
   //chassis.swing(90, false, 0.6, turning, 10000, 127);
- // chassis.boomerang(12, 24, 90, linear, turning);
+ chassis.boomerang(12, 24, 90, linear, turning);
 
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
   while (true) {
     console.clear();
-    std::string str = std::to_string(odom.getPose().x) + " " + std::to_string(odom.getPose().y) + " " + std::to_string(odom.getPose().theta) + "\n";
+    std::string str = std::to_string(chassis.getPose().x) + " " + std::to_string(chassis.getPose().y) + " " + std::to_string(chassis.getPose().theta) + "\n";
     console.println(str);
 
     chassis.arcade(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));

@@ -8,7 +8,6 @@
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "pros/rotation.hpp"
-#include "lib/odom.hpp"
 
 pros::MotorGroup leftMotors({9,-8,-10}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
 
@@ -20,8 +19,6 @@ pros::Rotation rot(4);
 lib::TrackingWheel track(rot, 2);
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
-
-lib::Odom odom(track, imu);
 
 lib::Chassis chassis = lib::Chassis(&leftMotors, &rightMotors, &imu, &track, 450, 2.75);
 
