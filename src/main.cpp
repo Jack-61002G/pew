@@ -56,7 +56,9 @@ void opcontrol() {
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
   //chassis.swing(90, false, 0.6, turning, 10000, 127);
- chassis.boomerang(12, 24, 90, linear, turning);
+ chassis.turn(90, turning, 10000);
+ chassis.turn(-90, turning, 10000);
+ chassis.turn(0, turning, 10000);
 
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);

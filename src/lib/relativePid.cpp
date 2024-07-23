@@ -1,11 +1,29 @@
 #include "lib/chassis.h"
+#include <cstdint>
 
 
 using namespace lib;
 
+float constrain180(float input) {  
+  while (input > 180) {
+    input -= 360;
+  } while (input < -180) {
+    input += 360;
+  }
+    return input;
+  }
 
 
 void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed, bool async) {
+
+  const float largeError = 1;
+  const float smallError = .5;
+  const float largeTimeout = 150;
+  const float smallTimeout = 35;
+
+  uint32_t largeTimeoutStart = 0;
+  uint32_t smallTimeoutStart = 0;
+
   if (async) {
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
@@ -18,7 +36,7 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
   double startHeading = headingTarget;
 
   state = DriveState::MOVING;
-
+  uint32_t startTime = pros::millis();
 
   while (true) {
 
@@ -35,24 +53,74 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
     double headingError = startHeading - heading;
 
 
-    if (std::abs(linearError) < 0.5 && std::abs(leftMotors->get_actual_velocity()) < 10 && std::abs(rightMotors->get_actual_velocity()) < 10) {
+    //ez template style large error/small error exits
+    if (pros::millis() - startTime > timeout) {
       leftMotors->move(0);
       rightMotors->move(0);
+      leftMotors->brake();
+      rightMotors->brake();
       state = DriveState::IDLE;
       linearPid.reset();
       headingPid.reset();
       return;
     }
 
+    if(std::abs(linearError) < largeError) {
+      if(largeTimeoutStart == 0) {
+        largeTimeoutStart = pros::millis();
+      } else if(pros::millis() - largeTimeoutStart > largeTimeout) {
+        leftMotors->move(0);
+        rightMotors->move(0);
+        leftMotors->brake();
+        rightMotors->brake();
+        state = DriveState::IDLE;
+        linearPid.reset();
+        headingPid.reset();
+        return;
+      }
+    } else {
+      largeTimeoutStart = 0;
+    }
+
+    if(std::abs(linearError) < smallError) {
+      if(smallTimeoutStart == 0) {
+        smallTimeoutStart = pros::millis();
+      } else if(pros::millis() - smallTimeoutStart > smallTimeout) {
+        leftMotors->move(0);
+        rightMotors->move(0);
+        leftMotors->brake();
+        rightMotors->brake();
+        state = DriveState::IDLE;
+        linearPid.reset();
+        headingPid.reset();
+        return;
+      }
+    } else {
+      smallTimeoutStart = 0;
+    }
+
     arcade(linearPid.update(linearError), headingPid.update(headingError));
 
     pros::delay(10);
   }
+
+
 }
 
 
 
+
+
 void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed, bool async) {
+
+  const float largeError = 3;
+  const float smallError = 1;
+  const float largeTimeout = 100;
+  const float smallTimeout = 35;
+
+  uint32_t largeTimeoutStart = 0;
+  uint32_t smallTimeoutStart = 0;
+
   if (async) {
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
@@ -61,31 +129,64 @@ void Chassis::turn(double target, PID headingPid, int timeout, float maxSpeed, b
   }
 
 
-  double startHeading = imu->get_rotation();
+  uint32_t startTime = pros::millis();
 
-  while (target - startHeading > 360) {
-    target -= 360;
-  } while (target - startHeading < 0) {
-    target += 360;
-  }
 
   state = DriveState::MOVING;
 
 
   while (true) {
 
-    double headingError = target + startHeading - imu->get_rotation();
+    double headingError = target - constrain180(imu->get_rotation());
 
-    if (std::abs(headingError) < 2 && std::abs(leftMotors->get_actual_velocity()) < 5 && std::abs(rightMotors->get_actual_velocity()) < 5) {
+    //ez template style large error/small error exits
+    if (pros::millis() - startTime > timeout) {
       leftMotors->move(0);
       rightMotors->move(0);
+      leftMotors->brake();
+      rightMotors->brake();
       state = DriveState::IDLE;
       headingPid.reset();
       headingTarget = target;
       return;
     }
+    if(std::abs(headingError) < largeError) {
+
+      if(largeTimeoutStart == 0) {
+        largeTimeoutStart = pros::millis();
+      } else if(pros::millis() - largeTimeoutStart > largeTimeout) {
+        leftMotors->move(0);
+        rightMotors->move(0);
+        leftMotors->brake();
+        rightMotors->brake();
+        state = DriveState::IDLE;
+        headingPid.reset();
+        headingTarget = target;
+        return;
+      }
+    } else {
+      largeTimeoutStart = 0;
+    }
+    if(std::abs(headingError) < smallError) {
+        
+        if(smallTimeoutStart == 0) {
+          smallTimeoutStart = pros::millis();
+        } else if(pros::millis() - smallTimeoutStart > smallTimeout) {
+          leftMotors->move(0);
+          rightMotors->move(0);
+          leftMotors->brake();
+          rightMotors->brake();
+          state = DriveState::IDLE;
+          headingPid.reset();
+          headingTarget = target;
+          return;
+        }
+      } else {
+        smallTimeoutStart = 0;
+    }
     
-    float output = fmin(headingPid.update(headingError), maxSpeed);
+    float output = headingPid.update(headingError);
+    output = (output > 0) ? fmin(output, maxSpeed) : fmax(output, -maxSpeed);
 
     leftMotors->move(output);
     rightMotors->move(-output);

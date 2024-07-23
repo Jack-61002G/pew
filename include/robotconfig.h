@@ -1,4 +1,5 @@
 #pragma once
+//#include "lift.hpp"
 #include "main.h"
 #include "lib/chassis.h"
 #include "lib/pid.h"
@@ -8,6 +9,9 @@
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "pros/rotation.hpp"
+
+//pros::Motor armMotor(20);
+//lib::Lift arm(armMotor, 12.0/84, {1, 0.0001, 1});
 
 pros::MotorGroup leftMotors({9,-8,-10}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
 
@@ -29,5 +33,5 @@ pros::adi::Pneumatics clamp('G', false);
 
 PID linear(11,0,6, 45);
 PID heading(0.2, 0.0001, 0.15);
-PID turning(2.5, 0.005, 15);
+PID turning(3.75, 0.0025, 37);
 
