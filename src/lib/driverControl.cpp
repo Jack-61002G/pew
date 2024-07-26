@@ -28,12 +28,11 @@ void Chassis::tank(double left, double right, std::vector<double> curves) {
   rightMotors->move(right);
 }
 
-void Chassis::arcadeMod(double forward, double turn, std::vector<double> curves,
+void Chassis::arcadeMod(double forward, double turn, double curve,
                         int speedThreshold, int speedCap) {
 
   // curve input
-  forward = inputCurve(forward, curves[0]);
-  turn = inputCurve(turn, curves[1]);
+  turn = inputCurve(turn, curve);
 
   if (std::abs(forward) > speedThreshold && std::abs(turn) > speedThreshold) {
     if (forward < 0) {

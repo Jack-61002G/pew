@@ -56,7 +56,7 @@ void Lift::loop() {
 
         prevError = error;
 
-        if (error < 1 && motors->get_actual_velocity() < 5 && pros::millis() - start > 1000) {
+        if (error < 1 || motors->get_actual_velocity() < 10 && pros::millis() - start > 250) {
           setState(LiftState::IDLE);
         }
 

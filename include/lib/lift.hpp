@@ -2,7 +2,6 @@
 #include "StateMachine.hpp"
 #include "lib/TaskWrapper.hpp"
 #include "pros/motor_group.hpp"
-#include "pros/motors.hpp"
 #include <memory>
 
 namespace lib {

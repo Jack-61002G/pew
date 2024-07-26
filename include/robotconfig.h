@@ -17,7 +17,7 @@ pros::MotorGroup leftMotors({-9,7,-10}, pros::v5::MotorGears::blue, pros::v5::Mo
 
 pros::MotorGroup rightMotors({1,-2,3}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
 
-pros::Imu imu(7);
+pros::Imu imu(8);
 
 pros::Rotation rot(4);
 lib::TrackingWheel track(rot, 2);
@@ -28,8 +28,8 @@ lib::Chassis chassis = lib::Chassis(&leftMotors, &rightMotors, &imu, &track, 450
 
 pros::Motor intake(-20);
 
-pros::MotorGroup armMotors({5, 12});
-lib::Lift lift(&armMotors, 1.0/7.0, {10, 0.01, 10});
+pros::MotorGroup armMotors({5, -14});
+lib::Lift lift(&armMotors, 1.0/7.0, {2, 0.1, 2});
 
 pros::adi::Pneumatics pisstake('H', false);
 pros::adi::Pneumatics clamp('G', false);

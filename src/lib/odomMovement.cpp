@@ -28,11 +28,16 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID headingPid, int t
   state = DriveState::MOVING;
   uint32_t startTime = pros::millis();
 
+
   while (true) {
 
-    double distance = -sqrt((getPose().x - x) + (getPose().y - y));
+    double dx = getPose().x - x;
+    double dy = getPose().y - y;
+    double distance = sqrt(dx * dx + dy * dy);
     double heading = imu->get_rotation();
-    double headingError = atan2(x - getPose().x, y - getPose().y) - heading;
+    double headingError = (atan2(y - getPose().y, x - getPose().x) - (heading * M_PI / 180)) * 180 / M_PI;
+
+    std::cout << "Distance: " << distance << " Heading: " << heading << " Heading Error: " << headingError << std::endl;
 
 
     //ez template style large error/small error exits
