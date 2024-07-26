@@ -25,18 +25,9 @@ void Chassis::loop() {
     lastPosition = rawPosition;
     lastAngle = rawAngle;
 
-
-    // Calculate change in x and y
-    float deltaY = deltaVertical;
-
-    // Calculate local x and y
-    float localX = 0;
-    float localY = deltaY;
-
-
     // Calculate global x and y
-    currentPose.x += localY * sin(rawAngle);
-    currentPose.y += localY * cos(rawAngle);
+    currentPose.x += deltaVertical * sin(rawAngle);
+    currentPose.y += deltaVertical * cos(rawAngle);
     currentPose.theta = rawAngle;
 
     //delay

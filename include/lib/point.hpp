@@ -1,3 +1,4 @@
+#pragma once
 #include <cmath> // math functions like sqrt()
 // provides information about the properties of arithmetic types
 #include <limits>

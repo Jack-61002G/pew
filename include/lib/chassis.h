@@ -64,13 +64,22 @@ public:
   void tank(double left, double right, std::vector<double> curves = {0, 0});
 
 
-  // basic pd movements
+
+  // relative pid movements
   void move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed = 127, bool async = false);
 
-  void turn(double target, PID headingPid, int timeout, float maxSpeed = 127, bool async = false);
+  void turn(double target, PID turningPid, int timeout, float maxSpeed = 127, bool async = false);
 
-  void swing(double target, bool side, float multiplier, PID headingPid, int timeout, float maxSpeed, bool async = false);
+  void swing(double target, bool side, float multiplier, PID turningPid, int timeout, float maxSpeed, bool async = false);
  
+
+
+  // odom movements
+  void moveToPoint(float x, float y, PID linearPid, PID headingPid, int timeout, float maxSpeed = 127, bool async = false);
+
+  void moveToPose(Point target, PID linearPid, PID headingPid, PID turningPid, int timeout, float maxSpeed = 127, bool async = false);
+
+
 
   // 2d movements
   void boomerang(double x, double y, double theta, PID linearPid, PID headingPid, int timeout = 2000, double dLead = 0.6, double gLead = 0.3, bool async = false, double exitRange = .5);

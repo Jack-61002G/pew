@@ -33,11 +33,11 @@ void Lift::loop() {
       uint32_t start = pros::millis();
       double integral = 0;
       double prevError = 0;
-      double integralMax = 70; // Adjust this value as needed
+      double integralMax = 10; // Adjust this value as needed
 
       while (true) {
 
-        double error = target - motors.get_position();
+        double error = target - motors->get_position();
         double derivative = error - prevError;
 
         integral += error;
@@ -49,21 +49,18 @@ void Lift::loop() {
           integral = -integralMax;
         }
 
-        double output = constants.kP * error + constants.kI * integral +
-                        constants.kD * derivative;
+        double output = constants.kP * error + constants.kI * integral + constants.kD * derivative;
 
-        motors.move(output);
+        motors->move(output);
 
         prevError = error;
 
-        if (error < 1 && motors.get_actual_velocity() < 5 &&
-            pros::millis() - start > 1000) {
+        if (error < 1 && motors->get_actual_velocity() < 5 && pros::millis() - start > 1000) {
           moving = false;
+          setState(LiftState::IDLE);
         }
 
         pros::Task::delay_until(&now, 25);
-        pros::lcd::set_text(2, std::to_string(motors.get_position()));
-        std::cout << motors.get_position() << std::endl;
       }
       break;
     }
