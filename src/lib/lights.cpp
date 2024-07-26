@@ -1,6 +1,5 @@
 #include "lights.h"
 #include "pros/misc.hpp"
-/*
 namespace lib {
 
 
@@ -30,4 +29,3 @@ void Lights::loop() {
 
 
 }
-*/

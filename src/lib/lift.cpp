@@ -1,5 +1,5 @@
 #include "lib/lift.hpp"
-#include "liblvgl/llemu.hpp"
+#include "pros/abstract_motor.hpp"
 #include <cstdint>
 
 using namespace lib;
@@ -16,7 +16,6 @@ void Lift::setAngle(double angle) {
 
   this->target = angle / gearRatio;
 
-  moving = true;
   setState(LiftState::MOVE);
 }
 
@@ -27,6 +26,8 @@ void Lift::loop() {
     switch (getState()) {
 
     case LiftState::IDLE:
+      motors->set_brake_mode_all(pros::MotorBrake::hold);
+      motors->brake();
       break;
 
     case LiftState::MOVE:
@@ -56,7 +57,6 @@ void Lift::loop() {
         prevError = error;
 
         if (error < 1 && motors->get_actual_velocity() < 5 && pros::millis() - start > 1000) {
-          moving = false;
           setState(LiftState::IDLE);
         }
 

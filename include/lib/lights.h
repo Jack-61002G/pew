@@ -1,7 +1,7 @@
 #pragma once
 #include "lib/TaskWrapper.hpp"
-#include "robotconfig.h"
-/*
+#include "main.h"
+
 
 namespace lib {
 
@@ -19,5 +19,3 @@ public:
 
 };
 }
-
-*/
