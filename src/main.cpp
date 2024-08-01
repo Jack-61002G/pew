@@ -33,7 +33,7 @@ void initialize() {
   imu.reset(true);
   track.reset();
   pros::delay(500);
-  
+
   chassis.startTask();
   lift.startTask();
 
@@ -67,7 +67,10 @@ void opcontrol() {
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   console.focus();
 
-  chassis.moveToPoint(12, 12, linear, turning, 1500);
+  rightDriveLed.set_all(0xff0000);
+  leftDriveLed.set_all(0xff0000);
+
+  //chassis.moveToPoint(12, 12, linear, turning, 1500);
 
     while (true) {
     
@@ -77,8 +80,9 @@ void opcontrol() {
 
     chassis.arcadeMod(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), 2, 114, 110);
     intake.move((controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) ? -127 : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) ? 127 : 0 );
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {pisstake.toggle();}
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {clamp.toggle();}
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {pisstake.toggle();}
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {clamp.toggle();}
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {claw.toggle();}
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {lift.setAngle(95);}
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {lift.setAngle(0);}
 

@@ -26,8 +26,6 @@ private:
 
   double target;
 
-  bool moving = false;
-
 
 public:
   Lift(pros::MotorGroup *motors, double gearRatio, PIDConstants constants) : motors(motors), gearRatio(gearRatio), constants(constants) {
@@ -38,6 +36,7 @@ public:
   void setAngle(double angle);
   void waitUntilSettled();
   void loop() override;
+  
 };
 
 } // namespace lib

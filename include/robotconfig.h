@@ -3,6 +3,7 @@
 #include "main.h"
 #include "lib/chassis.h"
 #include "lib/pid.h"
+#include "lib/lights.h"
 #include "pros/abstract_motor.hpp"
 #include "pros/adi.h"
 #include "pros/adi.hpp"
@@ -33,10 +34,13 @@ lib::Lift lift(&armMotors, 1.0/7.0, {2, 0.1, 2});
 
 pros::adi::Pneumatics pisstake('H', false);
 pros::adi::Pneumatics clamp('G', false);
+pros::adi::Pneumatics claw('F', false);
 
 PID linear(11,0,6, 45);
 PID heading(0.2, 0.0001, 0.15);
 PID turning(3.75, 0.0025, 37);
 
-pros::adi::Led leftArmLed('A', 32);
-pros::adi::Led rightArmLed('B', 32);
+pros::adi::Led leftArmLed('C', 32);
+pros::adi::Led rightArmLed('D', 32);
+pros::adi::Led leftDriveLed('B', 48);
+pros::adi::Led rightDriveLed('A', 48);

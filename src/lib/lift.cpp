@@ -1,11 +1,12 @@
 #include "lib/lift.hpp"
 #include "pros/abstract_motor.hpp"
 #include <cstdint>
+#include <iostream>
 
 using namespace lib;
 
 void Lift::waitUntilSettled() {
-  while (moving) {
+  while (getState() != LiftState::IDLE) {
     pros::delay(15);
   }
 }
@@ -26,15 +27,20 @@ void Lift::loop() {
     switch (getState()) {
 
     case LiftState::IDLE:
+      std::cout << "Lift idle" << std::endl;
+
+      motors->move(0);
       motors->set_brake_mode_all(pros::MotorBrake::hold);
       motors->brake();
       break;
 
     case LiftState::MOVE:
+      std::cout << "Moving lift" << std::endl;
+      
       uint32_t start = pros::millis();
       double integral = 0;
       double prevError = 0;
-      double integralMax = 10; // Adjust this value as needed
+      double integralMax = 10;
 
       while (true) {
 
@@ -50,15 +56,17 @@ void Lift::loop() {
           integral = -integralMax;
         }
 
+                // Check for oscillation
+        if (error * prevError < 0) {
+          setState(LiftState::IDLE);
+          break;
+        }
+
         double output = constants.kP * error + constants.kI * integral + constants.kD * derivative;
 
         motors->move(output);
 
         prevError = error;
-
-        if (error < 1 || motors->get_actual_velocity() < 10 && pros::millis() - start > 250) {
-          setState(LiftState::IDLE);
-        }
 
         pros::Task::delay_until(&now, 25);
       }
