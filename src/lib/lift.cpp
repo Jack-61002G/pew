@@ -30,7 +30,7 @@ void Lift::loop() {
       std::cout << "Lift idle" << std::endl;
 
       motors->move(0);
-      motors->set_brake_mode_all(pros::MotorBrake::hold);
+      motors->set_brake_mode_all(pros::MotorBrake::coast);
       motors->brake();
       break;
 
@@ -57,7 +57,7 @@ void Lift::loop() {
         }
 
                 // Check for oscillation
-        if (error * prevError < 0) {
+        if (error * prevError < 0 && target == 0 && pros::millis() - start > 250 && std::abs(error) < 7) {
           setState(LiftState::IDLE);
           break;
         }

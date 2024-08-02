@@ -20,3 +20,12 @@ float avg(std::vector<float> values) {
   }
   return sum / values.size();
 }
+
+float constrain180(float input) {  
+  while (input > 180) {
+    input -= 360;
+  } while (input < -180) {
+    input += 360;
+  }
+    return input;
+}

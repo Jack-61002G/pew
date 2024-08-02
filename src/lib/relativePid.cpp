@@ -4,14 +4,6 @@
 
 using namespace lib;
 
-float constrain180(float input) {  
-  while (input > 180) {
-    input -= 360;
-  } while (input < -180) {
-    input += 360;
-  }
-    return input;
-  }
 
 
 void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed, bool async) {

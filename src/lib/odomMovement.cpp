@@ -1,5 +1,6 @@
 #include "lib/chassis.h"
 #include <cmath>
+#include <cstdlib>
 
 using namespace lib;
 
@@ -86,7 +87,7 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID headingPid, int t
       smallTimeoutStart = 0;
     }
 
-    arcade(linearPid.update(distance), headingPid.update(headingError));
+    arcade(linearPid.update(distance * (1 - fabs(headingError) / 90)), headingPid.update(headingError));
 
     pros::delay(10);
   }
