@@ -2,6 +2,9 @@
 #include "lib/lift.hpp"
 #include "lib/chassis.h"
 #include "lib/pid.h"
+#include "pros/adi.hpp"
+#include "pros/motor_group.hpp"
+#include "pros/motors.hpp"
 
 //pros::Motor armMotor(20);
 //lib::Lift arm(armMotor, 12.0/84, {1, 0.0001, 1});
@@ -19,10 +22,11 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 inline lib::Chassis chassis = lib::Chassis(&leftMotors, &rightMotors, &imu, &track, 450, 2.75);
 
-inline pros::Motor intake(-20);
+inline pros::MotorGroup intake({-18, -17});
 
 inline pros::MotorGroup armMotors({5, -14});
-inline lib::Lift lift(&armMotors, 1.0/7.0, {2, 0.1, 2});
+inline pros::adi::Pneumatics wrist('E', false);
+inline lib::Lift lift(&armMotors, &wrist, 1.0/7.0, {2, 0.1, 2});
 
 inline pros::adi::Pneumatics pisstake('H', false);
 inline pros::adi::Pneumatics clamp('G', false);

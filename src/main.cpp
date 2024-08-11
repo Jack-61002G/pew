@@ -74,7 +74,7 @@ void opcontrol() {
   //rightDriveLed.set_all(0xff0000);
   //rightArmLed.set_all(0xff0000);
   //leftArmLed.set_all(0xff0000);
-  
+
   chassis.moveToPoint(12, 12, linear, turning, 1500);
 
     while (true) {
@@ -88,8 +88,6 @@ void opcontrol() {
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {pisstake.toggle();}
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {claw.toggle();}
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {clamp.toggle();}
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {lift.setAngle(95);}
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {lift.setAngle(0);}
 
     pros::delay(15);
   }}

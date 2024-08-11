@@ -5,73 +5,82 @@
 
 using namespace lib;
 
-void Lift::waitUntilSettled() {
-  while (getState() != LiftState::IDLE) {
-    pros::delay(15);
-  }
-}
-
-void Lift::setAngle(double angle) {
-
-  setState(LiftState::IDLE);
-
-  this->target = angle / gearRatio;
-
-  setState(LiftState::MOVE);
-}
-
 void Lift::loop() {
 
   uint32_t now = pros::millis();
   while (true) {
     switch (getState()) {
 
-    case LiftState::IDLE:
-      std::cout << "Lift idle" << std::endl;
+    case LiftState::UP_OUT:
 
-      motors->move(0);
-      motors->set_brake_mode_all(pros::MotorBrake::coast);
-      motors->brake();
-      break;
-
-    case LiftState::MOVE:
-      std::cout << "Moving lift" << std::endl;
-      
-      uint32_t start = pros::millis();
-      double integral = 0;
-      double prevError = 0;
-      double integralMax = 10;
-
-      while (true) {
-
-        double error = target - motors->get_position();
-        double derivative = error - prevError;
-
-        integral += error;
-
-        // Anti-windup: Limit the integral term
-        if (integral > integralMax) {
-          integral = integralMax;
-        } else if (integral < -integralMax) {
-          integral = -integralMax;
-        }
-
-                // Check for oscillation
-        if (error * prevError < 0 && target == 0 && pros::millis() - start > 250 && std::abs(error) < 7) {
-          setState(LiftState::IDLE);
-          break;
-        }
-
-        double output = constants.kP * error + constants.kI * integral + constants.kD * derivative;
-
-        motors->move(output);
-
-        prevError = error;
-
-        pros::Task::delay_until(&now, 25);
+      if (target != UP_ANGLE) {
+        pid.reset();
+        target = UP_ANGLE; 
       }
+      wrist->set_value(true);
+  
       break;
+
+    case LiftState::UP_IN:
+      
+        if (target != UP_ANGLE) {
+          pid.reset();
+          target = UP_ANGLE;
+        }
+        wrist->set_value(false);
+    
+        break;
+
+    case LiftState::DOWN_OUT:
+        
+          if (target != DOWN_ANGLE) {
+            pid.reset();
+            target = DOWN_ANGLE;
+          }
+          wrist->set_value(true);
+      
+          break;
+
+    case LiftState::DOWN_IN:
+          
+            if (target != DOWN_ANGLE) {
+              pid.reset();
+              target = DOWN_ANGLE;
+            }
+            wrist->set_value(false);
+        
+            break;
+
+    case LiftState::OUT_CUSTOM:
+
+              wrist->set_value(true);
+          
+              break;
+
+    case LiftState::MID_IN:
+              
+                if (target != MID_ANGLE) {
+                  pid.reset();
+                  target = MID_ANGLE;
+                }
+                wrist->set_value(false);
+            
+                break;
+
+    float error = target - motors->get_position() / gearRatio;
+    motors->move(pid.update(error));
+
+
+    
     }
+
+    
     pros::Task::delay_until(&now, 15);
   }
+}
+
+void Lift::setAngle(float angle) {
+  setState(LiftState::OUT_CUSTOM);
+  pid.reset();
+  target = angle;
 }
