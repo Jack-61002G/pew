@@ -36,8 +36,10 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID headingPid, int t
     double dy = getPose().y - y;
     double distance = sqrt(dx * dx + dy * dy);
     double heading = imu->get_rotation();
-    double headingError = (atan2(y - getPose().y, x - getPose().x) - (heading * M_PI / 180)) * 180 / M_PI;
-
+    
+    double headingError = (atan2(y - getPose().y, x - getPose().x) - (constrain180(heading) * M_PI / 180)) * 180 / M_PI;
+    double linearError = distance * cos(fabs(headingError) * M_PI / 180);
+    
     std::cout << "Distance: " << distance << " Heading: " << heading << " Heading Error: " << headingError << std::endl;
 
 
@@ -87,7 +89,7 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID headingPid, int t
       smallTimeoutStart = 0;
     }
 
-    arcade(linearPid.update(distance * (1 - fabs(headingError) / 90)), headingPid.update(headingError));
+    arcade(linearPid.update(linearError), headingPid.update(headingError));
 
     pros::delay(10);
   }
