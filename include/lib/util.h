@@ -8,3 +8,9 @@ float slew(float current, float target, float rate);
 float avg(std::vector<float> values);
 
 float constrain180(float input);
+
+float constrain90(float input);
+
+float degreesToRadians(float degrees);
+
+float radiansToDegrees(float radians);

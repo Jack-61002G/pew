@@ -29,3 +29,20 @@ float constrain180(float input) {
   }
     return input;
 }
+
+float constrain90(float input) {
+  while (input > 90) {
+    input -= 180;
+  } while (input < -90) {
+    input += 180;
+  }
+  return input;
+}
+
+float degreesToRadians(float degrees) {
+  return degrees * M_PI / 180;
+}
+
+float radiansToDegrees(float radians) {
+  return radians * 180 / M_PI;
+}

@@ -34,19 +34,18 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID headingPid, int t
   while (true) {
     Point pose = getPose();
 
-    double dx = pose.x - x;
-    double dy = pose.y - y;
-    double distance = sqrt(dx * dx + dy * dy);
+    double distance = hypot(pose.x - x, pose.y - y);
     double heading = pose.theta;
-    
-    double headingError = constrain180((atan2(y - pose.y, x - pose.x) - (heading * M_PI / 180)) * 180 / M_PI);
-    double linearError = distance * cos((headingError) * M_PI / 180);
+    double headingError = constrain180((atan2(y - pose.y, x - pose.x) - radiansToDegrees(heading)) * degreesToRadians(180));
+    double linearError = distance * cos(degreesToRadians(headingError));
 
     if (std::fabs(distance) < 11.5) {
       headingError = 0;
     }
 
     float linearOutput = (std::fabs(headingError) >= 90) ? linearPid.update(-linearError) : linearPid.update(linearError);
+
+    headingError = constrain90(headingError);
 
     if (linearOutput > maxSpeed) {
       linearOutput = maxSpeed;
