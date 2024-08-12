@@ -16,7 +16,7 @@ inline pros::MotorGroup rightMotors({1,-2,3}, pros::v5::MotorGears::blue, pros::
 inline pros::Imu imu(8);
 
 inline pros::Rotation rot(4);
-inline lib::TrackingWheel track(rot, 2);
+inline lib::TrackingWheel track(rot, 1.95);
 
 inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 

@@ -39,7 +39,7 @@ void initialize() {
   pros::delay(500);
 
   chassis.startTask();
-  lift.startTask();
+  //lift.startTask();
 
 }
 
@@ -74,8 +74,10 @@ void opcontrol() {
   //rightDriveLed.set_all(0xff0000);
   //rightArmLed.set_all(0xff0000);
   //leftArmLed.set_all(0xff0000);
-
-  chassis.moveToPoint(12, 12, linear, turning, 1500);
+  //chassis.move(12, linear, heading, 1000);
+  chassis.moveToPoint(24, 24, linear, turning, 1500);
+  chassis.turn(-135, turning, 1500);
+  chassis.moveToPoint(0, 0, linear, turning, 1500);
 
     while (true) {
     

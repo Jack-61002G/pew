@@ -1,4 +1,6 @@
 #include "lib/chassis.h"
+#include "point.hpp"
+#include "util.h"
 #include <cmath>
 #include <cstdlib>
 
@@ -29,67 +31,31 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID headingPid, int t
   state = DriveState::MOVING;
   uint32_t startTime = pros::millis();
 
-
   while (true) {
+    Point pose = getPose();
 
-    double dx = getPose().x - x;
-    double dy = getPose().y - y;
+    double dx = pose.x - x;
+    double dy = pose.y - y;
     double distance = sqrt(dx * dx + dy * dy);
-    double heading = imu->get_rotation();
+    double heading = pose.theta;
     
-    double headingError = (atan2(y - getPose().y, x - getPose().x) - (constrain180(heading) * M_PI / 180)) * 180 / M_PI;
-    double linearError = distance * cos(fabs(headingError) * M_PI / 180);
+    double headingError = constrain180((atan2(y - pose.y, x - pose.x) - (heading * M_PI / 180)) * 180 / M_PI);
+    double linearError = distance * cos((headingError) * M_PI / 180);
+
+    if (std::fabs(distance) < 11.5) {
+      headingError = 0;
+    }
+
+    float linearOutput = (std::fabs(headingError) >= 90) ? linearPid.update(-linearError) : linearPid.update(linearError);
+
+    if (linearOutput > maxSpeed) {
+      linearOutput = maxSpeed;
+    }
+    else if (linearOutput < -maxSpeed) {
+      linearOutput = -maxSpeed;
+    }
     
-    std::cout << "Distance: " << distance << " Heading: " << heading << " Heading Error: " << headingError << std::endl;
-
-
-    //ez template style large error/small error exits
-    if (pros::millis() - startTime > timeout) {
-      leftMotors->move(0);
-      rightMotors->move(0);
-      leftMotors->brake();
-      rightMotors->brake();
-      state = DriveState::IDLE;
-      linearPid.reset();
-      headingPid.reset();
-      return;
-    }
-
-    if(std::abs(distance) < largeError) {
-      if(largeTimeoutStart == 0) {
-        largeTimeoutStart = pros::millis();
-      } else if(pros::millis() - largeTimeoutStart > largeTimeout) {
-        leftMotors->move(0);
-        rightMotors->move(0);
-        leftMotors->brake();
-        rightMotors->brake();
-        state = DriveState::IDLE;
-        linearPid.reset();
-        headingPid.reset();
-        return;
-      }
-    } else {
-      largeTimeoutStart = 0;
-    }
-
-    if(std::abs(distance) < smallError) {
-      if(smallTimeoutStart == 0) {
-        smallTimeoutStart = pros::millis();
-      } else if(pros::millis() - smallTimeoutStart > smallTimeout) {
-        leftMotors->move(0);
-        rightMotors->move(0);
-        leftMotors->brake();
-        rightMotors->brake();
-        state = DriveState::IDLE;
-        linearPid.reset();
-        headingPid.reset();
-        return;
-      }
-    } else {
-      smallTimeoutStart = 0;
-    }
-
-    arcade(linearPid.update(linearError), headingPid.update(headingError));
+    arcade(linearOutput, headingPid.update(headingError));
 
     pros::delay(10);
   }

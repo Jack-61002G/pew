@@ -65,7 +65,7 @@ public:
 
 
   // relative pid movements
-  void move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed = 127, bool async = false);
+  void move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed = 110, bool async = false);
 
   void turn(double target, PID turningPid, int timeout, float maxSpeed = 127, bool async = false);
 
