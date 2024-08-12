@@ -1,4 +1,5 @@
 
+#include "lib/lift.hpp"
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
@@ -75,9 +76,10 @@ void opcontrol() {
   //rightArmLed.set_all(0xff0000);
   //leftArmLed.set_all(0xff0000);
   //chassis.move(12, linear, heading, 1000);
-  chassis.moveToPoint(24, 24, linear, turning, 1500);
-  chassis.turn(-135, turning, 1500);
-  chassis.moveToPoint(0, 0, linear, turning, 1500);
+  //chassis.moveToPoint(24, 24, linear, turning, 250);
+
+
+  //chassis.moveToPoint(-24, 24, linear, turning, 250);
 
     while (true) {
     
@@ -89,7 +91,8 @@ void opcontrol() {
     intake.move((controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) ? -127 : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) ? 127 : 0 );
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {pisstake.toggle();}
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {claw.toggle();}
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {clamp.toggle();}
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {wrist.toggle();}
+    armMotors.move((controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) ? -127 : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) ? 127 : 0 );
 
     pros::delay(15);
   }}

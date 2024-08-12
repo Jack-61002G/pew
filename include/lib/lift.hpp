@@ -23,8 +23,8 @@ private:
   std::shared_ptr<pros::MotorGroup> motors;
   std::shared_ptr<pros::adi::Pneumatics> wrist;
   const float DOWN_ANGLE = 0;
-  const float MID_ANGLE = 0;
-  const float UP_ANGLE = 0;
+  const float MID_ANGLE = 45;
+  const float UP_ANGLE = 81 ;
 
   const float gearRatio;
 

@@ -24,13 +24,13 @@ inline lib::Chassis chassis = lib::Chassis(&leftMotors, &rightMotors, &imu, &tra
 
 inline pros::MotorGroup intake({-18, -17});
 
-inline pros::MotorGroup armMotors({5, -14});
-inline pros::adi::Pneumatics wrist('E', false);
-inline lib::Lift lift(&armMotors, &wrist, 1.0/7.0, {2, 0.1, 2});
+inline pros::MotorGroup armMotors({5});
+inline pros::adi::Pneumatics wrist('H', false);
+inline lib::Lift lift(&armMotors, &wrist, 1.0/7.0, {2, 0.1, 2.5});
 
 inline pros::adi::Pneumatics pisstake('H', false);
-inline pros::adi::Pneumatics clamp('G', false);
-inline pros::adi::Pneumatics claw('F', false);
+inline pros::adi::Pneumatics clamp('F', false);
+inline pros::adi::Pneumatics claw('G', false);
 
 inline PID linear(11,0,6, 45);
 inline PID heading(0.2, 0.0001, 0.15);

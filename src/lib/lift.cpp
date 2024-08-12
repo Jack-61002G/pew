@@ -8,6 +8,7 @@ using namespace lib;
 void Lift::loop() {
 
   uint32_t now = pros::millis();
+  motors->tare_position();
   while (true) {
     switch (getState()) {
 
@@ -66,13 +67,10 @@ void Lift::loop() {
                 wrist->set_value(false);
             
                 break;
-
-    float error = target - motors->get_position() / gearRatio;
-    motors->move(pid.update(error));
-
-
-    
     }
+    double error = (target / gearRatio) - motors->get_position();
+    motors->move(pid.update(error));
+    std::cout<<error<<std::endl;
 
     
     pros::Task::delay_until(&now, 15);
