@@ -63,27 +63,13 @@ void opcontrol() {
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-  //chassis.swing(90, false, 0.6, turning, 10000, 127);
-  //chassis.turn(90, turning, 10000);
-  //chassis.turn(-90, turning, 10000);
-  // chassis.turn(0, turning, 10000);
-
-  leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-  rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-  console.focus();
-
-  //rightDriveLed.set_all(0xff0000);
-  //rightArmLed.set_all(0xff0000);
-  //leftArmLed.set_all(0xff0000);
-  //chassis.move(12, linear, heading, 1000);
-  //chassis.moveToPoint(24, 24, linear, turning, 250);
-
-
-  //chassis.moveToPoint(-24, 24, linear, turning, 250);
+  chassis.moveToPoint(24, 24, linear, movetoturn, 1000);
+  chassis.moveToPoint(0, 0, linear, turning, 1000);
 
     while (true) {
     
     console.clear();
+    console.focus();
     std::string str = std::to_string(chassis.getPose().x) + " " + std::to_string(chassis.getPose().y) + " " + std::to_string(chassis.getPose().theta) + "\n";
     console.println(str);
 

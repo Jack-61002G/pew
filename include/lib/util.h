@@ -11,6 +11,10 @@ float constrain180(float input);
 
 float constrain90(float input);
 
+float relative90(float input, float current);
+
 float degreesToRadians(float degrees);
 
 float radiansToDegrees(float radians);
+
+float angleError(float current, float target);

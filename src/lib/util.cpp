@@ -1,4 +1,6 @@
 #include "lib/util.h"
+#include "lib/point.hpp"
+#include <cmath>
 
 float slew(float current, float target, float rate) {
   if (target - current > rate) {
@@ -45,4 +47,18 @@ float degreesToRadians(float degrees) {
 
 float radiansToDegrees(float radians) {
   return radians * 180 / M_PI;
+}
+
+float relative90(float input, float anchor) {
+  while (input > anchor + 90) {
+    input -= 180;
+  } while (input < anchor - 90) {
+    input += 180;
+  }
+  return input;
+}
+
+float angleError(float current, float target) {
+
+  return target - current;
 }

@@ -15,7 +15,7 @@ inline pros::MotorGroup rightMotors({1,-2,3}, pros::v5::MotorGears::blue, pros::
 
 inline pros::Imu imu(8);
 
-inline pros::Rotation rot(4);
+inline pros::Rotation rot(6);
 inline lib::TrackingWheel track(rot, 1.95);
 
 inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
@@ -32,9 +32,10 @@ inline pros::adi::Pneumatics pisstake('H', false);
 inline pros::adi::Pneumatics clamp('F', false);
 inline pros::adi::Pneumatics claw('G', false);
 
-inline PID linear(11,0,6, 45);
+inline PID linear(9,0,18, 45);
 inline PID heading(0.2, 0.0001, 0.15);
 inline PID turning(3.75, 0.0025, 37);
+inline PID movetoturn(2.5, .0001, 5);
 
 //inline pros::adi::Led leftArmLed('C', 48);
 //inline pros::adi::Led rightArmLed('D', 48);
