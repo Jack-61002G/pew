@@ -10,7 +10,7 @@ float PID::update(const float error) {
     integral = 0;
 
   // calculate derivative
-  const float derivative = error - prevError;
+  float derivative = error - prevError;
   prevError = error;
 
   // calculate output

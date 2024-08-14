@@ -4,23 +4,19 @@
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include "robotconfig.h"
+#include "autons.h"
 #include "robodash/api.h"
 #include <string>
 
 
-// ============================= Example autons ============================= //
-
-void best_auton() { std::cout << "Running best auton" << std::endl; }
-void simple_auton() { std::cout << "Running simple auton " << std::endl; }
-void good_auton() { std::cout << "Running good auton" << std::endl; }
 
 // ================================= Views ================================= //
 
 // Create robodash selector
 rd::Selector selector({
-    {"Best auton", &best_auton},
-    {"Simple auton", &simple_auton},
-    {"Good auton", &good_auton},
+    {"RedLeft", &redLeft},
+    {"RedRight", &redRight},
+    {"redRush", &redRush},
 });
 
 // Create robodash console
@@ -30,17 +26,12 @@ rd::Console console;
 
 
 void initialize() {
-  //leftDriveLed.set_all(0x00ff00);
-
-  //rightDriveLed.set_all(0xff0000);
-
-  
   imu.reset(true);
   track.reset();
-  pros::delay(500);
+  pros::delay(2000);
 
   chassis.startTask();
-  //lift.startTask();
+  lift.startTask();
 
 }
 
@@ -54,7 +45,9 @@ void competition_initialize() {}
 
 
 
-void autonomous() {}
+void autonomous() {
+  selector.run_auton();
+}
 
 
 
@@ -63,8 +56,10 @@ void opcontrol() {
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-  chassis.moveToPoint(24, 24, linear, movetoturn, 1000);
-  chassis.moveToPoint(0, 0, linear, turning, 1000);
+  chassis.moveToPoint(36, 24, linear, movetoturn, 2000);
+  chassis.moveToPoint(0, 0, linear, movetoturn, 2000);
+  //chassis.turn(0, turning, 1000);
+  //chassis.moveToPoint(0, 36, linear, turning, 10000);
 
     while (true) {
     

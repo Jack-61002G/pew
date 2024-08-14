@@ -109,6 +109,9 @@ void Chassis::turn(double target, PID turningPid, int timeout, float maxSpeed, b
   uint32_t smallTimeoutStart = 0;
 
 
+  headingTarget = target;
+
+
   if (async) {
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
@@ -135,7 +138,6 @@ void Chassis::turn(double target, PID turningPid, int timeout, float maxSpeed, b
       rightMotors->brake();
       state = DriveState::IDLE;
       turningPid.reset();
-      headingTarget = target;
       return;
     }
     if(std::abs(headingError) < largeError) {
@@ -149,7 +151,6 @@ void Chassis::turn(double target, PID turningPid, int timeout, float maxSpeed, b
         rightMotors->brake();
         state = DriveState::IDLE;
         turningPid.reset();
-        headingTarget = target;
         return;
       }
     } else {
@@ -166,7 +167,6 @@ void Chassis::turn(double target, PID turningPid, int timeout, float maxSpeed, b
           rightMotors->brake();
           state = DriveState::IDLE;
           turningPid.reset();
-          headingTarget = target;
           return;
         }
       } else {
@@ -217,7 +217,7 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
 
   while (true) {
 
-    double headingError = target + startHeading - imu->get_rotation();
+    double headingError = target - constrain180(imu->get_rotation());
 
     //ez template style large error/small error exits
     if (pros::millis() - startTime > timeout) {

@@ -1,22 +1,35 @@
 #include "robotconfig.h"
+#include "autons.h"
 
 
 
 void redLeft() {
-    // Back up to left side mogo
-    // Clamp mogo
+    chassis.move(-26.25, linear, heading, 1000);
+    clamp.extend();
+    pros::delay(100);
 
-    // Turn to single stack
-    // Drive forward, grab bottom ring
+    chassis.turn(110, turning, 1000);
+    intake.move(-127);
+    chassis.move(22.5, linear, heading, 1000);
 
-    // Turn to quad stack
-    // Drive forward
+    pros::delay(100);
 
-    // Yoink each bottom ring
+    chassis.move(-3, linear, heading, 1000);
 
-    // Back up and turn to ladder
+    chassis.turn(180, turning, 1000);
+    chassis.move(16, linear, heading, 1000);
+    pros::delay(100);
+    chassis.move(-11, linear, heading, 1000);
 
-    // Drive forward into ladder
+    chassis.turn(123, turning, 1000);
+    chassis.swing(180, false, 0.3, turning, 1000, 100);
+    pros::delay(200);
+    intake.move(0);
+
+    chassis.move(-50, linear, heading, 1000);
+    chassis.turn(45, turning, 1000);
+
+
 }
 
 void redRight() {
