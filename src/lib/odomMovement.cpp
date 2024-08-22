@@ -63,9 +63,7 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID headingPid,
 
     if (distance < 5) {
       angularError = 0;
-    } else if (distance < 15) {
-      angularError *= 1 - (distance - 5) / 10;
-    }
+}
 
     if (std::fabs(lateralError) < smallError) {
       if (smallTimeoutStart == 0) {

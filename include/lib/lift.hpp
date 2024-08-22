@@ -42,6 +42,7 @@ public:
   void loop() override;
 
   void setAngle(float angle);
+  float getAngle();
   
 };
 

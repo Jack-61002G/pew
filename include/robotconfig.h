@@ -32,10 +32,10 @@ inline pros::adi::Pneumatics pisstake('F', false);
 inline pros::adi::Pneumatics clamp('E', false);
 inline pros::adi::Pneumatics claw('G', false);
 
-inline PID linear(6,0.0, 21, 45);
-inline PID heading(0.2, 0.0001, 0.15);
+inline PID linear(10,0.0, 35, 45);
+inline PID heading(1.25, 0.005, 15);
 inline PID turning(3.75, 0.0025, 37);
-inline PID movetoturn(0.2, .00015, 9);
+inline PID movetoturn(0.35, .00015, 9);
 
 //inline pros::adi::Led leftArmLed('C', 48);
 //inline pros::adi::Led rightArmLed('D', 48);

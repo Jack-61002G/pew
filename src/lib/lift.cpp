@@ -1,5 +1,6 @@
 #include "lib/lift.hpp"
 #include "pros/abstract_motor.hpp"
+#include "robotconfig.h"
 #include <cstdint>
 #include <iostream>
 
@@ -81,4 +82,8 @@ void Lift::setAngle(float angle) {
   setState(LiftState::OUT_CUSTOM);
   pid.reset();
   target = angle;
+}
+
+float Lift::getAngle() {
+  return target;
 }
