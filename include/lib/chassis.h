@@ -64,6 +64,10 @@ public:
 
 
 
+  void waitUntilFinished();
+
+
+
   // relative pid movements
   void move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed = 110, bool async = false);
 

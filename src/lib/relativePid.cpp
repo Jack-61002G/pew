@@ -8,8 +8,8 @@ using namespace lib;
 
 void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed, bool async) {
 
-  const float largeError = 1;
-  const float smallError = .5;
+  const float largeError = 1.2;
+  const float smallError = .7;
   const float largeTimeout = 150;
   const float smallTimeout = 35;
 
@@ -88,7 +88,11 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
       smallTimeoutStart = 0;
     }
 
-    arcade(linearPid.update(linearError), headingPid.update(headingError));
+    float linearOutput = linearPid.update(linearError);
+    if (linearOutput > maxSpeed) {linearOutput = maxSpeed;}
+    if (linearOutput < -maxSpeed) {linearOutput = -maxSpeed;}
+
+    arcade(linearOutput, headingPid.update(headingError));
 
     pros::delay(10);
   }
@@ -276,5 +280,12 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
     }
 
     pros::delay(10);
+  }
+}
+
+
+void Chassis::waitUntilFinished() {
+  while (state == DriveState::MOVING) {
+    pros::delay(20);
   }
 }

@@ -37,7 +37,9 @@ void initialize() {
 
 
 
-void disabled() {}
+void disabled() {
+  clamp.retract();
+}
 
 
 
@@ -64,6 +66,7 @@ void opcontrol() {
 
   std::string str = std::to_string(chassis.getPose().x) + " " + std::to_string(chassis.getPose().y) + " " + std::to_string(chassis.getPose().theta) + "\n";
   console.println(str);
+
 
   while (true) {
 
