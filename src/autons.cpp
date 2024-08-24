@@ -6,34 +6,38 @@
 
 
 void redLeft() {
-    chassis.move(-26.25, linear, heading, 1000);
-    clamp.extend();
-    pros::delay(100);
+    pros::Task task([&]() {
+        pros::delay(640);
+        clamp.extend();
+    });
 
-    chassis.turn(110, turning, 1000);
+    chassis.move(-28.25, linear, heading, 1200, 85);
+
+    pros::delay(300);
+
+    chassis.turn(99, turning, 1000);
     intake.move(-127);
-    chassis.move(22.5, linear, heading, 1000);
+    chassis.move(22.5, linear, heading, 1000, 90);
 
     pros::delay(100);
 
-    chassis.move(-3, linear, heading, 1000);
+    chassis.move(-14, linear, heading, 1000);
 
-    chassis.turn(180, turning, 1000);
-    chassis.move(16, linear, heading, 1000);
-    pros::delay(100);
-    chassis.move(-11, linear, heading, 1000);
+    chassis.turn(140, turning, 1000);
+    chassis.move(19, linear, heading, 1000);
+    pros::delay(350);
+    chassis.move(-19, linear, heading, 1000);
 
-    chassis.turn(123, turning, 1000);
-    chassis.swing(180, false, 0.3, turning, 1000, 100);
-    pros::delay(200);
+    chassis.turn(90, turning, 1000);
     intake.move(0);
+    chassis.move(24, linear, heading, 1000);
 
-    chassis.move(-50, linear, heading, 1000);
-    chassis.turn(45, turning, 1000);
-
-
-    // grab rings from 4 stack
-
+    chassis.turn(-175, turning, 1000);
+    intake.move(-127);
+    chassis.move(19, linear, heading, 1000);
+    pros::delay(350);
+    chassis.turn(-180, turning, 1000);
+    chassis.move(-40, linear, heading, 1000);
 }
 
 void redRight() {
@@ -54,55 +58,46 @@ void redRight() {
     pros::delay(750);
     chassis.turn(-15.5, turning, 500);
 
+    pros::delay(150);
     intake.move(0);
     lift.setAngle(18.15);
 
-    chassis.move(30, linear, heading, 1000, 90);
-    chassis.move(6.6, linear, heading, 1000, 60);
+    chassis.move(27, linear, heading, 1000, 90);
+    chassis.move(9.53, linear, heading, 1000, 55);
 
     claw.extend();
     pros::delay(200);
     lift.setAngle(60);
 
     chassis.move(-9.55, linear, heading, 500);
-    chassis.turn(90, turning, 800);
+    chassis.turn(89.25, turning, 800);
 
     pisstake.extend();
     intake.move(-127);
-    chassis.move(47, linear, heading, 1000, 100);
+    chassis.move(45, linear, heading, 1000, 100);
 
     pros::delay(200);
     pisstake.retract();
-    pros::delay(100);
-    chassis.move(-8.5, linear, heading, 1000);
+    pros::delay(200);
+    chassis.move(-6.5, linear, heading, 1000);
+
+    chassis.turn(42.72, turning, 500);
 
     pros::delay(1200);
-
-    chassis.turn(43.5, turning, 500);
     intake.move(0);
 
-    chassis.move(10.2, linear, heading, 800, 80);
+    chassis.move(9.712, linear, heading, 800, 80);
 
     pros::delay(250);
-    lift.setAngle(33);
-    pros::delay(400);
+    lift.setAngle(30);
+    pros::delay(450);
     claw.retract();
 
-    chassis.move(-36, linear, heading, 500);
-    lift.setState(lib::LiftState::UP_OUT);
-    chassis.turn(135, turning, 800);
+    chassis.move(-36, linear, heading, 1000);
+    lift.setAngle(70);
+    chassis.turn(135, turning, 1000);
     clamp.retract();
-    chassis.move(24, linear, heading, 1000);
-
-
-    //lift.setState()
-
-    // Turn to stack
-    // Drive forward, grab bottom ring
-
-    // Turn to corner stack
-    // Drive forward, pull top ring off with arm
-    // Intake ring
+    chassis.move(22, linear, heading, 1000);
 }
 
 void redRush() {
