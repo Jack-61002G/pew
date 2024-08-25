@@ -1,4 +1,5 @@
 #include "lib/chassis.h"
+#include "robodash/views/console.hpp"
 #include <cstdint>
 
 
@@ -39,7 +40,7 @@ void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, flo
 
 
     double linearError = startPos + target - distance;
-    double headingError = startHeading - heading;
+    double headingError = constrain180(startHeading - heading);
 
 
     //ez template style large error/small error exits
@@ -113,6 +114,12 @@ void Chassis::turn(double target, PID turningPid, int timeout, float maxSpeed, b
   uint32_t smallTimeoutStart = 0;
 
 
+  if (blueSide) {
+    target = -target;
+  } else {
+    target = target;
+  }
+
   headingTarget = target;
 
 
@@ -132,7 +139,7 @@ void Chassis::turn(double target, PID turningPid, int timeout, float maxSpeed, b
 
   while (true) {
 
-    double headingError = target - constrain180(imu->get_rotation());
+    double headingError = constrain180(target - imu->get_rotation());
 
     //ez template style large error/small error exits
     if (pros::millis() - startTime > timeout) {

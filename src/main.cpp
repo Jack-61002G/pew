@@ -16,7 +16,10 @@
 rd::Selector selector({
     {"RedLeft", &redLeft},
     {"RedRight", &redRight},
-    {"redRush", &redRush},
+    {"redAWP", &redAWP},
+    {"BlueLeft", &blueLeft},
+    {"BlueRight", &blueRight},
+    {"blueAWP", &blueAWP}
 });
 
 // Create robodash console

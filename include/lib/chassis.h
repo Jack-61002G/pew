@@ -36,6 +36,8 @@ private:
   }
 
 public:
+  bool blueSide = false;
+
   DriveState getState() { return state; }
 
   // constructor

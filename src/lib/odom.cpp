@@ -43,7 +43,7 @@ Point Chassis::getPose(bool radians) {
 
 
 void Chassis::setPose(Point newPose, bool radians) {
-   currentPose = newPose;
-   if (!radians) {currentPose.theta *= M_PI / 180.0;}
-   headingTarget = newPose.theta;
- }
+  currentPose = newPose;
+  if (!radians) {currentPose.theta *= M_PI / 180.0;}
+  headingTarget = newPose.theta;
+}
