@@ -5,13 +5,15 @@
 
 
 
-void left() {
+void left() { 
     pros::Task task([&]() {
-        pros::delay(640);
+        while (track.getDistance() > -22) { pros::delay(10);}
         clamp.extend();
     });
+    
+    chassis.move(-26.5, linear, heading, 1000, 55);
 
-    chassis.move(-28.25, linear, heading, 1200, 85);
+    pros::delay(250);
     intake.move(-127);
 
     pros::delay(300);
@@ -22,32 +24,32 @@ void left() {
 
     pros::delay(100);
 
-    chassis.move(-15.5, linear, heading, 1000);
+    chassis.move(-16, linear, heading, 1000);
 
     // 4 stack
     chassis.turn(152, turning, 1000);
-    chassis.move(17.6, linear, heading, 1000);
-    pros::delay(650);
-    chassis.move(-17.6, linear, heading, 1000);
+    chassis.move(18, linear, heading, 1000);
+    pros::delay(700);
+    chassis.move(-17.5, linear, heading, 1000);
 
     chassis.turn(90, turning, 1000);
     intake.move(0);
-    chassis.move(19, linear, heading, 1000);
+    chassis.move(17.5, linear, heading, 1000);
 
     chassis.turn(180, turning, 1000);
     intake.move(-127);
-    chassis.move(17.75, linear, heading, 1000);
+    chassis.move(16.5, linear, heading, 1000);
 
-    pros::delay(700);
-    chassis.move(-24, linear, heading, 1000);
+    pros::delay(750);
+    chassis.move(-22.75, linear, heading, 1000);
 
     chassis.turn(250, turning, 1000);
-    lift.setAngle(70);
+    lift.setAngle(60);
     intake.move(0);
 
     chassis.move(24, linear, heading, 1000);
     clamp.retract();
-    chassis.move(20, linear, heading, 1000);
+    chassis.move(21, linear, heading, 1000);
 
     /*
     chassis.move(-40.5, linear, heading, 1000);
@@ -69,85 +71,87 @@ void left() {
     */
 }
 
-void right() {
+void right() { // unused
     
     pros::Task task([&]() {
-        pros::delay(660);
+        while (track.getDistance() > -22) { pros::delay(10);}
         clamp.extend();
     });
+    
+    chassis.move(-26.5, linear, heading, 1000, 57);
 
-    chassis.move(-28.25, linear, heading, 1200, 85);
-
-    pros::delay(300);
-
-    chassis.turn(-99, turning, 1000);
+    pros::delay(250);
     intake.move(-127);
-    chassis.move(22.5, linear, heading, 1000, 90);
+
+    chassis.turn(-97, turning, 1200);
+    chassis.move(22.5, linear, heading, 1200, 90);
 
     pros::delay(750);
-    chassis.turn(-15.5, turning, 500);
+    chassis.turn(-16, turning, 500);
 
     pros::delay(150);
     intake.move(0);
     lift.setAngle(18.3);
 
-    chassis.move(27, linear, heading, 1000, 90);
-    chassis.move(9.53, linear, heading, 1000, 50);
+    chassis.move(22.6, linear, heading, 1500, 90);
+    chassis.move(10, linear, heading, 1200, 50);
 
     claw.extend();
     pros::delay(200);
-    lift.setAngle(60);
+    lift.setAngle(20);
 
-    chassis.move(-9.55, linear, heading, 500);
-    chassis.turn(89.25, turning, 800);
+    chassis.move(-10, linear, heading, 800);
+
+    chassis.turn(120, turning, 800);
+
+    pros::delay(250);
+    claw.retract();
+    pros::delay(400);
+    lift.setState(lib::LiftState::DOWN_IN);
+
+    chassis.turn(89, turning, 800);
 
     pisstake.extend();
     intake.move(-127);
-    chassis.move(45, linear, heading, 1000, 100);
+    chassis.move(45, linear, heading, 1200, 100);
 
     pros::delay(200);
     pisstake.retract();
+
     pros::delay(200);
-    chassis.move(-6.5, linear, heading, 1000);
+    chassis.move(-40, linear, heading, 1200, 100);
+    chassis.turn(135, turning, 1000);
 
-    chassis.turn(39.8, turning, 500);
-
-    pros::delay(1200);
     intake.move(0);
 
-    chassis.move(9.57, linear, heading, 800, 80);
+    pros::delay(500);
+    lift.setAngle(60);
 
-    pros::delay(250);
-    lift.setAngle(30);
-    pros::delay(450);
-    claw.retract();
-
-    chassis.move(-36, linear, heading, 1000);
-    lift.setAngle(70);
-    chassis.turn(135, turning, 1000);
+    chassis.move(34, linear, heading, 1200, 100);
     clamp.retract();
-    chassis.move(22, linear, heading, 1000);
+    chassis.move(8, linear, heading, 1000);
+
 }
 
 void AWP() {
     pros::Task task([&]() {
-        pros::delay(620);
+        while (track.getDistance() > -22) { pros::delay(10);}
         clamp.extend();
     });
+    
+    chassis.move(-26.5, linear, heading, 1000, 55);
 
-    chassis.move(-28.25, linear, heading, 1200, 85);
+    pros::delay(250);
     intake.move(-127);
-
-    pros::delay(300);
 
     // single stack
     chassis.turn(99, turning, 1000);
-    chassis.move(24, linear, heading, 1000, 90);
+    chassis.move(23.5, linear, heading, 1000, 90);
 
     pros::delay(250);
-    chassis.turn(-65, turning, 1000);
+    chassis.turn(-60, turning, 1000);
     pisstake.extend();
-    chassis.move(44, linear, heading, 1000);
+    chassis.move(44.3, linear, heading, 1000);
 
     pros::delay(200);
     pisstake.retract();
@@ -158,31 +162,34 @@ void AWP() {
     intake.move(0);
     clamp.retract();
     
-    chassis.move(6, linear, heading, 1000);
-    chassis.turn(62, turning, 1000);
+    chassis.move(9, linear, heading, 1000);
+    chassis.turn(59.25, turning, 1000);
 
+    // second mogo
+    float startPos = track.getDistance();
     pros::Task task2electricboogaloo([&]() {
-        pros::delay(800);
+        while (track.getDistance() - startPos > -33.3) { pros::delay(10);}
         clamp.extend();
     });
-    chassis.move(-36, linear, heading, 1000, 90);
+    chassis.move(-37.8, linear, heading, 1200, 81);
 
     pros::delay(300);
-    chassis.turn(-100, turning, 1000);
+    chassis.turn(-86, turning, 1000);
     intake.move(-127);
-    chassis.move(26, linear, heading, 1000, 90);
+    chassis.move(17.5, linear, heading, 1000, 92.5);
 
-    pros::delay(500);
+    pros::delay(600);
     chassis.turn(90, turning, 1000);
+    chassis.move(24, linear, heading, 1000);
 
-    pros::delay(750);
+    pros::delay(400);
     clamp.retract();
     intake.move(0);
-    lift.setAngle(65);
-    pros::delay(250);
-  
-    chassis.turn(107, turning, 1000);
-    chassis.move(34, linear, heading, 1000);
+    lift.setAngle(60);
+    pros::delay(400);
+    
+    chassis.turn(135, turning, 1000);
+    chassis.move(10, linear, heading, 1000);
 }
 
 void redLeft() {
@@ -192,7 +199,65 @@ void redLeft() {
 
 void redRight() {
     chassis.blueSide = false;
-    right();
+
+    pros::Task task([&]() {
+        while (track.getDistance() > -22) { pros::delay(10);}
+        clamp.extend();
+    });
+    
+    chassis.move(-26.5, linear, heading, 1000, 57);
+
+    pros::delay(250);
+    intake.move(-127);
+
+    chassis.turn(-97, turning, 1200);
+    chassis.move(22.5, linear, heading, 1200, 90);
+
+    pros::delay(750);
+    chassis.turn(-16, turning, 500);
+
+    pros::delay(150);
+    intake.move(0);
+    lift.setAngle(18.3);
+
+    chassis.move(22.6, linear, heading, 1500, 90);
+    chassis.move(10, linear, heading, 1200, 50);
+
+    claw.extend();
+    pros::delay(200);
+    lift.setAngle(20);
+
+    chassis.move(-10, linear, heading, 800);
+
+    chassis.turn(120, turning, 800);
+
+    pros::delay(250);
+    claw.retract();
+    pros::delay(400);
+    lift.setState(lib::LiftState::DOWN_IN);
+
+    chassis.turn(89, turning, 800);
+
+    pisstake.extend();
+    intake.move(-127);
+    chassis.move(45, linear, heading, 1200, 100);
+
+    pros::delay(200);
+    pisstake.retract();
+
+    pros::delay(200);
+    chassis.move(-40, linear, heading, 1200, 100);
+    chassis.turn(135, turning, 1000);
+
+    intake.move(0);
+
+    pros::delay(500);
+    lift.setAngle(60);
+
+    chassis.move(34, linear, heading, 1200, 100);
+    clamp.retract();
+    chassis.move(8, linear, heading, 1000);
+
 }
 
 void redAWP() {
@@ -202,7 +267,65 @@ void redAWP() {
 
 void blueLeft() {
     chassis.blueSide = true;
-    right(); // intentionally mirrored
+
+    pros::Task task([&]() {
+        while (track.getDistance() > -22) { pros::delay(10);}
+        clamp.extend();
+    });
+    
+    chassis.move(-26.5, linear, heading, 1000, 57);
+
+    pros::delay(250);
+    intake.move(-127);
+
+    chassis.turn(-97, turning, 1200);
+    chassis.move(22.5, linear, heading, 1200, 90);
+
+    pros::delay(750);
+    chassis.turn(0, turning, 500);
+    chassis.move(20, linear, heading, 1200, 100);
+    chassis.turn(-60, turning, 1000);
+
+    intake.move(0);
+    lift.setAngle(18.3);
+
+    chassis.move(14.3, linear, heading, 1200, 50);
+
+    claw.extend();
+    pros::delay(200);
+    lift.setAngle(20);
+
+    chassis.move(-10, linear, heading, 800);
+
+    chassis.turn(60, turning, 800);
+
+    pros::delay(250);
+    claw.retract();
+    pros::delay(400);
+    lift.setState(lib::LiftState::DOWN_IN);
+
+    chassis.turn(89, turning, 800);
+
+    pisstake.extend();
+    intake.move(-127);
+    chassis.move(40, linear, heading, 1200, 100);
+
+    pros::delay(200);
+    pisstake.retract();
+
+    pros::delay(200);
+    chassis.move(-35, linear, heading, 1200, 100);
+    chassis.turn(135, turning, 1000);
+
+    intake.move(0);
+
+    pros::delay(500);
+    lift.setAngle(60);
+
+    chassis.move(30, linear, heading, 1200, 100);
+    clamp.retract();
+    chassis.move(10, linear, heading, 1000);
+
 }
 
 void blueRight() {

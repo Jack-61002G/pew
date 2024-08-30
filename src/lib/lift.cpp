@@ -71,7 +71,7 @@ void Lift::loop() {
     }
     double error = (target / gearRatio) - motors->get_position();
     motors->move(pid.update(error));
-    std::cout<<error<<std::endl;
+    //std::cout<<error<<std::endl;
 
     
     pros::Task::delay_until(&now, 15);
