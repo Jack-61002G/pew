@@ -1,9 +1,3 @@
-- [x] implement diffy motorgroup
-- [x] implement pd move/turn
-- [x] implement 1d motion profiles
-- [ ] implement swing turns
-- [ ] test non-odom based motion
-- [ ] implement and test odom
-- [ ] implement pure pursuit
+meow !
 
-![alt text](https://cdn.discordapp.com/attachments/1204687260440858636/1223508880877686784/pineapple.jpg?ex=661a1c70&is=6607a770&hm=07d46b41f1a2b6aa221c998b2431a786b9c40d7673196c824dadae8c78ab4765&)
+<img src="https://cdn.discordapp.com/attachments/888280038263382148/1272728061946888325/IMG_1472.png?ex=66d27160&is=66d11fe0&hm=869fff3f5c0e789ff5beab2df42ce5b1854945c6b50bfad6ed4a810bfcab1e5a&" />

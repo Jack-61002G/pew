@@ -16,7 +16,7 @@ void Lift::loop() {
     case LiftState::UP_OUT:
 
       if (target != UP_ANGLE) {
-        pid.reset();
+        pid.variables_reset();
         target = UP_ANGLE; 
       }
       wrist->set_value(true);
@@ -26,7 +26,7 @@ void Lift::loop() {
     case LiftState::UP_IN:
       
         if (target != UP_ANGLE) {
-          pid.reset();
+          pid.variables_reset();
           target = UP_ANGLE;
         }
         wrist->set_value(false);
@@ -36,7 +36,7 @@ void Lift::loop() {
     case LiftState::DOWN_OUT:
         
           if (target != DOWN_ANGLE) {
-            pid.reset();
+            pid.variables_reset();
             target = DOWN_ANGLE;
           }
           wrist->set_value(true);
@@ -46,7 +46,7 @@ void Lift::loop() {
     case LiftState::DOWN_IN:
           
             if (target != DOWN_ANGLE) {
-              pid.reset();
+              pid.variables_reset();
               target = DOWN_ANGLE;
             }
             wrist->set_value(false);
@@ -62,15 +62,16 @@ void Lift::loop() {
     case LiftState::MID_IN:
               
                 if (target != MID_ANGLE) {
-                  pid.reset();
+                  pid.variables_reset();
                   target = MID_ANGLE;
                 }
                 wrist->set_value(false);
             
                 break;
     }
+    pid.target_set(target / gearRatio);
     double error = (target / gearRatio) - motors->get_position();
-    motors->move(pid.update(error));
+    motors->move(pid.compute_error(error,motors->get_position()));
     //std::cout<<error<<std::endl;
 
     
@@ -80,7 +81,7 @@ void Lift::loop() {
 
 void Lift::setAngle(float angle) {
   setState(LiftState::OUT_CUSTOM);
-  pid.reset();
+  pid.variables_reset();
   target = angle;
 }
 
