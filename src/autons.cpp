@@ -3,7 +3,10 @@
 #include "robotconfig.h"
 #include "autons.h"
 
-
+void exit_condition_defaults() {
+  turning.exit_condition_set(35, 1, 100, 3, 250, 500);
+  linear.exit_condition_set(35, 30, 150, 150, 250, 500);
+}
 
 void left() { 
     pros::Task task([&]() {

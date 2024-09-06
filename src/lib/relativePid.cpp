@@ -1,190 +1,95 @@
 #include "lib/chassis.h"
 #include "robodash/views/console.hpp"
+#include "robotconfig.h"
+#include "util.h"
 #include <cstdint>
-
 
 using namespace lib;
 
-
-
-void Chassis::move(float target, PID linearPid, PID headingPid, int timeout, float maxSpeed, bool async) {
-
-  const float largeError = 1.2;
-  const float smallError = .7;
-  const float largeTimeout = 150;
-  const float smallTimeout = 35;
-
-  uint32_t largeTimeoutStart = 0;
-  uint32_t smallTimeoutStart = 0;
-
+void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed,
+                   bool async) {
 
   if (async) {
     while (this->getState() == DriveState::MOVING) {
-      pros::delay(20);
+      pros::delay(10);
     }
-    pros::Task task([&]() { move(target, linearPid, headingPid, timeout, maxSpeed); });
+    pros::Task task([&]() { move(target, linearPid, headingPid, maxSpeed); });
   }
-
 
   float startPos = track->getDistance();
   double startHeading = headingTarget;
-  uint32_t startTime = pros::millis();
 
+  linearPid.target_set(target);
+  headingPid.target_set(startHeading);
 
   state = DriveState::MOVING;
 
-  while (true) {
+  while (linearPid.exit_condition() == exit_output::RUNNING) {
 
     double distance = track->getDistance();
     double heading = imu->get_rotation();
 
-
     double linearError = startPos + target - distance;
     double headingError = constrain180(startHeading - heading);
 
+    float linearOutput =
+        linearPid.compute_error(linearError, distance - startPos);
+    float headingOutput =
+        headingPid.compute_error(headingError, constrain180(heading));
 
-    //ez template style large error/small error exits
-    if (pros::millis() - startTime > timeout) {
-      leftMotors->move(0);
-      rightMotors->move(0);
-      leftMotors->brake();
-      rightMotors->brake();
-      state = DriveState::IDLE;
-      linearPid.reset();
-      headingPid.reset();
-      return;
+    // if linearoutput + abs(headingOutput) > maxSpeed or 127, scale down
+    // linearOutput
+    if (std::abs(linearOutput) + std::abs(headingOutput) > maxSpeed) {
+      linearOutput =
+          (linearOutput > 0)
+              ? fmin(linearOutput, maxSpeed - std::abs(headingOutput))
+              : fmax(linearOutput, -maxSpeed + std::abs(headingOutput));
     }
 
-    if(std::abs(linearError) < largeError) {
-      if(largeTimeoutStart == 0) {
-        largeTimeoutStart = pros::millis();
-      } else if(pros::millis() - largeTimeoutStart > largeTimeout) {
-        leftMotors->move(0);
-        rightMotors->move(0);
-        leftMotors->brake();
-        rightMotors->brake();
-        state = DriveState::IDLE;
-        linearPid.reset();
-        headingPid.reset();
-        return;
-      }
-    } else {
-      largeTimeoutStart = 0;
-    }
-
-    if(std::abs(linearError) < smallError) {
-      if(smallTimeoutStart == 0) {
-        smallTimeoutStart = pros::millis();
-      } else if(pros::millis() - smallTimeoutStart > smallTimeout) {
-        leftMotors->move(0);
-        rightMotors->move(0);
-        leftMotors->brake();
-        rightMotors->brake();
-        state = DriveState::IDLE;
-        linearPid.reset();
-        headingPid.reset();
-        return;
-      }
-    } else {
-      smallTimeoutStart = 0;
-    }
-
-    float linearOutput = linearPid.update(linearError);
-    if (linearOutput > maxSpeed) {linearOutput = maxSpeed;}
-    if (linearOutput < -maxSpeed) {linearOutput = -maxSpeed;}
-
-    arcade(linearOutput, headingPid.update(headingError));
+    arcade(linearOutput, headingOutput);
 
     pros::delay(10);
   }
 
-
+  // reset pid
+  std::string str = std::to_string(chassis.getPose().x) + " " +
+                    std::to_string(chassis.getPose().y) + " " +
+                    std::to_string(chassis.getPose().theta) + "\n";
+  console.println(str);
+  linearPid.variables_reset();
+  headingPid.variables_reset();
+  leftMotors->move(0);
+  rightMotors->move(0);
+  leftMotors->brake();
+  rightMotors->brake();
+  state = DriveState::IDLE;
 }
 
-
-
-void Chassis::turn(double target, PID turningPid, int timeout, float maxSpeed, bool async) {
-
-  const float largeError = 3;
-  const float smallError = 1;
-  const float largeTimeout = 100;
-  const float smallTimeout = 35;
-
-  uint32_t largeTimeoutStart = 0;
-  uint32_t smallTimeoutStart = 0;
-
+void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async) {
 
   if (blueSide) {
     target = -target;
-  } else {
-    target = target;
   }
 
   headingTarget = target;
-
 
   if (async) {
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
-    pros::Task task([&]() { turn(target, turningPid, timeout, maxSpeed); });
+    pros::Task task([&]() { turn(target, turningPid, maxSpeed); });
   }
 
-
-  uint32_t startTime = pros::millis();
-
+  turningPid.target_set(target);
 
   state = DriveState::MOVING;
 
-
-  while (true) {
+  while (turningPid.exit_condition() == exit_output::RUNNING) {
 
     double headingError = constrain180(target - imu->get_rotation());
 
-    //ez template style large error/small error exits
-    if (pros::millis() - startTime > timeout) {
-      leftMotors->move(0);
-      rightMotors->move(0);
-      leftMotors->brake();
-      rightMotors->brake();
-      state = DriveState::IDLE;
-      turningPid.reset();
-      return;
-    }
-    if(std::abs(headingError) < largeError) {
-
-      if(largeTimeoutStart == 0) {
-        largeTimeoutStart = pros::millis();
-      } else if(pros::millis() - largeTimeoutStart > largeTimeout) {
-        leftMotors->move(0);
-        rightMotors->move(0);
-        leftMotors->brake();
-        rightMotors->brake();
-        state = DriveState::IDLE;
-        turningPid.reset();
-        return;
-      }
-    } else {
-      largeTimeoutStart = 0;
-    }
-    if(std::abs(headingError) < smallError) {
-        
-        if(smallTimeoutStart == 0) {
-          smallTimeoutStart = pros::millis();
-        } else if(pros::millis() - smallTimeoutStart > smallTimeout) {
-          leftMotors->move(0);
-          rightMotors->move(0);
-          leftMotors->brake();
-          rightMotors->brake();
-          state = DriveState::IDLE;
-          turningPid.reset();
-          return;
-        }
-      } else {
-        smallTimeoutStart = 0;
-    }
-    
-    float output = turningPid.update(headingError);
+    float output = turningPid.compute_error(headingError,
+                                            constrain180(imu->get_rotation()));
     output = (output > 0) ? fmin(output, maxSpeed) : fmax(output, -maxSpeed);
 
     leftMotors->move(output);
@@ -192,91 +97,52 @@ void Chassis::turn(double target, PID turningPid, int timeout, float maxSpeed, b
 
     pros::delay(10);
   }
+
+  // reset pid
+  std::string str = std::to_string(chassis.getPose().x) + " " +
+                    std::to_string(chassis.getPose().y) + " " +
+                    std::to_string(chassis.getPose().theta) + "\n";
+  console.println(str);
+  turningPid.variables_reset();
+  turningPid.variables_reset();
+  leftMotors->move(0);
+  rightMotors->move(0);
+  leftMotors->brake();
+  rightMotors->brake();
+  state = DriveState::IDLE;
 }
 
-
-
-void Chassis::swing(double target, bool side, float multiplier, PID turningPid, int timeout, float maxSpeed, bool async) {
-
-  const float largeError = 3;
-  const float smallError = 1;
-  const float largeTimeout = 100;
-  const float smallTimeout = 35;
-
-  uint32_t largeTimeoutStart = 0;
-  uint32_t smallTimeoutStart = 0;
+void Chassis::swing(double target, bool side, float multiplier, PID turningPid,
+                    float maxSpeed, bool async) {
 
   if (async) {
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
-    pros::Task task([&]() { swing(target, side, multiplier, turningPid, timeout, maxSpeed); });
+    pros::Task task(
+        [&]() { swing(target, side, multiplier, turningPid, maxSpeed); });
   }
-
-  uint32_t startTime = pros::millis();
 
   double startHeading = imu->get_rotation();
 
   while (target - startHeading > 360) {
     target -= 360;
-  } while (target - startHeading < 0) {
+  }
+  while (target - startHeading < 0) {
     target += 360;
   }
 
+  turningPid.target_set(target);
+
   state = DriveState::MOVING;
 
-
-  while (true) {
+  while (turningPid.exit_condition() == exit_output::RUNNING) {
 
     double headingError = target - constrain180(imu->get_rotation());
 
-    //ez template style large error/small error exits
-    if (pros::millis() - startTime > timeout) {
-      leftMotors->move(0);
-      rightMotors->move(0);
-      leftMotors->brake();
-      rightMotors->brake();
-      state = DriveState::IDLE;
-      turningPid.reset();
-      headingTarget = target;
-      return;
-    }
-    if(std::abs(headingError) < largeError) {
-
-      if(largeTimeoutStart == 0) {
-        largeTimeoutStart = pros::millis();
-      } else if(pros::millis() - largeTimeoutStart > largeTimeout) {
-        leftMotors->move(0);
-        rightMotors->move(0);
-        leftMotors->brake();
-        rightMotors->brake();
-        state = DriveState::IDLE;
-        turningPid.reset();
-        headingTarget = target;
-        return;
-      }
-    } else {
-      largeTimeoutStart = 0;
-    }
-    if(std::abs(headingError) < smallError) {
-        
-        if(smallTimeoutStart == 0) {
-          smallTimeoutStart = pros::millis();
-        } else if(pros::millis() - smallTimeoutStart > smallTimeout) {
-          leftMotors->move(0);
-          rightMotors->move(0);
-          leftMotors->brake();
-          rightMotors->brake();
-          state = DriveState::IDLE;
-          turningPid.reset();
-          headingTarget = target;
-          return;
-        }
-      } else {
-        smallTimeoutStart = 0;
-    }
-    
-    float output = fmin(turningPid.update(headingError), maxSpeed);
+    float output = turningPid.compute_error(headingError,
+                                            constrain180(imu->get_rotation()));
+    output = (output > 0) ? fmin(output, maxSpeed) : fmax(output, -maxSpeed);
 
     if (side) {
       leftMotors->move(output * multiplier);
@@ -288,11 +154,23 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
 
     pros::delay(10);
   }
-}
 
+  // reset pid
+  std::string str = std::to_string(chassis.getPose().x) + " " +
+                    std::to_string(chassis.getPose().y) + " " +
+                    std::to_string(chassis.getPose().theta) + "\n";
+  console.println(str);
+  turningPid.variables_reset();
+  turningPid.variables_reset();
+  leftMotors->move(0);
+  rightMotors->move(0);
+  leftMotors->brake();
+  rightMotors->brake();
+  state = DriveState::IDLE;
+}
 
 void Chassis::waitUntilFinished() {
   while (state == DriveState::MOVING) {
-    pros::delay(20);
+    pros::delay(10);
   }
 }
