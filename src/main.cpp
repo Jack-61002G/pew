@@ -51,7 +51,14 @@ void competition_initialize() {}
 
 
 void autonomous() {
-  selector.run_auton();
+  leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+  chassis.moveToPoint(20, 20, linear, heading, 2000);
+  //chassis.moveToPoint(-12, 12, linear, heading, 2000);
+  //chassis.moveToPoint(0, 0, linear, heading, 2000);
+
+  //selector.run_auton();
 }
 
 

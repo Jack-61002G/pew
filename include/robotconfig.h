@@ -33,7 +33,7 @@ inline pros::adi::Pneumatics clamp('E', false);
 inline pros::adi::Pneumatics claw('G', false);
 
 inline PID linear(10,0.0, 34, 45);
-inline PID heading(1.61, 0.0052, 15);
+inline PID heading(1.0, 0.0052, 12);
 inline PID turning(3.75, 0.0025, 37);
 inline PID movetoturn(0.35, .00015, 9);
 
