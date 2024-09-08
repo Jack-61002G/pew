@@ -75,7 +75,7 @@ public:
 
   void turn(double target, PID turningPid, float maxSpeed = 127, bool async = false);
 
-  void swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed, bool async = false);
+  void swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed = 127, bool async = false);
  
 
 

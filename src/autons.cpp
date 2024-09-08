@@ -4,8 +4,9 @@
 #include "autons.h"
 
 void exit_condition_defaults() {
-  turning.exit_condition_set(35, 1, 100, 3, 250, 500);
-  linear.exit_condition_set(35, 30, 150, 150, 250, 500);
+  turning.exit_condition_set(150, 1, 300, 3, 500, 500);
+  linear.exit_condition_set(150, .25, 300, .75, 500, 500);
+  swing.exit_condition_set(150, 1, 300, 3, 500, 500);
 }
 
 void left() { 

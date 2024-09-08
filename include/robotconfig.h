@@ -30,8 +30,9 @@ inline pros::adi::Pneumatics clamp('E', false);
 inline pros::adi::Pneumatics claw('G', false);
 
 inline PID linear(10,0.0, 34);
-inline PID heading(12, 0, 20, 0);
-inline PID turning(4, 0.003, 40, 15);
+inline PID heading(2.875, 0, 20, 0);
+inline PID turning(2.875, 0.003, 20, 15);
+inline PID swing(.5, 0.0, 25, 7.5);
 
 
 //inline pros::adi::Led leftArmLed('C', 48);

@@ -46,12 +46,14 @@ void competition_initialize() {}
 
 
 void autonomous() {
+  console.focus();
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-  chassis.moveToPoint(20, 20, linear, heading, 2000);
-  //chassis.moveToPoint(-12, 12, linear, heading, 2000);
-  //chassis.moveToPoint(0, 0, linear, heading, 2000);
+  chassis.swing(90, true, 0, swing);
+  chassis.swing(90, true, 0, swing);
+  chassis.swing(90, false, 0, swing);
+  chassis.swing(0, false, 0, swing);
 
   //selector.run_auton();
 }
@@ -59,19 +61,12 @@ void autonomous() {
 
 
 void opcontrol() {
+
   lift.stopTask();
   float liftTarget = -1;
 
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-
-  console.clear();
-  console.focus();
-
-  std::string str = std::to_string(chassis.getPose().x) + " " +
-                    std::to_string(chassis.getPose().y) + " " +
-                    std::to_string(chassis.getPose().theta) + "\n";
-  console.println(str);
 
   while (true) {
 
