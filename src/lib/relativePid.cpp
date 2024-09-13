@@ -18,7 +18,7 @@ void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed, 
     while (this->getState() == DriveState::MOVING) {
       pros::delay(10);
     }
-    pros::Task task([&]() { move(target, linearPid, headingPid, maxSpeed); });
+    pros::Task task([=]() { move(target, linearPid, headingPid, maxSpeed); });
   }
 
   float startPos = track->getDistance();
@@ -78,7 +78,7 @@ void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async) {
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
-    pros::Task task([&]() { turn(target, turningPid, maxSpeed); });
+    pros::Task task([=]() { turn(target, turningPid, maxSpeed); });
   }
 
   turningPid.target_set(target);
@@ -119,7 +119,7 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
-    pros::Task task([&]() { swing(target, side, multiplier, turningPid, maxSpeed); });
+    pros::Task task([=]() { swing(target, side, multiplier, turningPid, maxSpeed); });
   }
 
   double startHeading = imu->get_rotation();

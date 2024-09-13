@@ -15,7 +15,7 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid, float
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
-    pros::Task task([&]() { moveToPoint(x, y, linearPid, turningPid, maxSpeed); });
+    pros::Task task([=]() { moveToPoint(x, y, linearPid, turningPid, maxSpeed); });
   }
 
   state = DriveState::MOVING;
