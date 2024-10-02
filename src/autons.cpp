@@ -100,7 +100,7 @@ void right() { // unused
     chassis.move(22.6, linear, heading, 1500, 90);
     chassis.move(10, linear, heading, 1200, 50);
 
-    claw.extend();
+    //claw.extend();
     pros::delay(200);
     lift.setAngle(20);
 
@@ -109,18 +109,18 @@ void right() { // unused
     chassis.turn(120, turning, 800);
 
     pros::delay(250);
-    claw.retract();
+    //claw.retract();
     pros::delay(400);
     lift.setState(lib::LiftState::DOWN_IN);
 
     chassis.turn(89, turning, 800);
 
-    pisstake.extend();
+    //pisstake.extend();
     intake.move(-127);
     chassis.move(45, linear, heading, 1200, 100);
 
     pros::delay(200);
-    pisstake.retract();
+    //pisstake.retract();
 
     pros::delay(200);
     chassis.move(-40, linear, heading, 1200, 100);
@@ -154,11 +154,11 @@ void AWP() {
 
     pros::delay(250);
     chassis.turn(-60, turning, 1000);
-    pisstake.extend();
+    //pisstake.extend();
     chassis.move(44.3, linear, heading, 1000);
 
     pros::delay(200);
-    pisstake.retract();
+    //pisstake.retract();
     pros::delay(200);
     chassis.move(-10, linear, heading, 1000);
 
@@ -227,7 +227,7 @@ void redRight() {
     chassis.move(22.6, linear, heading, 1500, 90);
     chassis.move(10, linear, heading, 1200, 50);
 
-    claw.extend();
+    //claw.extend();
     pros::delay(200);
     lift.setAngle(20);
 
@@ -236,18 +236,18 @@ void redRight() {
     chassis.turn(120, turning, 800);
 
     pros::delay(250);
-    claw.retract();
+    //claw.retract();
     pros::delay(400);
     lift.setState(lib::LiftState::DOWN_IN);
 
     chassis.turn(89, turning, 800);
 
-    pisstake.extend();
+    //pisstake.extend();
     intake.move(-127);
     chassis.move(45, linear, heading, 1200, 100);
 
     pros::delay(200);
-    pisstake.retract();
+    //pisstake.retract();
 
     pros::delay(200);
     chassis.move(-40, linear, heading, 1200, 100);
@@ -310,12 +310,12 @@ void blueLeft() {
 
     chassis.turn(89, turning, 800);
 
-    pisstake.extend();
+    //pisstake.extend();
     intake.move(-127);
     chassis.move(40, linear, heading, 1200, 100);
 
     pros::delay(200);
-    pisstake.retract();
+    //pisstake.retract();
 
     pros::delay(200);
     chassis.move(-35, linear, heading, 1200, 100);
