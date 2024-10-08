@@ -1,4 +1,4 @@
-#include "lib/lift.hpp"
+#include "lib///lift.hpp"
 #include "pros/rtos.hpp"
 #include "robotconfig.h"
 #include "autons.h"
@@ -48,7 +48,7 @@ void left() {
     chassis.move(-22.75, linear, heading, 1000);
 
     chassis.turn(250, turning, 1000);
-    //lift.setAngle(60);
+    ////lift.setAngle(60);
     intake.move(0);
 
     chassis.move(37, linear, heading, 1000);
@@ -60,12 +60,12 @@ void left() {
     intake.move(0);
 
     chassis.turn(50, turning, 1000);
-    lift.setAngle(12.8);
+    //lift.setAngle(12.8);
 
     pros::delay(750);
     chassis.move(9, linear, heading, 1000, 50);
 
-    lift.setAngle(17);
+    //lift.setAngle(17);
 
     pros::delay(500);
     claw.extend();
@@ -95,14 +95,14 @@ void right() { // unused
 
     pros::delay(150);
     intake.move(0);
-    lift.setAngle(18.3);
+    //lift.setAngle(18.3);
 
     chassis.move(22.6, linear, heading, 1500, 90);
     chassis.move(10, linear, heading, 1200, 50);
 
     //claw.extend();
     pros::delay(200);
-    lift.setAngle(20);
+    //lift.setAngle(20);
 
     chassis.move(-10, linear, heading, 800);
 
@@ -111,7 +111,7 @@ void right() { // unused
     pros::delay(250);
     //claw.retract();
     pros::delay(400);
-    lift.setState(lib::LiftState::DOWN_IN);
+    //lift.setState(lib::LiftState::DOWN_IN);
 
     chassis.turn(89, turning, 800);
 
@@ -129,7 +129,7 @@ void right() { // unused
     intake.move(0);
 
     pros::delay(500);
-    lift.setAngle(60);
+    //lift.setAngle(60);
 
     chassis.move(34, linear, heading, 1200, 100);
     clamp.retract();
@@ -189,7 +189,7 @@ void AWP() {
     pros::delay(400);
     clamp.retract();
     intake.move(0);
-    lift.setAngle(60);
+    //lift.setAngle(60);
     pros::delay(400);
     
     chassis.turn(135, turning, 1000);
@@ -222,14 +222,14 @@ void redRight() {
 
     pros::delay(150);
     intake.move(0);
-    lift.setAngle(18.3);
+    //lift.setAngle(18.3);
 
     chassis.move(22.6, linear, heading, 1500, 90);
     chassis.move(10, linear, heading, 1200, 50);
 
     //claw.extend();
     pros::delay(200);
-    lift.setAngle(20);
+    //lift.setAngle(20);
 
     chassis.move(-10, linear, heading, 800);
 
@@ -238,7 +238,7 @@ void redRight() {
     pros::delay(250);
     //claw.retract();
     pros::delay(400);
-    lift.setState(lib::LiftState::DOWN_IN);
+    //lift.setState(lib::LiftState::DOWN_IN);
 
     chassis.turn(89, turning, 800);
 
@@ -256,7 +256,7 @@ void redRight() {
     intake.move(0);
 
     pros::delay(500);
-    //lift.setAngle(60);
+    ////lift.setAngle(60);
 
     chassis.move(34, linear, heading, 1200, 100);
     clamp.retract();
@@ -291,13 +291,13 @@ void blueLeft() {
     chassis.turn(-60, turning, 1000);
 
     intake.move(0);
-    lift.setState(lib::LiftState::UP_IN);
+    //lift.setState(lib::LiftState::UP_IN);
 
     chassis.move(14.3, linear, heading, 1200, 50);
 
     //claw.extend();
     //pros::delay(200);
-    //lift.setState(lib::LiftState::UP_IN);
+    ////lift.setState(lib::LiftState::UP_IN);
 
     chassis.move(-10, linear, heading, 800);
 
@@ -306,7 +306,7 @@ void blueLeft() {
     pros::delay(250);
     //claw.retract();
     //pros::delay(400);
-    //lift.setState(lib::LiftState::DOWN_IN);
+    ////lift.setState(lib::LiftState::DOWN_IN);
 
     chassis.turn(89, turning, 800);
 
@@ -324,7 +324,7 @@ void blueLeft() {
     intake.move(0);
 
     pros::delay(500);
-    //lift.setAngle(60);
+    ////lift.setAngle(60);
 
     chassis.move(30, linear, heading, 1200, 100);
     clamp.retract();

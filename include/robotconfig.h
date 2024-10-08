@@ -21,11 +21,10 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 inline lib::Chassis chassis = lib::Chassis(&leftMotors, &rightMotors, &imu, &track, 450, 2.75);
 
-inline pros::MotorGroup intake({3, -8});
+inline pros::MotorGroup intake({7});
 
-inline pros::MotorGroup armMotors({5});
-inline pros::adi::Pneumatics wrist('H', false);
-inline lib::Lift lift(&armMotors, &wrist, 1.0/7.0, {2, 0.1, 2.5});
+inline pros::MotorGroup armMotors({6, -8});
+inline lib::Lift lift(&armMotors,  36.0/60, {2.5, 0, 3.75});
 
 inline pros::adi::Pneumatics doinker('F', false);
 inline pros::adi::Pneumatics clamp('D', false);

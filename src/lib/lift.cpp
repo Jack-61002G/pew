@@ -13,59 +13,30 @@ void Lift::loop() {
   while (true) {
     switch (getState()) {
 
-    case LiftState::UP_OUT:
+    case LiftState::Stored:
 
-      if (target != UP_ANGLE) {
+      if (target != DOWN_ANGLE) {
         pid.variables_reset();
-        target = UP_ANGLE; 
+        target = DOWN_ANGLE; 
       }
-      wrist->set_value(true);
   
       break;
 
-    case LiftState::UP_IN:
+    case LiftState::Recieve:
       
-        if (target != UP_ANGLE) {
+        if (target != MID_ANGLE) {
           pid.variables_reset();
-          target = UP_ANGLE;
+          target = MID_ANGLE;
         }
-        wrist->set_value(false);
     
         break;
 
-    case LiftState::DOWN_OUT:
-        
-          if (target != DOWN_ANGLE) {
-            pid.variables_reset();
-            target = DOWN_ANGLE;
-          }
-          wrist->set_value(true);
-      
-          break;
-
-    case LiftState::DOWN_IN:
-          
-            if (target != DOWN_ANGLE) {
-              pid.variables_reset();
-              target = DOWN_ANGLE;
-            }
-            wrist->set_value(false);
-        
-            break;
-
-    case LiftState::OUT_CUSTOM:
-
-              wrist->set_value(true);
-          
-              break;
-
-    case LiftState::MID_IN:
+    case LiftState::Score:
               
-                if (target != MID_ANGLE) {
+                if (target != UP_ANGLE) {
                   pid.variables_reset();
-                  target = MID_ANGLE;
+                  target = UP_ANGLE;
                 }
-                wrist->set_value(false);
             
                 break;
     }
@@ -79,10 +50,12 @@ void Lift::loop() {
   }
 }
 
-void Lift::setAngle(float angle) {
-  setState(LiftState::OUT_CUSTOM);
-  pid.variables_reset();
-  target = angle;
+void Lift::itterateState(bool delta) {
+  if (delta) {
+    setState(static_cast<LiftState>((static_cast<int>(getState()) + 1) % 3));
+  } else {
+    setState(static_cast<LiftState>((static_cast<int>(getState()) + 2) % 3));
+  }
 }
 
 float Lift::getAngle() {

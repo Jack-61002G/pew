@@ -19,8 +19,6 @@ rd::Selector selector({{"RedLeft", &redLeft},
                        {"BlueRight", &blueRight},
                        {"blueAWP", &blueAWP}});
 
-
-
 // ========================= Competition Functions ========================= //
 
 void initialize() {
@@ -39,14 +37,14 @@ void initialize() {
   chassis.startTask();
   lift.startTask();
   lights.startTask();
-  lights.team = 1;
 }
 
-void disabled() { clamp.retract(); lights.stopTimer(); }
+void disabled() {
+  clamp.retract();
+  lights.stopTimer();
+}
 
 void competition_initialize() {}
-
-
 
 void autonomous() {
   console.focus();
@@ -74,22 +72,24 @@ void autonomous() {
   //clamp
   chassis.moveToPoint(0, 0, linear, heading); //slightly pull away from goal
   chassis.swing(idk, idk, 0, swing); //turn to face ring above bottom goal
-  chassis.moveToPoint(0, 0, linear, heading); //move claw into position to grab ring
+  chassis.moveToPoint(0, 0, linear, heading); //move claw into position to grab
+  ring
   //At the bottom tall goal
   //claw
   chassis.swing(180,idk, 0, swing); //line up claw to goal
   //move arm up
   //claw
   chassis.swing(idk, idk, 0, swing); //turn to the bottom left of the middle
-  chassis.moveToPoint(0, 0, linear, heading); //move to the bottom left of the middle
-  chassis.swing(45, idk, 0, swing); //turn to the center
+  chassis.moveToPoint(0, 0, linear, heading); //move to the bottom left of the
+  middle chassis.swing(45, idk, 0, swing); //turn to the center
   chassis.moveToPoint(0, 0, linear, heading); //move to the center ring
   //In the middle
   chassis.swing(idk, idk, 0, swing); //turn to face away from the mobile goal
-  chassis.moveToPoint(0, 0, linear, heading); //move backwords to the mobile goal
+  chassis.moveToPoint(0, 0, linear, heading); //move backwords to the mobile
+  goal
   //clamp
-  chassis.swing(idk, idk, 0, swing); //turn to face the closes ring to the middle
-  chassis.moveToPoint(0, 0, linear, heading); //move to the ring
+  chassis.swing(idk, idk, 0, swing); //turn to face the closes ring to the
+  middle chassis.moveToPoint(0, 0, linear, heading); //move to the ring
   //In the top left quadrent
   chassis.swing(0, idk, 0, swing); //turn to face the ring above
   chassis.moveToPoint(0, 0, linear, heading); //move to the ring
@@ -101,8 +101,8 @@ void autonomous() {
   chassis.moveToPoint(0, 0, linear, heading); //move backwords into goal
   //clamp
   chassis.moveToPoint(0, 0, linear, heading); //move away from goal slightly
-  chassis.swing(idk, idk, 0, swing); //turn to face the ring below the goal for claw
-  chassis.moveToPoint(0, 0, linear, heading); //move to the ring
+  chassis.swing(idk, idk, 0, swing); //turn to face the ring below the goal for
+  claw chassis.moveToPoint(0, 0, linear, heading); //move to the ring
   //At the bottom tall goal
   //claw
   chassis.swing(180, idk, 0, swing); //turn to face the tall goal
@@ -113,14 +113,10 @@ void autonomous() {
   selector.run_auton();
 }
 
-
-
 void opcontrol() {
 
-  lift.stopTask();
   lights.startTimer();
   float liftTarget = -1;
-
 
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -130,9 +126,9 @@ void opcontrol() {
     chassis.arcadeMod(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),
                       controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X),
                       2, 114, 110);
-    intake.move((controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2))   ? -127
-                : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) ? 127
-                : 0);
+    intake.move((controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2))   ? 127
+                : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) ? -127
+                                                                          : 0);
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
       doinker.toggle();
     }
@@ -141,22 +137,14 @@ void opcontrol() {
     }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
       clamp.toggle();
+      lights.indicator = clamp.is_extended();
     }
-    armMotors.move(
-        (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2))   ? -100
-        : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) ? 100
-                                                                  : 0);
-
-    if (liftTarget == -1) {
-      liftTarget = armMotors.get_position();
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
+      lift.itterateState(1);
+    } else if (controller.get_digital_new_press(
+                   pros::E_CONTROLLER_DIGITAL_R2)) {
+      lift.itterateState(0);
     }
-    if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) &&
-        !controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-      armMotors.move((liftTarget - armMotors.get_position()) * 1.5);
-    } else {
-      liftTarget = -1;
-    }
-    std::cout << liftTarget << std::endl;
 
     pros::delay(15);
   }
