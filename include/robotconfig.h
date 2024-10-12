@@ -8,7 +8,7 @@
 #include "robotconfig.h"
 
 
-inline pros::MotorGroup leftMotors({-12,-13,14}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
+inline pros::MotorGroup leftMotors({-16,-13,14}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
 
 inline pros::MotorGroup rightMotors({11,-19,20}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
 
@@ -26,9 +26,9 @@ inline pros::MotorGroup intake({7});
 inline pros::MotorGroup armMotors({6, -8});
 inline lib::Lift lift(&armMotors,  36.0/60, {2.5, 0, 3.75});
 
-inline pros::adi::Pneumatics doinker('F', false);
+inline pros::adi::Pneumatics doinker('H', false);
 inline pros::adi::Pneumatics clamp('D', false);
-inline pros::adi::Pneumatics sorter('H', false);
+inline pros::adi::Pneumatics sorter('F', false);
 
 inline PID linear(10,0.0, 34);
 inline PID heading(2.875, 0, 20, 0);

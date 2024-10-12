@@ -11,7 +11,8 @@ class Lights : public ryan::TaskWrapper {
 private:
     pros::adi::Led leftDriveLed = pros::adi::Led('E', 40);
     pros::adi::Led rightDriveLed = pros::adi::Led('G', 40);
-    pros::adi::Led indicatorLed = pros::adi::Led('C', 40);
+    pros::adi::Led indicatorLed1 = pros::adi::Led('C', 6);
+    pros::adi::Led indicatorLed2 = pros::adi::Led('A', 6);
 
     const uint32_t red = 0x850000;
     const uint32_t blue = 0x000080;
@@ -22,13 +23,14 @@ private:
 
     const uint32_t warning_30 = 0x00FF00;
     const uint32_t warning_15 = 0x858500;
+    const uint32_t warning_0 = 0xFF0000;
 
 public:
     int team = 0;
     int indicator = 0;
     int startTime = -1;
 
-    void startTimer() { startTime = pros::millis() - 75000; }
+    void startTimer() { startTime = pros::millis(); }
     void stopTimer() { startTime = -1; }
     void loop() override;
 

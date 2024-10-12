@@ -16,7 +16,7 @@ void lib::Lights::loop() {
         if (startTime != -1) {
         int dT = pros::millis() - startTime;
 
-        if (85000 < dT && dT < 85500) { // 30 second warning
+        if (40000 < dT && dT < 40500) { // 30 second warning
         if (currentWarning != 1) {
             currentWarning = 1;
             leftDriveLed.set_all(warning_30);
@@ -24,12 +24,20 @@ void lib::Lights::loop() {
             rightDriveLed.set_all(warning_30);
             pros::delay(20);
         }}
-        else if (90000 < dT && dT < 90500) { // 15 second warning
+        else if (50000 < dT && dT < 50500) { // 15 second warning
         if (currentWarning != 2) {
             currentWarning = 2;
             leftDriveLed.set_all(warning_15);
             pros::delay(20);
             rightDriveLed.set_all(warning_15);
+            pros::delay(20);
+        }}
+        else if (55000 < dT && dT < 55500) { // 0 second warning
+        if (currentWarning != 3) {
+            currentWarning = 3;
+            leftDriveLed.set_all(warning_0);
+            pros::delay(20);
+            rightDriveLed.set_all(warning_0);
             pros::delay(20);
         }}
         else if (currentWarning != 0) { // clearing warning
@@ -51,10 +59,11 @@ void lib::Lights::loop() {
             pros::delay(20);
         }
 
-        // update indicator light
+        // update indicator lights
         if (indicator != currentIndicator) {
             currentIndicator = indicator;
-            indicatorLed.set_all(indicator == 1 ? ind_on : ind_off);
+            indicatorLed1.set_all(indicator == 1 ? ind_on : ind_off);
+            indicatorLed2.set_all(indicator == 1 ? ind_on : ind_off);
             pros::delay(20);
         }
 
