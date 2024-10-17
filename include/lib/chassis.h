@@ -80,7 +80,7 @@ public:
 
 
   // odom movements
-  void moveToPoint(float x, float y, PID linearPid, PID headingPid, float maxSpeed = 127, bool async = false);
+  void moveToPoint(float x, float y, PID linearPid, PID headingPid, bool backwards = false, float maxSpeed = 127, bool async = false);
 
 };
 } // namespace lib
