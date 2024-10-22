@@ -16,28 +16,20 @@ void lib::Lights::loop() {
         if (startTime != -1) {
         int dT = pros::millis() - startTime;
 
-        if (40000 < dT && dT < 40500) { // 30 second warning
+        if (5000 < dT && dT < 5500) { // 20 second warning
         if (currentWarning != 1) {
             currentWarning = 1;
-            leftDriveLed.set_all(warning_30);
+            leftDriveLed.set_all(warning_1);
             pros::delay(20);
-            rightDriveLed.set_all(warning_30);
+            rightDriveLed.set_all(warning_1);
             pros::delay(20);
         }}
-        else if (50000 < dT && dT < 50500) { // 15 second warning
+        else if (10000 < dT && dT < 10500) { // 10 second warning
         if (currentWarning != 2) {
             currentWarning = 2;
-            leftDriveLed.set_all(warning_15);
+            leftDriveLed.set_all(warning_2);
             pros::delay(20);
-            rightDriveLed.set_all(warning_15);
-            pros::delay(20);
-        }}
-        else if (55000 < dT && dT < 55500) { // 0 second warning
-        if (currentWarning != 3) {
-            currentWarning = 3;
-            leftDriveLed.set_all(warning_0);
-            pros::delay(20);
-            rightDriveLed.set_all(warning_0);
+            rightDriveLed.set_all(warning_2);
             pros::delay(20);
         }}
         else if (currentWarning != 0) { // clearing warning
@@ -62,9 +54,15 @@ void lib::Lights::loop() {
         // update indicator lights
         if (indicator != currentIndicator) {
             currentIndicator = indicator;
-            indicatorLed1.set_all(indicator == 1 ? ind_on : ind_off);
-            indicatorLed2.set_all(indicator == 1 ? ind_on : ind_off);
-            pros::delay(20);
+            if (indicator == 1) {
+                indicatorLed1.set_all(team == 1 ? red : blue);
+                pros::delay(20);
+                indicatorLed2.set_all(team == 1 ? red : blue);
+            } else {
+                indicatorLed1.clear();
+                pros::delay(20);
+                indicatorLed2.clear();
+            }
         }
 
         pros::delay(20);

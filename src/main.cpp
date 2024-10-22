@@ -48,7 +48,9 @@ void autonomous() {
 
   lights.stopTimer();
 
-  selector.run_auton();
+  redLeft();
+
+  //selector.run_auton();
 }
 
 void opcontrol() {

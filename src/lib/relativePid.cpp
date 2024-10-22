@@ -68,10 +68,6 @@ void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed, 
 
 void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async) {
 
-  if (blueSide) {
-    target = -target;
-  }
-
   headingTarget = target;
 
   if (async) {
@@ -115,20 +111,13 @@ void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async) {
 
 void Chassis::swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed, bool async) {
 
+  headingTarget = target;
+
   if (async) {
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
-    pros::Task task([=]() { swing(target, side, multiplier, turningPid, maxSpeed); });
-  }
-
-  double startHeading = imu->get_rotation();
-
-  while (target - startHeading > 360) {
-    target -= 360;
-  }
-  while (target - startHeading < 0) {
-    target += 360;
+    pros::Task task([=]() { turn(target, turningPid, maxSpeed); });
   }
 
   turningPid.target_set(target);
@@ -144,10 +133,10 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
 
     if (side) {
       leftMotors->move(output * multiplier);
-      rightMotors->move(output);
+      rightMotors->move(-output);
     } else {
       leftMotors->move(output);
-      rightMotors->move(output * multiplier);
+      rightMotors->move(-output * multiplier);
     }
 
     pros::delay(10);
@@ -155,13 +144,14 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
 
   // reset pid
   std::string str = std::to_string(chassis.getPose().x) + " " + std::to_string(chassis.getPose().y) + " " + std::to_string(chassis.getPose().theta) + "\n";
-  console.println(str);
+  //console.println(str);
+  leftMotors->brake();
+  rightMotors->brake();
   turningPid.variables_reset();
   turningPid.variables_reset();
   leftMotors->move(0);
   rightMotors->move(0);
-  leftMotors->brake();
-  rightMotors->brake();
+  
   state = DriveState::IDLE;
 }
 
