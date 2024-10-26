@@ -23,9 +23,9 @@ private:
 
     const uint32_t warning_1 = 0x00FF00;
     const uint32_t warning_2 = 0xDDFF00;
-
+    const uint32_t rainbow[7] = {0xff0000, 0xffa500, 0xffff00, 0x008000, 0x0000ff, 0x4b0082, 0xee82ee};
 public:
-    int team = 2;
+    int team = 3;
     int indicator = 0;
     int startTime = -1;
 
