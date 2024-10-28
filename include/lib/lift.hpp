@@ -22,7 +22,7 @@ class Lift : public StateMachine<LiftState, LiftState::Stored>, public ryan::Tas
 private:
   std::shared_ptr<pros::MotorGroup> motors;
   const float DOWN_ANGLE = 0;
-  const float MID_ANGLE = 30;
+  const float MID_ANGLE = 28;
   const float UP_ANGLE = 126 ;
 
   const float gearRatio;

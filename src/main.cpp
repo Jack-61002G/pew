@@ -70,10 +70,10 @@ void opcontrol() {
                 : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) ? -127
                                                                           : 0);
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-      doinker.toggle();
+      sorter.toggle();
     }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-      sorter.toggle();
+      doinker.toggle();
     }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
       clamp.toggle();
