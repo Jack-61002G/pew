@@ -48,9 +48,7 @@ void autonomous() {
 
   lights.stopTimer();
 
-  std::vector<Point> controlPoints = {Point(0, 0), Point(17.752, 26.881),
-                                      Point(37.683, 2.178),
-                                      Point(37.964, 33.899)};
+  std::vector<Point> controlPoints = {Point(0.000, 0.000),Point(0.0, 24),Point(0, 24),Point(0, 48)};
 
   auto profile = generator.generateProfile(controlPoints,
                                            55.0, // max velocity
@@ -58,7 +56,6 @@ void autonomous() {
                                            45.0, // max deceleration
                                            12.0  // track width
   );
-
   chassis.followTrajectory(profile);
   redLeft();
 
