@@ -24,6 +24,7 @@ private:
 
   const int rpm;
   const double wheel;
+  static constexpr float MAX_DRIVE_SPEED = 64.8;
 
   double angleWrap(double angle) {
     while (angle > 360) {
@@ -81,6 +82,6 @@ public:
 
   // odom movements
   void moveToPoint(float x, float y, PID linearPid, PID headingPid, bool backwards = false, float maxSpeed = 127, bool async = false);
-  void followTrajectory(const std::vector<ProfilePoint>& trajectory, double max_speed, double b = 2.0, double zeta = 0.7, bool async = false);
+  void followTrajectory(const std::vector<ProfilePoint>& trajectory, double max_speed = MAX_DRIVE_SPEED, double b = 1.5, double zeta = 0.8, bool async = false);
 };
 } // namespace lib
