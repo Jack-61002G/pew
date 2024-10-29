@@ -58,7 +58,6 @@ void lib::Lights::loop() {
     int currentIndicator = -1;
     int currentWarning = 0;
     int offset = 0;
-    int updateCounter = 0;
     
     // Create initial gradient for the LED strip
     std::vector<RGB> gradient = interpolateColors("#FF0000", "#0000FF", 40);
@@ -73,8 +72,6 @@ void lib::Lights::loop() {
     }
     
     while (true) {
-        // Check warnings less frequently
-        if (updateCounter % 5 == 0) {
             if (startTime != -1) {
                 int dT = pros::millis() - startTime;
                 
@@ -160,7 +157,4 @@ void lib::Lights::loop() {
             offset = (offset + 1) % 40;
             pros::delay(20);  // Delay before next update
         }
-        
-        updateCounter++;
     }
-}

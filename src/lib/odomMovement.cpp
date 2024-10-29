@@ -41,7 +41,7 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
   state = DriveState::IDLE;
 }
 
-void Chassis::followTrajectory(const std::vector<ProfilePoint>& trajectory, double b, double zeta, bool async) {
+void Chassis::followTrajectory(const std::vector<ProfilePoint>& trajectory, double maxSpeed, double b, double zeta, bool async) {
     if (async) {
         while (this->getState() == DriveState::MOVING) {
             pros::delay(10);
@@ -53,38 +53,48 @@ void Chassis::followTrajectory(const std::vector<ProfilePoint>& trajectory, doub
     state = DriveState::MOVING;
     
     // Ramsete constants
-    // b > 0 (aggressive convergence)
-    // zeta ∈ (0,1) (damping coefficient)
     const double kB = b;        // Usually 2.0
     const double kZeta = zeta;  // Usually 0.7
-
+    
+    // Get initial distance for relative tracking
+    double startDistance = track->getDistance();
+    
+    // Index to track progress through trajectory
     size_t trajectoryIndex = 0;
-    double startTime = pros::millis() / 1000.0; // Convert to seconds
 
     while (trajectoryIndex < trajectory.size()) {
-        double currentTime = pros::millis() / 1000.0 - startTime;
-        
-        // Find the closest point in trajectory based on time
-        while (trajectoryIndex + 1 < trajectory.size() && 
-               (currentTime * trajectory.back().velocity) > trajectory[trajectoryIndex].distance) {
-            trajectoryIndex++;
-        }
-
         // Get current robot state
         Point currentPose = getPose();
         double currentX = currentPose.x;
         double currentY = currentPose.y;
         double currentTheta = currentPose.theta * M_PI / 180.0; // Convert to radians
+        
+        // Calculate distance traveled along path
+        double distanceTraveled = track->getDistance() - startDistance;
+        
+        // Find the closest point in trajectory based on distance
+        while (trajectoryIndex + 1 < trajectory.size() && 
+               distanceTraveled > trajectory[trajectoryIndex].distance) {
+            trajectoryIndex++;
+        }
 
         // Get desired state from trajectory
         const ProfilePoint& desired = trajectory[trajectoryIndex];
         double desiredX = desired.position.x;
         double desiredY = desired.position.y;
         
-        // Calculate desired heading from trajectory curvature
-        double desiredTheta = std::atan2(desired.position.y - currentY, desired.position.x - currentX);
-        double desiredVelocity = desired.velocity;
-        
+        // Calculate desired heading based on the trajectory
+        double desiredTheta;
+        if (trajectoryIndex < trajectory.size() - 1) {
+            const ProfilePoint& nextPoint = trajectory[trajectoryIndex + 1];
+            desiredTheta = std::atan2(nextPoint.position.y - desired.position.y,
+                                    nextPoint.position.x - desired.position.x);
+        } else {
+            // Use the last known heading for the final point
+            desiredTheta = std::atan2(desired.position.y - currentY,
+                                    desired.position.x - currentX);
+        }
+
         // Transform error to robot frame
         double dx = desiredX - currentX;
         double dy = desiredY - currentY;
@@ -93,9 +103,10 @@ void Chassis::followTrajectory(const std::vector<ProfilePoint>& trajectory, doub
         // Error in robot's reference frame
         double error_x = std::cos(currentTheta) * dx + std::sin(currentTheta) * dy;
         double error_y = -std::sin(currentTheta) * dx + std::cos(currentTheta) * dy;
-        
-        // Calculate angular error term
         double error_theta = dtheta;
+
+        // Get desired velocity from the profile
+        double desiredVelocity = desired.velocity;
 
         // Ramsete control law
         double k = 2 * kZeta * std::sqrt(desiredVelocity * desiredVelocity + kB * error_x * error_x);
@@ -111,17 +122,22 @@ void Chassis::followTrajectory(const std::vector<ProfilePoint>& trajectory, doub
         double leftVelocity = v - omega * track_width / 2.0;
         double rightVelocity = v + omega * track_width / 2.0;
 
-        // Apply velocities to motors
-        // Assuming your motor controllers accept velocity commands
-        leftMotors->move_velocity(leftVelocity);
-        rightMotors->move_velocity(rightVelocity);
+        // Scale velocities to match the profile's left/right velocities
+        double scaleFactor = std::min(desired.leftVelocity / leftVelocity,
+                                    desired.rightVelocity / rightVelocity);
+        leftVelocity *= scaleFactor;
+        rightVelocity *= scaleFactor;
 
-        pros::delay(10);
+        // Apply velocities to motors
+        leftMotors->move_velocity((leftVelocity / maxSpeed) * 600);
+        rightMotors->move_velocity((rightVelocity / maxSpeed) *600);
+
+        pros::delay(25);
 
         // Check if we've reached the end of the trajectory
         if (trajectoryIndex >= trajectory.size() - 1 &&
-            std::abs(error_x) < 0.05 &&  // 5cm tolerance
-            std::abs(error_y) < 0.05 &&
+            std::abs(error_x) < 0.5 && 
+            std::abs(error_y) < 0.5 &&
             std::abs(error_theta) < 0.05) { // ~3 degrees tolerance
             break;
         }

@@ -81,6 +81,6 @@ public:
 
   // odom movements
   void moveToPoint(float x, float y, PID linearPid, PID headingPid, bool backwards = false, float maxSpeed = 127, bool async = false);
-  void followTrajectory(const std::vector<ProfilePoint>& trajectory, double b = 2.0, double zeta = 0.7, bool async = false);
+  void followTrajectory(const std::vector<ProfilePoint>& trajectory, double max_speed, double b = 2.0, double zeta = 0.7, bool async = false);
 };
 } // namespace lib
