@@ -61,7 +61,7 @@ HSV rgbToHsv(const RGB& rgb) {
 
 
 RGB hsvToRgb(const HSV& hsv) {
-    RGB rgb(255, 255, 255);
+    RGB rgb(0, 0, 0);
 
     if (hsv.s == 0) {
         // If saturation is 0, the color is a shade of gray
@@ -120,9 +120,9 @@ RGB hexToRGB(const std::string& hex) {
 
 
 
-std::vector<RGB> interpolateColors(RGB start, RGB end, int stripLength) {
-    HSV color1 = rgbToHsv(start);
-    HSV color2 = rgbToHsv(end);
+std::vector<RGB> interpolateColors(float start, float end, int stripLength) {
+    HSV color1 = HSV(start, 1, 1);
+    HSV color2 = HSV(end, 1, 1);
     
     std::vector<RGB> result;
     result.reserve(stripLength);
@@ -135,9 +135,9 @@ std::vector<RGB> interpolateColors(RGB start, RGB end, int stripLength) {
 
     for (int i = 0; i < stripLength; ++i) {
 
-        int h = std::lerp(static_cast<float>(color1.h), static_cast<float>(color2.h), static_cast<float>(i) / static_cast<float>(stripLength));
-        int s = std::lerp(static_cast<float>(color1.s), static_cast<float>(color2.s), static_cast<float>(i) / static_cast<float>(stripLength));
-        int v = std::lerp(static_cast<float>(color1.v), static_cast<float>(color2.v), static_cast<float>(i) / static_cast<float>(stripLength));
+        int h = std::lerp(static_cast<float>(color1.h), static_cast<float>(color2.h), static_cast<float>(i) / stripLength);
+        int s = std::lerp(static_cast<float>(color1.s), static_cast<float>(color2.s), static_cast<float>(i) / stripLength);
+        int v = std::lerp(static_cast<float>(color1.v), static_cast<float>(color2.v), static_cast<float>(i) / stripLength);
         
         result.emplace_back(hsvToRgb(HSV(h, s, v)));
     }
@@ -154,12 +154,12 @@ void lib::Lights::loop() {
     
 
 
-    std::vector<RGB> blue = interpolateColors(RGB(0, 0, 255), RGB(0, 0, 255), 40);
-    std::vector<RGB> red = interpolateColors(RGB(255, 0, 0), RGB(255, 0, 0), 40);
-    std::vector<RGB> skills = interpolateColors(RGB(255, 0, 255), RGB(255, 0, 255), 40);
+    std::vector<RGB> blue = interpolateColors(240, 240, 40);
+    std::vector<RGB> red = interpolateColors(0, 0, 40);
+    std::vector<RGB> skills = interpolateColors(300, 300, 40);
 
-    std::vector<RGB> warning1 = interpolateColors(RGB(0, 255, 0), RGB(0, 255, 0), 40);
-    std::vector<RGB> warning2 = interpolateColors(RGB(255, 255, 0), RGB(255, 255, 0), 40);
+    std::vector<RGB> warning1 = interpolateColors(120, 120, 40);
+    std::vector<RGB> warning2 = interpolateColors(60, 60, 40);
 
 
 
@@ -240,7 +240,7 @@ void lib::Lights::loop() {
             int colorIndex = (i + offset) % 40;
             leftDriveLed.set_pixel(stripColors[colorIndex], i);
         }
-        pros::delay(20);
+        pros::delay(10);
             
         
         // Update right strip
@@ -248,7 +248,7 @@ void lib::Lights::loop() {
             int colorIndex = (i + offset) % 40;
             rightDriveLed.set_pixel(stripColors[colorIndex], i);
         }
-        pros::delay(20);
+        pros::delay(10);
 
 
         // update indicators
@@ -257,19 +257,19 @@ void lib::Lights::loop() {
                 int colorIndex = (i + offset) % 40;
                 indicatorLed1.set_pixel(stripColors[colorIndex], i);
             }
-            pros::delay(20);
+            pros::delay(10);
 
             for (int i = 0; i < 40; i++) {
                 int colorIndex = (i + offset) % 40;
                 indicatorLed2.set_pixel(stripColors[colorIndex], i);
             }
-            pros::delay(20);
+            pros::delay(10);
         } else {
             indicatorLed1.clear();
-            pros::delay(20);
+            pros::delay(10);
 
             indicatorLed2.clear();
-            pros::delay(20);
+            pros::delay(10);
         }
 
 
