@@ -61,7 +61,7 @@ HSV rgbToHsv(const RGB& rgb) {
 
 
 RGB hsvToRgb(const HSV& hsv) {
-    RGB rgb(0, 0, 0);
+    RGB rgb(255, 255, 255);
 
     if (hsv.s == 0) {
         // If saturation is 0, the color is a shade of gray
@@ -120,9 +120,9 @@ RGB hexToRGB(const std::string& hex) {
 
 
 
-std::vector<RGB> interpolateColors(double start, double end, int stripLength) {
-    HSV color1(start, 1, 1);
-    HSV color2(end, 1, 1);
+std::vector<RGB> interpolateColors(RGB start, RGB end, int stripLength) {
+    HSV color1 = rgbToHsv(start);
+    HSV color2 = rgbToHsv(end);
     
     std::vector<RGB> result;
     result.reserve(stripLength);
@@ -132,18 +132,6 @@ std::vector<RGB> interpolateColors(double start, double end, int stripLength) {
         return result;
     }
     
-    //double stepR = static_cast<double>(color2.r - color1.r) / (stripLength - 1);
-    //double stepG = static_cast<double>(color2.g - color1.g) / (stripLength - 1);
-    //double stepB = static_cast<double>(color2.b - color1.b) / (stripLength - 1);
-    
-    //for (int i = 0; i < stripLength; ++i) {
-    //    int r = static_cast<int>(color1.r + stepR * i);
-    //    int g = static_cast<int>(color1.g + stepG * i);
-    //    int b = static_cast<int>(color1.b + stepB * i);
-    //    
-    //    r = std::clamp(r, 0, 255);
-    //    g = std::clamp(g, 0, 255);
-    //    b = std::clamp(b, 0, 255);
 
     for (int i = 0; i < stripLength; ++i) {
 
@@ -160,122 +148,131 @@ std::vector<RGB> interpolateColors(double start, double end, int stripLength) {
 
 
 void lib::Lights::loop() {
-    int currentTeam = 3;
-    int currentIndicator = -1;
+    int currentTeam = -1;
     int currentWarning = 0;
     int offset = 0;
     
-    // Create initial gradient for the LED strip
-    std::vector<RGB> gradient = interpolateColors(360, 240, 40);
 
-    for (int i = 0; i < gradient.size(); i++) {
-        std::cout << std::to_string(gradient[i].r) + ", " + std::to_string(gradient[i].g) + ", " + std::to_string(gradient[i].b) << std::endl;
-    }
 
-    // Pre-calculate all color integers for the strip
+    std::vector<RGB> blue = interpolateColors(RGB(0, 0, 255), RGB(0, 0, 255), 40);
+    std::vector<RGB> red = interpolateColors(RGB(255, 0, 0), RGB(255, 0, 0), 40);
+    std::vector<RGB> skills = interpolateColors(RGB(255, 0, 255), RGB(255, 0, 255), 40);
+
+    std::vector<RGB> warning1 = interpolateColors(RGB(0, 255, 0), RGB(0, 255, 0), 40);
+    std::vector<RGB> warning2 = interpolateColors(RGB(255, 255, 0), RGB(255, 255, 0), 40);
+
+
+
+    // Calculate colors
     std::vector<uint32_t> stripColors(40);
     for (int i = 0; i < 40; i++) {
-        RGB color = gradient[i];
+        RGB color = team == 1 ? red[i] : team == 2 ? blue[i] : skills[i];
         stripColors[i] = (static_cast<uint32_t>(color.r) << 16) | 
                         (static_cast<uint32_t>(color.g) << 8) | 
                         static_cast<uint32_t>(color.b);
     }
 
-    
-            for (int i = 0; i < 40; i++) {
-                int colorIndex = (i + offset) % 40;
-                leftDriveLed.set_pixel(stripColors[colorIndex], i);
-                pros::delay(10);
 
-                rightDriveLed.set_pixel(stripColors[colorIndex], i);
-                pros::delay(10);
-            }
-            
-            // Increment offset for next update
-            offset = (offset + 1) % 40;
+    // Fill effect
+    for (int i = 0; i < 40; i++) {
+        int colorIndex = (i + offset) % 40;
+        leftDriveLed.set_pixel(stripColors[colorIndex], i);
+        pros::delay(10);
+
+        rightDriveLed.set_pixel(stripColors[colorIndex], i);
+        pros::delay(10);
+    }
+    offset = (offset + 1) % 40;
     
+
+
     while (true) {
-            if (startTime != -1) {
-                int dT = pros::millis() - startTime;
-                
-                if (5000 < dT && dT < 5500) {
-                    if (currentWarning != 1) {
-                        currentWarning = 1;
-                        leftDriveLed.set_all(warning_1);
-                        pros::delay(20);
-                        rightDriveLed.set_all(warning_1);
-                        pros::delay(20);
+
+
+        if (startTime != -1) {
+            int dT = pros::millis() - startTime;
+
+            // set to time warning 1
+            if (5000 < dT && dT < 5500) {
+                if (currentWarning != 1) {
+                    currentWarning = 1;
+                    for (int i = 0; i < 40; i++) {
+                        RGB color = warning1[i];
+                        stripColors[i] = (static_cast<uint32_t>(color.r) << 16) | 
+                                        (static_cast<uint32_t>(color.g) << 8) | 
+                                        static_cast<uint32_t>(color.b);
                     }
-                }
-                else if (10000 < dT && dT < 10500) {
-                    if (currentWarning != 2) {
-                        currentWarning = 2;
-                        leftDriveLed.set_all(warning_2);
-                        pros::delay(20);
-                        rightDriveLed.set_all(warning_2);
-                        pros::delay(20);
-                    }
-                }
-                else if (currentWarning != 0) {
-                    currentWarning = 0;
-                    currentTeam = -1;
                 }
             }
 
-            // Update indicator lights
-            if (indicator != currentIndicator) {
-                currentIndicator = indicator;
-                if (indicator == 1) {
-                    indicatorLed1.set_all(team == 1 ? red : blue);
-                    pros::delay(20);
-                    indicatorLed2.set_all(team == 1 ? red : blue);
-                    pros::delay(20);
-                } else {
-                    indicatorLed1.clear();
-                    pros::delay(20);
-                    indicatorLed2.clear();
-                    pros::delay(20);
+            // set to time warning 2
+            else if (10000 < dT && dT < 10500) {
+                if (currentWarning != 2) {
+                    currentWarning = 2;
+                    for (int i = 0; i < 40; i++) {
+                        RGB color = warning2[i];
+                        stripColors[i] = (static_cast<uint32_t>(color.r) << 16) | 
+                                        (static_cast<uint32_t>(color.g) << 8) | 
+                                        static_cast<uint32_t>(color.b);
+                    }
                 }
+            }
+            else if (currentWarning != 0) {
+                currentWarning = 0;
+                currentTeam = -1;
             }
         }
 
-        // Update team colors if changed
+        // set to team colors
         if (team != currentTeam && currentWarning == 0) {
             currentTeam = team;
-            if (team == 1) {
-                gradient = interpolateColors(360, 240, 40);
-            } else if (team == 2) {
-                gradient = interpolateColors(360, 240, 40);
-            } else {
-                gradient = interpolateColors(360, 240, 40);
-            }
-            
-            // Update the pre-calculated colors
             for (int i = 0; i < 40; i++) {
-                RGB color = gradient[i];
+                RGB color = team == 1 ? red[i] : team == 2 ? blue[i] : skills[i];
                 stripColors[i] = (static_cast<uint32_t>(color.r) << 16) | 
                                 (static_cast<uint32_t>(color.g) << 8) | 
                                 static_cast<uint32_t>(color.b);
             }
         }
 
-        // Update LED strips with flowing gradient
-        if (currentWarning == 0) {
-            // Update all LEDs on left strip
-            for (int i = 0; i < 40; i++) {
-                int colorIndex = (i + offset) % 40;
-                leftDriveLed.set_pixel(stripColors[colorIndex], i);
-            }
-            pros::delay(20);  // Required delay between strips
-            
-            // Update all LEDs on right strip
-            for (int i = 0; i < 40; i++) {
-                int colorIndex = (i + offset) % 40;
-                rightDriveLed.set_pixel(stripColors[colorIndex], i);
-            }
-            
-            // Increment offset for next update
-            offset = (offset + 1) % 40;
-            pros::delay(20);  // Delay before next update
+
+        // Update left strip
+        for (int i = 0; i < 40; i++) {
+            int colorIndex = (i + offset) % 40;
+            leftDriveLed.set_pixel(stripColors[colorIndex], i);
         }
+        pros::delay(20);
+            
+        
+        // Update right strip
+        for (int i = 0; i < 40; i++) {
+            int colorIndex = (i + offset) % 40;
+            rightDriveLed.set_pixel(stripColors[colorIndex], i);
+        }
+        pros::delay(20);
+
+
+        // update indicators
+        if (indicator) {
+            for (int i = 0; i < 40; i++) {
+                int colorIndex = (i + offset) % 40;
+                indicatorLed1.set_pixel(stripColors[colorIndex], i);
+            }
+            pros::delay(20);
+
+            for (int i = 0; i < 40; i++) {
+                int colorIndex = (i + offset) % 40;
+                indicatorLed2.set_pixel(stripColors[colorIndex], i);
+            }
+            pros::delay(20);
+        } else {
+            indicatorLed1.clear();
+            pros::delay(20);
+
+            indicatorLed2.clear();
+            pros::delay(20);
+        }
+
+
+        offset = (offset + 1) % 40;
     }
+}
