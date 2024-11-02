@@ -10,9 +10,10 @@ void exit_condition_defaults() {
   swing.exit_condition_set(75, 2, 150, 6, 150, 500);
 }
 
-void clampAt(Point pose) {
+void clampAt(float distance) {
   pros::Task task([&]() {
-    while (chassis.getPose().distanceTo(pose) > .25) {
+    float startDistance = track.getDistance();
+    while (fabs(startDistance - track.getDistance()) < distance) {
       pros::delay(15);
     }
     clamp.extend();
@@ -25,31 +26,79 @@ void skills() {
   pros::delay(750);
   intake.move(0);
 
-  chassis.turn(130, turning);
-  chassis.move(-24, linear, heading);
-  clamp.extend();
+  chassis.move(6, linear, heading);
 
-  chassis.turn(-10, turning);
+  pros::Task task([&]() {pros::delay(1050); clamp.extend();});
+
+  chassis.moveToPoint(-25, 16, linear, heading, true, 80);
+
+  pros::delay(250);
   intake.move(127);
-  chassis.move(24, linear, heading);
-  chassis.turn(-90, turning);
-  chassis.move(24, linear, heading);
+  chassis.moveToPoint(-24, 38, linear, heading, false, 80);
 
-  chassis.turn(180, turning);
-  chassis.move(36, linear, heading);
+  pros::delay(500);
+  lift.setState(lib::LiftState::Recieve);
+
+  chassis.moveToPoint(-55, 68, linear, heading, false, 90);
+  pros::delay(500);
+  intake.move(0);
+
+  chassis.moveToPoint(-64, 68, linear, heading);
+  lift.setState(lib::LiftState::Score);
+
   pros::delay(300);
-  chassis.move(-24, linear, heading);
-  chassis.turn(-135, turning);
-  chassis.move(12, linear, heading);
-  chassis.turn(30, turning);
-  chassis.move(-20, linear, heading);
-
+  chassis.move(-10, linear, heading);
+  lift.setState(lib::LiftState::Stored);
+  
+  intake.move(127);
+  chassis.moveToPoint(-48, 4, linear, heading, false, 55);
+  chassis.move(-12, linear, heading);
+  chassis.moveToPoint(-65, 16, linear, heading);
+  chassis.moveToPoint(-71, 1, linear, heading, true);
   clamp.retract();
+  intake.move(0);
+  chassis.move(10, linear, heading);
+
+  chassis.moveToPoint(6, 15, linear, heading, true);
+  pros::Task task2electricboogaloo([&]() {pros::delay(500); clamp.extend();});
+  chassis.moveToPoint(25, 15.5, linear, heading, true, 80);
+
+  pros::delay(250);
+  intake.move(127);
+  chassis.moveToPoint(24, 38, linear, heading, false, 80);
+
+  pros::delay(500);
+  lift.setState(lib::LiftState::Recieve);
+
+  chassis.moveToPoint(55, 68, linear, heading, false, 90);
+  pros::delay(500);
+  intake.move(0);
+
+  chassis.moveToPoint(64, 68, linear, heading);
+  lift.setState(lib::LiftState::Score);
+
+  pros::delay(300);
+  chassis.move(-10, linear, heading);
+  lift.setState(lib::LiftState::Stored);
+  
+  intake.move(127);
+  chassis.moveToPoint(48, 4, linear, heading, false, 55);
+  chassis.move(-12, linear, heading);
+  chassis.moveToPoint(65, 16, linear, heading);
+  chassis.moveToPoint(71, 1, linear, heading, true);
+  clamp.retract();
+
+  chassis.moveToPoint(48, 72, linear, heading);
+  chassis.moveToPoint(24, 94, linear, heading);
+  intake.move(0);
+  pros::Task taskthethird([&]() {pros::delay(1600); clamp.extend();});
+  chassis.moveToPoint(0, 110, linear, heading, true, 80);
+
 }
 
 void redLeft() {
   chassis.moveToPoint(0, 0, linear, heading);
-  clampAt({0, -24});
+  clampAt(24);
   chassis.moveToPoint(0, -26, linear, heading, true, 80);
 
   intake.move(127);

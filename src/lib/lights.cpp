@@ -99,6 +99,18 @@ RGB hsvToRgb(const HSV& hsv) {
 
 
 
+int wrapDegrees(float degrees) {
+    while (degrees > 360) {
+        degrees -= 360;
+    }
+    while (degrees < 0) {
+        degrees += 360;
+    }
+    return degrees;
+}
+
+
+
 int hexToDecimal(const std::string& hex) {
     return std::stoi(hex, nullptr, 16);
 }
@@ -139,7 +151,7 @@ std::vector<RGB> interpolateColors(float start, float end, int stripLength) {
         int s = std::lerp(static_cast<float>(color1.s), static_cast<float>(color2.s), static_cast<float>(i) / stripLength);
         int v = std::lerp(static_cast<float>(color1.v), static_cast<float>(color2.v), static_cast<float>(i) / stripLength);
         
-        result.emplace_back(hsvToRgb(HSV(h, s, v)));
+        result.emplace_back(hsvToRgb(HSV(wrapDegrees(h), s, v)));
     }
     
     return result;
@@ -154,12 +166,12 @@ void lib::Lights::loop() {
     
 
 
-    std::vector<RGB> blue = interpolateColors(240, 240, 40);
-    std::vector<RGB> red = interpolateColors(0, 0, 40);
-    std::vector<RGB> skills = interpolateColors(300, 300, 40);
+    std::vector<RGB> blue = interpolateColors(120, 300, 40);
+    std::vector<RGB> red = interpolateColors(330, 390, 40);
+    std::vector<RGB> skills = interpolateColors(255, 345, 40);
 
-    std::vector<RGB> warning1 = interpolateColors(120, 120, 40);
-    std::vector<RGB> warning2 = interpolateColors(60, 60, 40);
+    std::vector<RGB> warning1 = interpolateColors(100, 180, 40);
+    std::vector<RGB> warning2 = interpolateColors(50, 140, 40);
 
 
 
@@ -193,7 +205,7 @@ void lib::Lights::loop() {
             int dT = pros::millis() - startTime;
 
             // set to time warning 1
-            if (5000 < dT && dT < 5500) {
+            if (5000 < dT && dT < 6500) {
                 if (currentWarning != 1) {
                     currentWarning = 1;
                     for (int i = 0; i < 40; i++) {
@@ -206,7 +218,7 @@ void lib::Lights::loop() {
             }
 
             // set to time warning 2
-            else if (10000 < dT && dT < 10500) {
+            else if (10000 < dT && dT < 11500) {
                 if (currentWarning != 2) {
                     currentWarning = 2;
                     for (int i = 0; i < 40; i++) {
