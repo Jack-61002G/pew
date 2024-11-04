@@ -8,6 +8,7 @@
 #include "robodash/api.h"
 #include "robotconfig.h"
 #include <string>
+#include "lib/trajectory.hpp"
 
 // ================================= Views ================================= //
 
@@ -46,9 +47,13 @@ void autonomous() {
   leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
+  chassis.moveToPose({24,24,90});
+  chassis.moveToPose({48,48, 45});
+  chassis.moveToPose({0,0, 45}, true);
+
   lights.stopTimer();
 
-  skills();
+  //skills();
 
   // selector.run_auton();
 }

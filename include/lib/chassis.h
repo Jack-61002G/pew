@@ -50,7 +50,7 @@ public:
     state = DriveState::IDLE;
   }
 
-  //tracking
+  double sinc(double x);
 
   
   // tracking
@@ -82,6 +82,7 @@ public:
 
   // odom movements
   void moveToPoint(float x, float y, PID linearPid, PID headingPid, bool backwards = false, float maxSpeed = 127, bool async = false);
-  void followTrajectory(const std::vector<ProfilePoint>& trajectory, double max_speed = MAX_DRIVE_SPEED, double b = 1.5, double zeta = 0.8, bool async = false);
+  void followTrajectory(const std::vector<ProfilePoint>& trajectory, bool backwards = false, double max_speed = MAX_DRIVE_SPEED, double b = 1.5, double zeta = 0.8, bool async = false);
+  void moveToPose(Point endPoint, bool backwards = false);
 };
 } // namespace lib

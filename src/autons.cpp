@@ -74,7 +74,7 @@ void skills() {
   pros::delay(500);
   intake.move(0);
 
-  chassis.moveToPoint(64, 68, linear, heading);
+  chassis.moveToPoint(64 , 68, linear, heading);
   lift.setState(lib::LiftState::Score);
 
   pros::delay(300);

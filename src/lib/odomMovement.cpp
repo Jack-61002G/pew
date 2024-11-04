@@ -1,7 +1,11 @@
 #include "lib/chassis.h"
 #include "point.hpp"
 #include "pros/rtos.hpp"
+#include "robodash/views/console.hpp"
+#include "robotconfig.h"
 #include "util.h"
+#include <string>
+#include <utility>
 
 using namespace lib;
 
@@ -41,112 +45,98 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
   state = DriveState::IDLE;
 }
 
-void Chassis::followTrajectory(const std::vector<ProfilePoint>& trajectory, double maxSpeed, double b, double zeta, bool async) {
-    if (async) {
-        while (this->getState() == DriveState::MOVING) {
-            pros::delay(10);
-        }
-        pros::Task task([=]() { followTrajectory(trajectory, b, zeta, false); });
-        return;
-    }
-
+void Chassis::followTrajectory(const std::vector<ProfilePoint>& trajectory, bool backwards, double maxSpeed, double b, double zeta, bool async) {
     state = DriveState::MOVING;
-    
-    // Ramsete constants
-    const double kB = b;        // Usually 2.0
-    const double kZeta = zeta;  // Usually 0.7
-    
-    // Get initial distance for relative tracking
+    std::cout << "Starting trajectory following (backwards = " << (backwards ? "true" : "false") << ")\n";
+   
     double startDistance = track->getDistance();
+    size_t trajectoryIndex = 1;
     
-    // Index to track progress through trajectory
-    size_t trajectoryIndex = 0;
-
     while (trajectoryIndex < trajectory.size()) {
-        // Get current robot state
         Point currentPose = getPose();
-        double currentX = currentPose.x;
-        double currentY = currentPose.y;
-        double currentTheta = currentPose.theta * M_PI / 180.0; // Convert to radians
-        
-        // Calculate distance traveled along path
-        double distanceTraveled = track->getDistance() - startDistance;
-        
-        // Find the closest point in trajectory based on distance
-        while (trajectoryIndex + 1 < trajectory.size() && 
-               distanceTraveled > trajectory[trajectoryIndex].distance) {
+        double distanceTraveled = std::abs(track->getDistance() - startDistance);
+       
+        std::cout << "Current pose: x=" << currentPose.x
+                 << " y=" << currentPose.y
+                 << " theta=" << currentPose.theta << "\n";
+       
+        while (distanceTraveled > trajectory[trajectoryIndex].distance) {
             trajectoryIndex++;
+            if (trajectoryIndex >= trajectory.size()) break;
         }
-
-        // Get desired state from trajectory
+        
         const ProfilePoint& desired = trajectory[trajectoryIndex];
-        double desiredX = desired.position.x;
-        double desiredY = desired.position.y;
+       
+        std::cout << "Profile velocities: left=" << desired.leftVelocity
+                 << " right=" << desired.rightVelocity << "\n";
+                 
+        double leftVel = desired.leftVelocity;
+        double rightVel = desired.rightVelocity;
         
-        // Calculate desired heading based on the trajectory
-        double desiredTheta;
-        if (trajectoryIndex < trajectory.size() - 1) {
-            const ProfilePoint& nextPoint = trajectory[trajectoryIndex + 1];
-            desiredTheta = std::atan2(nextPoint.position.y - desired.position.y,
-                                    nextPoint.position.x - desired.position.x);
-        } else {
-            // Use the last known heading for the final point
-            desiredTheta = std::atan2(desired.position.y - currentY,
-                                    desired.position.x - currentX);
+        if (backwards) {
+            leftVel = -leftVel;
+            rightVel = -rightVel;
         }
-
-        // Transform error to robot frame
-        double dx = desiredX - currentX;
-        double dy = desiredY - currentY;
-        double dtheta = constrain180(desiredTheta - currentTheta * 180.0 / M_PI) * M_PI / 180.0;
-
-        // Error in robot's reference frame
-        double error_x = std::cos(currentTheta) * dx + std::sin(currentTheta) * dy;
-        double error_y = -std::sin(currentTheta) * dx + std::cos(currentTheta) * dy;
-        double error_theta = dtheta;
-
-        // Get desired velocity from the profile
-        double desiredVelocity = desired.velocity;
-
-        // Ramsete control law
-        double k = 2 * kZeta * std::sqrt(desiredVelocity * desiredVelocity + kB * error_x * error_x);
         
-        // Calculate linear and angular velocity commands
-        double v = desiredVelocity * std::cos(error_theta) + k * error_x;
-        double omega = desired.curvature * desiredVelocity + 
-                      kB * desiredVelocity * std::sin(error_theta) / error_theta * error_y +
-                      k * error_theta;
-
-        // Convert to left and right wheel velocities
-        double track_width = 12.0;
-        double leftVelocity = v - omega * track_width / 2.0;
-        double rightVelocity = v + omega * track_width / 2.0;
-
-        // Scale velocities to match the profile's left/right velocities
-        double scaleFactor = std::min(desired.leftVelocity / leftVelocity,
-                                    desired.rightVelocity / rightVelocity);
-        leftVelocity *= scaleFactor;
-        rightVelocity *= scaleFactor;
-
-        // Apply velocities to motors
-        leftMotors->move_velocity((leftVelocity / maxSpeed) * 600);
-        rightMotors->move_velocity((rightVelocity / maxSpeed) *600);
-
+        int leftMotorVel = static_cast<int>((leftVel / maxSpeed) * 600);
+        int rightMotorVel = static_cast<int>((rightVel / maxSpeed) * 600);
+        
+        std::cout << "Motor velocities: left=" << leftMotorVel
+                 << " right=" << rightMotorVel << "\n\n";
+                 
+        leftMotors->move_velocity(leftMotorVel);
+        rightMotors->move_velocity(rightMotorVel);
         pros::delay(25);
-
-        // Check if we've reached the end of the trajectory
-        if (trajectoryIndex >= trajectory.size() - 1 &&
-            std::abs(error_x) < 0.5 && 
-            std::abs(error_y) < 0.5 &&
-            std::abs(error_theta) < 0.05) { // ~3 degrees tolerance
-            break;
-        }
     }
-
-    // Stop motors and cleanup
+    
     leftMotors->move(0);
     rightMotors->move(0);
     leftMotors->brake();
     rightMotors->brake();
     state = DriveState::IDLE;
+}
+
+void Chassis::moveToPose(Point endPoint, bool backwards) {
+    Point startPose = getPose();
+    
+    // Convert angles to radians, adjusting for coordinate system where 0° is forward (+y)
+    double startHeading = (!backwards) ? (90 - startPose.theta) * M_PI / 180.0 : (90 - startPose.theta + 180) * M_PI / 180.0;
+    double endHeading = (!backwards) ? (90 - endPoint.theta) * M_PI / 180.0 : (90 - endPoint.theta + 180) * M_PI / 180.0;
+    
+    // Calculate distances for control point placement
+    double totalDistance = std::sqrt(std::pow(endPoint.x - startPose.x, 2) +
+                                   std::pow(endPoint.y - startPose.y, 2));
+    
+    // Place control points at 1/3 and 2/3 of the path length
+    double controlDist = totalDistance / 3.0;
+    
+    // Calculate control points based on front-facing heading
+    Point control1(
+        startPose.x + controlDist * std::cos(startHeading),
+        startPose.y + controlDist * std::sin(startHeading)
+    );
+    
+    Point control2(
+        endPoint.x - controlDist * std::cos(endHeading),
+        endPoint.y - controlDist * std::sin(endHeading)
+    );
+    
+    std::vector<Point> controlPoints = {
+        startPose,
+        control1,
+        control2,
+        endPoint
+    };
+    
+    auto profile = generator.generateProfile(
+        controlPoints,
+        64.1,   // max velocity
+        80.0,   // max acceleration
+        50.0,   // max deceleration
+        11.25   // track width
+    );
+    
+    followTrajectory(profile, backwards);
+    console.print(std::to_string(getPose().x) + " ");
+    console.println(std::to_string(getPose().y));
 }
