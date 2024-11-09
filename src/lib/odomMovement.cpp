@@ -9,8 +9,7 @@
 
 using namespace lib;
 
-void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
-                          bool backwards, float maxSpeed, bool async) {
+void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid, bool backwards, float maxSpeed, bool async) {
 
   if (async) {
     while (this->getState() == DriveState::MOVING) {
@@ -24,8 +23,7 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
   state = DriveState::MOVING;
 
   // turn to the point
-  double angle = fmod(
-      radiansToDegrees(M_PI_2 - atan2(y - getPose().y, x - getPose().x)), 360);
+  double angle = fmod(radiansToDegrees(M_PI_2 - atan2(y - getPose().y, x - getPose().x)), 360);
   std::cout << angle << "\n";
 
   if (backwards) {
@@ -40,7 +38,7 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
   if (backwards) {
     distance = -distance;
   }
-  move(distance, linearPid, turningPid, maxSpeed, false);
+  move(distance, linearPid, turningPid, maxSpeed);
 
   state = DriveState::IDLE;
 }
@@ -131,7 +129,7 @@ void Chassis::moveToPose(Point endPoint, bool backwards) {
     auto profile = generator.generateProfile(
         controlPoints,
         64.1,   // max velocity
-        80.0,   // max acceleration
+        128.0,   // max acceleration
         50.0,   // max deceleration
         11.25   // track width
     );
