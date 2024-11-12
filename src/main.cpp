@@ -13,7 +13,7 @@
 // ================================= Views ================================= //
 
 // Create robodash selector
-rd::Selector selector({{"Skills", skills}});
+rd::Selector selector({{"Skills", skills}, {"RedLeft", redLeft}, {"RedRight", redRight}, {"RedRush", redRush}, {"BlueLeft", blueLeft}, {"BlueRight", blueRight}, {"BlueRush", blueRush}});
 
 // ========================= Competition Functions ========================= //
 
@@ -32,7 +32,7 @@ void initialize() {
 
   chassis.startTask();
   lift.startTask();
-  lights.startTask();
+  //lights.startTask();
 }
 
 
@@ -55,9 +55,7 @@ void autonomous() {
 
   lights.stopTimer();
 
-  skills();
-
-  // selector.run_auton();
+  selector.run_auton();
 }
 
 void opcontrol() {

@@ -37,7 +37,7 @@ private:
   }
 
 public:
-  bool blueSide = false;
+  int team = 0;
 
   DriveState getState() { return state; }
 
@@ -74,15 +74,21 @@ public:
   // relative pid movements
   void move(float target, PID linearPid, PID headingPid, float maxSpeed = 110, bool async = false);
 
-  void turn(double target, PID turningPid, float maxSpeed = 127, bool async = false);
+  void turn(double target, PID turningPid, float maxSpeed = 127, bool async = false, bool reflectManually = false);
 
-  void swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed = 127, bool async = false);
+  void swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed = 127, bool async = false, bool reflectManually = false);
  
 
-
+struct MoveToPoseParams {
+    float maxSpeed = 127.0;
+    float minSpeed = 0.0;
+    float lead = 0.6;
+    float earlyExitRange = 0;
+    bool forwards = true;
+};
   // odom movements
   void moveToPoint(float x, float y, PID linearPid, PID headingPid, bool backwards = false, float maxSpeed = 127, bool async = false);
   void followTrajectory(const std::vector<ProfilePoint>& trajectory, bool backwards = false, double max_speed = MAX_DRIVE_SPEED, double b = 1.5, double zeta = 0.8, bool async = false);
-  void moveToPose(Point endPoint, bool backwards = false);
+  void moveToPose(Point target, PID linearPid, PID angularPid, bool backwards = false, int maxSpeed = 127, bool async = false);
 };
 } // namespace lib

@@ -8,11 +8,9 @@
 #include "pros/motors.hpp"
 #include "robotconfig.h"
 
-inline pros::MotorGroup leftMotors({-11, -13, 14}, pros::v5::MotorGears::blue,
-                                   pros::v5::MotorUnits::rotations);
+inline pros::MotorGroup leftMotors({-11, -13, 14}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
 
-inline pros::MotorGroup rightMotors({16, -17, 18}, pros::v5::MotorGears::blue,
-                                    pros::v5::MotorUnits::rotations);
+inline pros::MotorGroup rightMotors({16, -17, 18}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
 
 inline pros::Imu imu(19);
 
@@ -37,6 +35,7 @@ inline PID linear(10, 0.0, 34);
 inline PID heading(2.8, 0, 21, 0);
 inline PID turning(2.875, 0.003, 20, 15);
 inline PID swing(3.2, 0.003, 22, 15);
+inline PID mtp(4, 0.003, 20, 15);
 
 inline lib::Lights lights = lib::Lights();
 

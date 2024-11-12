@@ -18,7 +18,7 @@ void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed, 
     while (this->getState() == DriveState::MOVING) {
       pros::delay(10);
     }
-    pros::Task task([=]() { move(target, linearPid, headingPid, maxSpeed); });
+    pros::Task task([&]() { move(target, linearPid, headingPid, maxSpeed); });
   }
 
   float startPos = track->getDistance();
@@ -68,7 +68,11 @@ void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed, 
 
 
 
-void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async) {
+void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async, bool reflectManually) {
+
+  if (team == 2 and reflectManually) {
+    target = -target;
+  }
 
   headingTarget = target;
 
@@ -76,7 +80,7 @@ void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async) {
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
-    pros::Task task([=]() { turn(target, turningPid, maxSpeed); });
+    pros::Task task([&]() { turn(target, turningPid, maxSpeed); });
   }
 
   turningPid.target_set(target);
@@ -111,7 +115,12 @@ void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async) {
 
 
 
-void Chassis::swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed, bool async) {
+void Chassis::swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed, bool async, bool reflectManually) {
+
+  if (team == 2) {
+    target = -target;
+    side = !side;
+  }
 
   headingTarget = target;
 
@@ -119,7 +128,7 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
-    pros::Task task([=]() { turn(target, turningPid, maxSpeed); });
+    pros::Task task([&]() { turn(target, turningPid, maxSpeed); });
   }
 
   turningPid.target_set(target);

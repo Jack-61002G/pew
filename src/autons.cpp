@@ -7,8 +7,8 @@
 
 
 void exit_condition_defaults() {
-  turning.exit_condition_set(150, 1, 300, 3, 500, 500);
-  linear.exit_condition_set(150, .25, 300, .75, 500, 500);
+  turning.exit_condition_set(75, 1, 150, 3, 150, 500);
+  linear.exit_condition_set(150, .25, 300, .75, 150, 500);
   swing.exit_condition_set(75, 2, 150, 6, 150, 500);
 }
 
@@ -120,37 +120,96 @@ void skills() {
 
 
 
-void redLeft() {
-  chassis.moveToPoint(0, 0, linear, heading);
-  clampAt(24);
-  chassis.moveToPoint(0, -26, linear, heading, true, 80);
+void ringSide() {
+
+  chassis.swing(-45, true, 0, swing);
+
+  lift.setState(lib::LiftState::Score);
+  pros::delay(200);
+
+  pros::Task task([&]() {pros::delay(1100); clamp.extend(); lift.setState(lib::LiftState::Stored);});
+  chassis.moveToPoint(-13, -30, linear, heading, true, 73);
 
   intake.move(127);
 
-  chassis.moveToPoint(10, -47, linear, turning);
-  chassis.swing(90, true, 0, swing);
-
-  chassis.move(18, linear, heading);
-  pros::delay(300);
-
-  chassis.moveToPoint(24, -24, linear, heading);
-
-  clamp.retract();
-  chassis.moveToPoint(-36, -4, linear, heading, false, 90);
-
-  chassis.moveToPoint(-24, 12, linear, heading, true);
-  chassis.turn(180, turning);
+  chassis.moveToPoint(-38, -31, linear, turning);
+  chassis.move(-28, linear, heading);
+  chassis.swing(135, false, 0, swing, 127, false, true);
+  chassis.move(21, linear, heading);
+  chassis.swing(90, true, 0, swing, 127, false, true);
+  chassis.move(6, linear, heading);
 
   pros::delay(500);
-  intake.move(0);
 
-  chassis.move(40, linear, heading);
+  chassis.moveToPoint(-46, -6, linear, heading);
+  chassis.moveToPoint(-46, -6, linear, heading);
+  doinker.extend();
+  chassis.swing(120, false, 0, swing);
+  doinker.retract();
+  chassis.move(10, linear, heading);
+  intake.move(0);
+}
+
+void mogoSide() {
+  // do stuff here
+};
+
+void mogoRush() {
+  doinker.extend();
+  chassis.moveToPose({-8,36}, linear, mtp);
+  doinker.retract();
+  chassis.moveToPoint(0, 24, linear, turning, true);
+  doinker.extend();
+  pros::delay(250);
+  chassis.turn(0, turning);
+  
+  doinker.retract();
+  pros::delay(250);
+  pros::Task task2electricboogaloo([&]() {pros::delay(1500); clamp.extend();});
+  chassis.moveToPoint(-6, 48, linear, turning, true, 70);
+}
+
+
+
+void redLeft() {
+  chassis.team = 1;
+  lights.team = 1;
+
+  ringSide();
+}
+void blueLeft() {
+  chassis.team = 2;
+  lights.team = 2;
+
+  mogoSide();
+}
+
+
+
+void redRush() {
+  chassis.team = 1;
+  lights.team = 1;
+
+  mogoRush();
+}
+void blueRush() {
+  chassis.team = 2;
+  lights.team = 2;
+
+  mogoRush();
 }
 
 
 
 void redRight() {
-  chassis.moveToPoint(0, 32, linear, heading, false, true);
-  chassis.moveToPoint(-7, 38, linear, heading, false, true);
-  doinker.extend();
+  chassis.team = 1;
+  lights.team = 1;
+
+  mogoSide();
+}
+void blueRight() {
+  chassis.team = 2;
+  lights.team = 2;
+
+  ringSide();
 }
