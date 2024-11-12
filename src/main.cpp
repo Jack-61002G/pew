@@ -1,6 +1,7 @@
 
 #include "autons.h"
 #include "lib/lift.hpp"
+#include "lib/trajectory.hpp"
 #include "pros/adi.hpp"
 #include "pros/misc.h"
 #include "pros/motors.h"
@@ -8,12 +9,17 @@
 #include "robodash/api.h"
 #include "robotconfig.h"
 #include <string>
-#include "lib/trajectory.hpp"
 
 // ================================= Views ================================= //
 
 // Create robodash selector
-rd::Selector selector({{"Skills", skills}, {"RedLeft", redLeft}, {"RedRight", redRight}, {"RedRush", redRush}, {"BlueLeft", blueLeft}, {"BlueRight", blueRight}, {"BlueRush", blueRush}});
+rd::Selector selector({{"Skills", skills},
+                       {"RedLeft", redLeft},
+                       {"RedRight", redRight},
+                       {"RedRush", redRush},
+                       {"BlueLeft", blueLeft},
+                       {"BlueRight", blueRight},
+                       {"BlueRush", blueRush}});
 
 // ========================= Competition Functions ========================= //
 
@@ -32,21 +38,16 @@ void initialize() {
 
   chassis.startTask();
   lift.startTask();
-  //lights.startTask();
+  intake.startTask();
+  // lights.startTask();
 }
-
-
 
 void disabled() {
   clamp.retract();
   lights.stopTimer();
 }
 
-
-
 void competition_initialize() {}
-
-
 
 void autonomous() {
   console.focus();
@@ -71,9 +72,16 @@ void opcontrol() {
     chassis.arcadeMod(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),
                       controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X),
                       2, 114, 110);
-    intake.move((controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2))   ? 127
-                : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) ? -127
-                                                                          : 0);
+    lib::IntakeState newState =
+        (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
+            ? lib::IntakeState::In
+        : (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
+            ? lib::IntakeState::Out
+            : lib::IntakeState::Idle;
+
+    if (intake.getState() != newState) {
+      intake.setState(newState);
+    }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
       sorter.toggle();
     }

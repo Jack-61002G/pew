@@ -5,6 +5,7 @@
 #include "lib/pid.h"
 #include "lib/trajectory.hpp"
 #include "pros/adi.hpp"
+#include "lib/intake.hpp"
 #include "pros/motors.hpp"
 #include "robotconfig.h"
 
@@ -22,7 +23,8 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 inline lib::Chassis chassis =
     lib::Chassis(&leftMotors, &rightMotors, &imu, &track, 450, 2.75);
 
-inline pros::MotorGroup intake({7});
+inline pros::MotorGroup intakeMotor({7});
+inline lib::Intake intake(&intakeMotor);
 
 inline pros::MotorGroup armMotors({-9, 10});
 inline lib::Lift lift(&armMotors, 12.0 / 36, {2.5, 0, 1.5});

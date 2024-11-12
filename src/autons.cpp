@@ -28,9 +28,9 @@ void clampAt(float distance) {
 
 void skills() {
 
-  intake.move(127);
+  intake.setState(lib::IntakeState::In);
   pros::delay(750);
-  intake.move(0);
+  intake.setState(lib::IntakeState::Idle);
 
   chassis.move(8, linear, heading);
 
@@ -39,7 +39,7 @@ void skills() {
   chassis.moveToPoint(-25, 16, linear, heading, true, 70);
 
   pros::delay(250);
-  intake.move(127);
+  intake.setState(lib::IntakeState::In);
   chassis.moveToPoint(-24, 38, linear, heading, false, 80);
 
   pros::delay(750);
@@ -48,7 +48,7 @@ void skills() {
   chassis.moveToPoint(-59, 68, linear, heading, false, 80);
   pros::delay(500);
   chassis.move(-9, linear, heading);
-  intake.move(0);
+  intake.setState(lib::IntakeState::Idle);
 
   chassis.moveToPoint(-64, 63, linear, heading);
   lift.setState(lib::LiftState::Score);
@@ -57,13 +57,13 @@ void skills() {
   chassis.move(-10, linear, heading);
   lift.setState(lib::LiftState::Stored);
   
-  intake.move(127);
+  intake.setState(lib::IntakeState::In);
   chassis.moveToPoint(-48, 4, linear, heading, false, 55);
   chassis.move(-12, linear, heading);
   chassis.moveToPoint(-65, 16, linear, heading);
   chassis.moveToPoint(-71, 1, linear, heading, true);
   clamp.retract();
-  intake.move(0);
+  intake.setState(lib::IntakeState::Idle);
   chassis.move(10, linear, heading);
 
   chassis.moveToPoint(6, 15, linear, heading, true);
@@ -71,7 +71,7 @@ void skills() {
   chassis.moveToPoint(25, 15.5, linear, heading, true, 80);
 
   pros::delay(250);
-  intake.move(127);
+  intake.setState(lib::IntakeState::In);
   chassis.moveToPoint(24, 38, linear, heading, false, 80);
 
   pros::delay(500);
@@ -80,7 +80,7 @@ void skills() {
   chassis.moveToPoint(59, 68, linear, heading, false, 80);
   pros::delay(500);
   chassis.move(-11, linear, heading);
-  intake.move(0);
+  intake.setState(lib::IntakeState::Idle);
 
   chassis.moveToPoint(64, 63.5, linear, heading);
   lift.setState(lib::LiftState::Score);
@@ -89,7 +89,7 @@ void skills() {
   chassis.move(-10, linear, heading);
   lift.setState(lib::LiftState::Stored);
   
-  intake.move(127);
+  intake.setState(lib::IntakeState::In);
   chassis.moveToPoint(48, 4, linear, heading, false, 55);
   chassis.move(-12, linear, heading);
   chassis.moveToPoint(65, 16, linear, heading);
@@ -97,13 +97,13 @@ void skills() {
   clamp.retract();
 
   chassis.moveToPoint(48, 72, linear, heading);
-  pros::Task taskthethird([&]() {pros::delay(1000); intake.move(0);});
+  pros::Task taskthethird([&]() {pros::delay(1000); intake.setState(lib::IntakeState::Idle);});
   chassis.moveToPoint(24, 94, linear, heading);
 
   pros::Task revengeofthetasks([&]() {pros::delay(1650); clamp.extend();});
   chassis.moveToPoint(1.5, 113.5, linear, heading, true, 80);
 
-  intake.move(127);
+  intake.setState(lib::IntakeState::In);
   chassis.moveToPoint(-24, 90, linear, heading, false, 80);
   chassis.moveToPoint(-48, 90, linear, heading, false, 80);
 
@@ -111,7 +111,7 @@ void skills() {
   chassis.move(-8, linear, heading);
   chassis.moveToPoint(-60, 114, linear, heading, false, 60);
   chassis.move(-10, linear, heading);
-  intake.move(0);
+  intake.setState(lib::IntakeState::Idle);
   doinker.extend();
   chassis.moveToPoint(-60, 120, linear, heading);
   chassis.swing(135, true, 0, turning);
@@ -130,7 +130,7 @@ void ringSide() {
   pros::Task task([&]() {pros::delay(1100); clamp.extend(); lift.setState(lib::LiftState::Stored);});
   chassis.moveToPoint(-13, -30, linear, heading, true, 73);
 
-  intake.move(127);
+  intake.setState(lib::IntakeState::In);
 
   chassis.moveToPoint(-38, -31, linear, turning);
   chassis.move(-28, linear, heading);
@@ -147,7 +147,7 @@ void ringSide() {
   chassis.swing(120, false, 0, swing);
   doinker.retract();
   chassis.move(10, linear, heading);
-  intake.move(0);
+  intake.setState(lib::IntakeState::Idle);
 }
 
 void mogoSide() {
