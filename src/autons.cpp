@@ -7,9 +7,9 @@
 
 
 void exit_condition_defaults() {
-  turning.exit_condition_set(75, 1, 150, 3, 150, 500);
-  linear.exit_condition_set(150, .25, 300, .75, 150, 500);
-  swing.exit_condition_set(75, 2, 150, 6, 150, 500);
+  turning.exit_condition_set(75, 1, 150, 3, 300, 500);
+  linear.exit_condition_set(150, .25, 300, .75, 300, 500);
+  swing.exit_condition_set(75, 2, 150, 6, 300, 500);
 }
 
 

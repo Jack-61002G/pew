@@ -10,14 +10,14 @@
 using namespace lib;
 
 void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
-                          bool backwards, float maxSpeed, bool async) {
+                          bool backwards, float maxSpeed, bool async, bool fast) {
 
   if (async) {
     while (this->getState() == DriveState::MOVING) {
       pros::delay(20);
     }
     pros::Task task([&]() {
-      moveToPoint(x, y, linearPid, turningPid, backwards, maxSpeed);
+      moveToPoint(x, y, linearPid, turningPid, backwards, maxSpeed, false, fast);
     });
   }
 
@@ -31,7 +31,7 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
   if (backwards) {
     angle += 180;
   }
-  turn(angle, turningPid, maxSpeed, false);
+  turn(angle, turningPid, maxSpeed, false, false, fast);
 
   // move to the point
   float distance = sqrt(pow(x - getPose().x, 2) + pow(y - getPose().y, 2));
@@ -40,7 +40,7 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
   if (backwards) {
     distance = -distance;
   }
-  move(distance, linearPid, turningPid, maxSpeed);
+  move(distance, linearPid, turningPid, maxSpeed, false, fast);
 
   state = DriveState::IDLE;
 }

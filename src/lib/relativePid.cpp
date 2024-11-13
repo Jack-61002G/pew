@@ -6,13 +6,10 @@
 #include <cstdint>
 #include <string>
 
-
-
 using namespace lib;
 
-
-
-void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed, bool async) {
+void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed,
+                   bool async, bool fast) {
 
   if (async) {
     while (this->getState() == DriveState::MOVING) {
@@ -32,31 +29,43 @@ void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed, 
 
   while (linearPid.exit_condition() == exit_output::RUNNING && true) {
 
-
-
     double distance = track->getDistance();
     double heading = imu->get_rotation();
 
     double linearError = startPos + target - distance;
     double headingError = constrain180(startHeading - heading);
 
-    float linearOutput = linearPid.compute_error(linearError, distance - startPos);
-    float headingOutput = headingPid.compute_error(headingError, constrain180(heading));
+    float linearOutput =
+        linearPid.compute_error(linearError, distance - startPos);
+    float headingOutput =
+        headingPid.compute_error(headingError, constrain180(heading));
 
     // if linearoutput + abs(headingOutput) > maxSpeed or 127, scale down
     // linearOutput
     if (std::abs(linearOutput) + std::abs(headingOutput) > maxSpeed) {
-      linearOutput = (linearOutput > 0) ? fmin(linearOutput, maxSpeed - std::abs(headingOutput)) : fmax(linearOutput, -maxSpeed + std::abs(headingOutput));
+      linearOutput =
+          (linearOutput > 0)
+              ? fmin(linearOutput, maxSpeed - std::abs(headingOutput))
+              : fmax(linearOutput, -maxSpeed + std::abs(headingOutput));
     }
 
     arcade(linearOutput, headingOutput);
+
+    // if we went past the target
+    if (fast) {
+      if (fabs(distance) > fabs(target)) {
+        break;
+      }
+    }
 
     pros::delay(10);
   }
 
   // reset pid
-  std::string str = std::to_string(chassis.getPose().x) + " " +std::to_string(chassis.getPose().y) + " " + std::to_string(chassis.getPose().theta) + "\n";
-  //console.println(str);
+  std::string str = std::to_string(chassis.getPose().x) + " " +
+                    std::to_string(chassis.getPose().y) + " " +
+                    std::to_string(chassis.getPose().theta) + "\n";
+  // console.println(str);
   linearPid.variables_reset();
   headingPid.variables_reset();
   leftMotors->move(0);
@@ -66,9 +75,8 @@ void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed, 
   state = DriveState::IDLE;
 }
 
-
-
-void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async, bool reflectManually) {
+void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async,
+                   bool reflectManually, bool fast) {
 
   if (team == 2 and reflectManually) {
     target = -target;
@@ -91,31 +99,41 @@ void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async, bo
 
     double headingError = constrain180(target - imu->get_rotation());
 
-    float output = turningPid.compute_error(headingError, constrain180(imu->get_rotation()));
+    float output = turningPid.compute_error(headingError,
+                                            constrain180(imu->get_rotation()));
     output = (output > 0) ? fmin(output, maxSpeed) : fmax(output, -maxSpeed);
 
     leftMotors->move(output);
     rightMotors->move(-output);
 
+    // if we went past the target
+    if (fast) {
+      if (fabs(constrain180(imu->get_rotation())) > fabs(target)) {
+        break;
+      }
+    }
+
     pros::delay(10);
   }
 
   // reset pid
-  std::string str = std::to_string(chassis.getPose().x) + " " + std::to_string(chassis.getPose().y) + " " + std::to_string(chassis.getPose().theta) + "\n";
-  //console.println(str);
+  std::string str = std::to_string(chassis.getPose().x) + " " +
+                    std::to_string(chassis.getPose().y) + " " +
+                    std::to_string(chassis.getPose().theta) + "\n";
+  // console.println(str);
   leftMotors->brake();
   rightMotors->brake();
   turningPid.variables_reset();
   turningPid.variables_reset();
   leftMotors->move(0);
   rightMotors->move(0);
-  
+
   state = DriveState::IDLE;
 }
 
-
-
-void Chassis::swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed, bool async, bool reflectManually) {
+void Chassis::swing(double target, bool side, float multiplier, PID turningPid,
+                    float maxSpeed, bool async, bool reflectManually,
+                    bool fast) {
 
   if (team == 2) {
     target = -target;
@@ -139,7 +157,8 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
 
     double headingError = constrain180(target - imu->get_rotation());
 
-    float output = turningPid.compute_error(headingError, constrain180(imu->get_rotation()));
+    float output = turningPid.compute_error(headingError,
+                                            constrain180(imu->get_rotation()));
     output = (output > 0) ? fmin(output, maxSpeed) : fmax(output, -maxSpeed);
 
     if (side) {
@@ -150,19 +169,27 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
       rightMotors->move(-output * multiplier);
     }
 
+    if (fast) {
+      if (fabs(constrain180(imu->get_rotation())) > fabs(target)) {
+        break;
+      }
+    }
+
     pros::delay(10);
   }
 
   // reset pid
-  std::string str = std::to_string(chassis.getPose().x) + " " + std::to_string(chassis.getPose().y) + " " + std::to_string(chassis.getPose().theta) + "\n";
-  //console.println(str);
+  std::string str = std::to_string(chassis.getPose().x) + " " +
+                    std::to_string(chassis.getPose().y) + " " +
+                    std::to_string(chassis.getPose().theta) + "\n";
+  // console.println(str);
   leftMotors->brake();
   rightMotors->brake();
   turningPid.variables_reset();
   turningPid.variables_reset();
   leftMotors->move(0);
   rightMotors->move(0);
-  
+
   state = DriveState::IDLE;
 }
 

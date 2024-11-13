@@ -72,22 +72,14 @@ public:
 
 
   // relative pid movements
-  void move(float target, PID linearPid, PID headingPid, float maxSpeed = 110, bool async = false);
+  void move(float target, PID linearPid, PID headingPid, float maxSpeed = 110, bool async = false, bool fast = false);
 
-  void turn(double target, PID turningPid, float maxSpeed = 127, bool async = false, bool reflectManually = false);
+  void turn(double target, PID turningPid, float maxSpeed = 127, bool async = false, bool reflectManually = false, bool fast = false);
 
-  void swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed = 127, bool async = false, bool reflectManually = false);
+  void swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed = 127, bool async = false, bool reflectManually = false, bool fast = false);
  
-
-struct MoveToPoseParams {
-    float maxSpeed = 127.0;
-    float minSpeed = 0.0;
-    float lead = 0.6;
-    float earlyExitRange = 0;
-    bool forwards = true;
-};
   // odom movements
-  void moveToPoint(float x, float y, PID linearPid, PID headingPid, bool backwards = false, float maxSpeed = 127, bool async = false);
+  void moveToPoint(float x, float y, PID linearPid, PID headingPid, bool backwards = false, float maxSpeed = 127, bool async = false, bool fast = false);
   void followTrajectory(const std::vector<ProfilePoint>& trajectory, bool backwards = false, double max_speed = MAX_DRIVE_SPEED, double b = 1.5, double zeta = 0.8, bool async = false);
   void moveToPose(Point target, PID linearPid, PID angularPid, bool backwards = false, int maxSpeed = 127, bool async = false);
 };
