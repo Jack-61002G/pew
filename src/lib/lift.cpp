@@ -15,37 +15,38 @@ void Lift::loop() {
 
     case LiftState::Stored:
 
+      armLoading = false;
       if (target != DOWN_ANGLE) {
         pid.variables_reset();
-        target = DOWN_ANGLE; 
+        target = DOWN_ANGLE;
       }
-  
+
       break;
 
     case LiftState::Recieve:
-      
-        if (target != MID_ANGLE) {
-          pid.variables_reset();
-          target = MID_ANGLE;
-        }
-    
-        break;
+
+      armLoading = true;
+      if (target != MID_ANGLE) {
+        pid.variables_reset();
+        target = MID_ANGLE;
+      }
+
+      break;
 
     case LiftState::Score:
-              
-                if (target != UP_ANGLE) {
-                  pid.variables_reset();
-                  target = UP_ANGLE;
-                }
-            
-                break;
+
+      if (target != UP_ANGLE) {
+        pid.variables_reset();
+        target = UP_ANGLE;
+      }
+
+      break;
     }
     pid.target_set(target / gearRatio);
     double error = (target / gearRatio) - motors->get_position();
-    motors->move(pid.compute_error(error,motors->get_position()));
-    //std::cout<<error<<std::endl;
+    motors->move(pid.compute_error(error, motors->get_position()));
+    // std::cout<<error<<std::endl;
 
-    
     pros::Task::delay_until(&now, 15);
   }
 }
@@ -58,6 +59,4 @@ void Lift::itterateState(bool delta) {
   }
 }
 
-float Lift::getAngle() {
-  return target;
-}
+float Lift::getAngle() { return target; }

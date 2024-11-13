@@ -1,3 +1,4 @@
+#pragma once
 #include "lib/TaskWrapper.hpp"
 #include "lib/StateMachine.hpp"
 #include "main.h"

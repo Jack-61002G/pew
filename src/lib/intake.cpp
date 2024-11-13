@@ -1,5 +1,6 @@
 #include "lib/intake.hpp"
 #include "pros/rtos.hpp"
+#include "robotconfig.h"
 using namespace lib;
 void Intake::loop() {
 
@@ -10,7 +11,8 @@ void Intake::loop() {
   while (true) {
 
     // Then in your logic:
-    if (std::abs(motors->get_actual_velocity_all()[0]) < 10 && getState() != IntakeState::Idle) {
+    if (std::abs(motors->get_actual_velocity_all()[0]) < 10 &&
+        getState() != IntakeState::Idle) {
       if (jamStartTime == 0) {
         // First time detecting slow velocity
         jamStartTime = pros::millis();
@@ -19,8 +21,14 @@ void Intake::loop() {
       // Calculate how long we've been in slow velocity state
       uint32_t jamTimer = pros::millis() - jamStartTime;
 
-      if (jamTimer > 75) {
-        setState(IntakeState::Jam);
+      if (armLoading) {
+        if (jamTimer > 500) {
+          setState(IntakeState::Jam);
+        }
+      } else {
+        if (jamTimer > 75) {
+          setState(IntakeState::Jam);
+        }
       }
     } else {
       // Reset the start time when velocity is normal
@@ -50,7 +58,12 @@ void Intake::loop() {
     case IntakeState::Jam:
 
       motors->move(-127);
-      pros::delay(250);
+      if (armLoading) {
+        setState(IntakeState::Idle);
+        break;
+      } else {
+        pros::delay(250);
+      }
       setState(IntakeState::In);
       break;
     }

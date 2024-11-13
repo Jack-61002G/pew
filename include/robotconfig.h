@@ -9,6 +9,8 @@
 #include "pros/motors.hpp"
 #include "robotconfig.h"
 
+inline bool armLoading = false;
+
 inline pros::MotorGroup leftMotors({-11, -13, 14}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
 
 inline pros::MotorGroup rightMotors({16, -17, 18}, pros::v5::MotorGears::blue, pros::v5::MotorUnits::rotations);
