@@ -1,5 +1,6 @@
 #include "autons.h"
 #include "lib///lift.hpp"
+#include "lib/intake.hpp"
 #include "lib/point.hpp"
 #include "pros/rtos.hpp"
 #include "robotconfig.h"
@@ -121,33 +122,33 @@ void skills() {
 
 
 void ringSide() {
-
-  chassis.swing(-45, true, 0, swing);
-
-  lift.setState(lib::LiftState::Score);
-  pros::delay(200);
-
-  pros::Task task([&]() {pros::delay(1100); clamp.extend(); lift.setState(lib::LiftState::Stored);});
-  chassis.moveToPoint(-13, -30, linear, heading, true, 73);
-
+  chassis.moveToPoint(-1, 42, linear, heading, false, 127, false, true);
   intake.setState(lib::IntakeState::In);
 
-  chassis.moveToPoint(-38, -31, linear, turning);
-  chassis.move(-28, linear, heading);
-  chassis.swing(135, false, 0, swing, 127, false, true);
-  chassis.move(21, linear, heading);
-  chassis.swing(90, true, 0, swing, 127, false, true);
-  chassis.move(6, linear, heading);
+  pros::Task task([&]() {
+    pros::delay(700); intake.setState(lib::IntakeState::Idle);
+  });
+  chassis.swing(-50, true, 0, swing, 127, false, false, true);
+  
 
+  pros::Task task2([&]() {
+    pros::delay(750); clamp.extend();
+  });
+  chassis.moveToPoint(-12, 36, linear, heading, true, 65);
+  intake.setState(lib::IntakeState::In);
+  pros::delay(200);
+
+  chassis.moveToPoint(16, 30, linear, heading, false, 100);
+  chassis.turn(0, turning);
+  chassis.moveToPoint(18, 48, linear, heading, false, 100);
+  pros::delay(200);
+
+  chassis.turn(-135, turning);
+  chassis.moveToPoint(-38, 6, linear, heading);
+  lift.setState(lib::LiftState::Score);
   pros::delay(500);
-
-  chassis.moveToPoint(-46, -6, linear, heading);
-  chassis.moveToPoint(-46, -6, linear, heading);
-  doinker.extend();
-  chassis.swing(120, false, 0, swing);
-  doinker.retract();
-  chassis.move(10, linear, heading);
   intake.setState(lib::IntakeState::Idle);
+  chassis.moveToPoint(-38, -14, linear, heading);
 }
 
 void mogoSide() {
@@ -155,18 +156,41 @@ void mogoSide() {
 };
 
 void mogoRush() {
-  doinker.extend();
-  chassis.moveToPose({-8,36}, linear, mtp);
-  doinker.retract();
-  chassis.moveToPoint(0, 24, linear, turning, true);
-  doinker.extend();
-  pros::delay(250);
-  chassis.turn(0, turning);
+  chassis.moveToPoint(1, -35, linear, heading, true, 127, false, true);
+  pros::Task task([&]() {
+    pros::delay(850); clamp.extend();
+  });
+  chassis.moveToPoint(9, -46, linear, heading, true, 70);
+  intake.setState(lib::IntakeState::In);
   
-  doinker.retract();
-  pros::delay(250);
-  pros::Task task2electricboogaloo([&]() {pros::delay(1500); clamp.extend();});
-  chassis.moveToPoint(-6, 48, linear, turning, true, 70);
+  pros::delay(300);
+  pros::Task task2([&]() {
+    pros::delay(900); intake.setState(lib::IntakeState::Idle);
+  });
+  chassis.moveToPoint(10, -24, linear, heading, false, 100, false);
+
+  chassis.turn(80, turning);
+  clamp.retract();
+
+  chassis.turn(-90, turning);
+  
+  pros::Task task3([&]() {
+    pros::delay(650); clamp.extend();
+  });
+  chassis.moveToPoint(29.5, -28.5, linear, heading, true, 70);
+  intake.setState(lib::IntakeState::In);
+  
+  pros::Task taskonebillion([&]() {
+    pros::delay(700); intake.setState(lib::IntakeState::Idle);
+  });
+  pros::delay(500);
+
+  chassis.moveToPoint(16, 5, linear, heading);
+  doinker.extend();
+  
+  chassis.moveToPoint(0, 10, linear, heading);
+
+  chassis.turn(135, turning);
 }
 
 

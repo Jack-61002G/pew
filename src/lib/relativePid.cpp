@@ -131,9 +131,7 @@ void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async,
   state = DriveState::IDLE;
 }
 
-void Chassis::swing(double target, bool side, float multiplier, PID turningPid,
-                    float maxSpeed, bool async, bool reflectManually,
-                    bool fast) {
+void Chassis::swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed, bool async, bool reflectManually, bool fast) {
 
   if (team == 2) {
     target = -target;
