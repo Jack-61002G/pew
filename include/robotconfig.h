@@ -7,6 +7,7 @@
 #include "pros/adi.hpp"
 #include "lib/intake.hpp"
 #include "pros/motors.hpp"
+#include "pros/optical.hpp"
 #include "robotconfig.h"
 
 inline bool armLoading = false;
@@ -25,15 +26,18 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 inline lib::Chassis chassis =
     lib::Chassis(&leftMotors, &rightMotors, &imu, &track, 450, 2.75);
 
+inline pros::Optical color(6);
 inline pros::MotorGroup intakeMotor({7});
-inline lib::Intake intake(&intakeMotor);
+inline pros::adi::Pneumatics sorter('F', false);
+inline lib::Intake intake(&intakeMotor, &color, &sorter);
 
 inline pros::MotorGroup armMotors({-9, 10});
 inline lib::Lift lift(&armMotors, 12.0 / 36, {2.5, 0, 1.5});
 
 inline pros::adi::Pneumatics doinker('H', false);
 inline pros::adi::Pneumatics clamp('D', false);
-inline pros::adi::Pneumatics sorter('F', false);
+inline pros::adi::Pneumatics pisstake('C', false);
+
 
 inline PID linear(10, 0.0, 34);
 inline PID heading(2.8, 0, 21, 0);

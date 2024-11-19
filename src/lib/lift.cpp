@@ -33,6 +33,15 @@ void Lift::loop() {
 
       break;
 
+    case LiftState::LowScore:
+
+      if (target != MIDD_ANGLE) {
+        pid.variables_reset();
+        target = MIDD_ANGLE;
+      }
+
+      break;
+
     case LiftState::Score:
 
       if (target != UP_ANGLE) {

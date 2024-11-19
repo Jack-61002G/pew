@@ -9,8 +9,7 @@
 
 using namespace lib;
 
-void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
-                          bool backwards, float maxSpeed, bool async, bool fast) {
+void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid, bool backwards, float maxSpeed, bool async, bool fast) {
 
   if (async) {
     while (this->getState() == DriveState::MOVING) {
@@ -19,6 +18,10 @@ void Chassis::moveToPoint(float x, float y, PID linearPid, PID turningPid,
     pros::Task task([&]() {
       moveToPoint(x, y, linearPid, turningPid, backwards, maxSpeed, false, fast);
     });
+  }
+
+  if (team == 2) {
+    x = -x;
   }
 
   state = DriveState::MOVING;

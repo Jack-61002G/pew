@@ -12,8 +12,8 @@ private:
 
     pros::adi::Led leftDriveLed = pros::adi::Led('E', 40);
     pros::adi::Led rightDriveLed = pros::adi::Led('G', 40);
-    pros::adi::Led indicatorLed1 = pros::adi::Led('C', 6);
-    pros::adi::Led indicatorLed2 = pros::adi::Led('A', 6);
+    pros::adi::Led indicatorLed1 = pros::adi::Led('A', 6);
+    //pros::adi::Led indicatorLed2 = pros::adi::Led('A', 6);
 
 
 public:

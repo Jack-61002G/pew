@@ -53,7 +53,7 @@ void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed,
 
     // if we went past the target
     if (fast) {
-      if (fabs(distance) > fabs(target)) {
+      if (fabs(distance - startPos) > fabs(target)) {
         break;
       }
     }
@@ -75,8 +75,9 @@ void Chassis::move(float target, PID linearPid, PID headingPid, float maxSpeed,
   state = DriveState::IDLE;
 }
 
-void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async,
-                   bool reflectManually, bool fast) {
+
+
+void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async, bool reflectManually, bool fast) {
 
   if (team == 2 and reflectManually) {
     target = -target;
@@ -130,6 +131,8 @@ void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async,
 
   state = DriveState::IDLE;
 }
+
+
 
 void Chassis::swing(double target, bool side, float multiplier, PID turningPid, float maxSpeed, bool async, bool reflectManually, bool fast) {
 

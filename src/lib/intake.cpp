@@ -1,7 +1,13 @@
 #include "lib/intake.hpp"
 #include "pros/rtos.hpp"
 #include "robotconfig.h"
+
+
+
 using namespace lib;
+
+
+
 void Intake::loop() {
 
   int jamTimer = 0;
@@ -9,10 +15,8 @@ void Intake::loop() {
   uint32_t jamStartTime = 0;
 
   while (true) {
-
-    // Then in your logic:
-    if (std::abs(motors->get_actual_velocity_all()[0]) < 10 &&
-        getState() != IntakeState::Idle) {
+    // Intake jam logic
+    if (std::abs(motors->get_actual_velocity_all()[0]) < 10 && getState() != IntakeState::Idle && !pisstake.is_extended()) {
       if (jamStartTime == 0) {
         // First time detecting slow velocity
         jamStartTime = pros::millis();
@@ -22,7 +26,7 @@ void Intake::loop() {
       uint32_t jamTimer = pros::millis() - jamStartTime;
 
       if (armLoading) {
-        if (jamTimer > 500) {
+        if (jamTimer > 1000) {
           setState(IntakeState::Jam);
         }
       } else {
@@ -35,6 +39,24 @@ void Intake::loop() {
       jamStartTime = 0;
       jamTimer = 0;
     }
+
+
+    if (chassis.team == 2) {
+      if (color->get_hue() < 30 || color->get_hue() > 300) {
+        sort_time = pros::millis();
+      }
+    } else {
+      if (color->get_hue() > 180 && color->get_hue() < 330) {
+        sort_time = pros::millis();
+      }
+    }
+
+    if (!sort_override && pros::millis() - sort_time < 150) {
+      sort->extend();
+    } else {
+      sort->retract();
+    }
+
 
     switch (getState()) {
 
@@ -68,6 +90,6 @@ void Intake::loop() {
       break;
     }
 
-    pros::delay(25);
+    pros::delay(10);
   }
 }

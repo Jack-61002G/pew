@@ -201,7 +201,7 @@ void lib::Lights::loop() {
     while (true) {
 
 
-        if (startTime != -1) {
+        /*if (startTime != -1) {
             int dT = pros::millis() - startTime;
 
             // set to time warning 1
@@ -233,7 +233,7 @@ void lib::Lights::loop() {
                 currentWarning = 0;
                 currentTeam = -1;
             }
-        }
+        }*/
 
         // set to team colors
         if (team != currentTeam && currentWarning == 0) {
@@ -263,7 +263,7 @@ void lib::Lights::loop() {
         pros::delay(10);
 
 
-        // update indicators
+        // update indicator
         if (indicator) {
             for (int i = 0; i < 40; i++) {
                 int colorIndex = (i + offset) % 40;
@@ -271,16 +271,8 @@ void lib::Lights::loop() {
             }
             pros::delay(10);
 
-            for (int i = 0; i < 40; i++) {
-                int colorIndex = (i + offset) % 40;
-                indicatorLed2.set_pixel(stripColors[colorIndex], i);
-            }
-            pros::delay(10);
         } else {
             indicatorLed1.clear();
-            pros::delay(10);
-
-            indicatorLed2.clear();
             pros::delay(10);
         }
 

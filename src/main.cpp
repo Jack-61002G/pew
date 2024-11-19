@@ -14,11 +14,9 @@
 
 // Create robodash selector
 rd::Selector selector({{"Skills", skills},
-                       {"RedLeft", redLeft},
-                       {"RedRight", redRight},
+                       {"Red Ring Side", redRingSide},
                        {"RedRush", redRush},
-                       {"BlueLeft", blueLeft},
-                       {"BlueRight", blueRight},
+                       {"Blue Ring Side", blueRingSide},
                        {"BlueRush", blueRush}});
 
 // ========================= Competition Functions ========================= //
@@ -39,7 +37,7 @@ void initialize() {
   chassis.startTask();
   lift.startTask();
   intake.startTask();
-  // lights.startTask();
+  lights.startTask();
 }
 
 void disabled() {
@@ -60,6 +58,9 @@ void autonomous() {
 }
 
 void opcontrol() {
+
+  chassis.team = 1;
+  lights.team = 1;
 
   lights.startTimer();
   float liftTarget = -1;
@@ -83,7 +84,7 @@ void opcontrol() {
       intake.setState(newState);
     }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-      sorter.toggle();
+      intake.sort_override = true;
     }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
       doinker.toggle();
@@ -94,6 +95,9 @@ void opcontrol() {
     }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {
       lift.itterateState(1);
+    }
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
+      pisstake.toggle();
     }
 
     pros::delay(15);
