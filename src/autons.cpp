@@ -8,8 +8,8 @@
 
 
 void exit_condition_defaults() {
-  turning.exit_condition_set(75, 1, 150, 3, 300, 500);
-  linear.exit_condition_set(150, .25, 300, .75, 300, 500);
+  turning.exit_condition_set(75, 1.5, 150, 4, 300, 500);
+  linear.exit_condition_set(150, .33, 300, 1, 300, 500);
   swing.exit_condition_set(75, 2, 150, 6, 300, 500);
 }
 
@@ -122,11 +122,11 @@ void skills() {
 
 
 void ringSide() {
-  chassis.moveToPoint(-0.5, 40, linear, heading, false, 110, false, true);
+  chassis.moveToPoint(-0.6, 40, linear, heading, false, 110, false, true);
   intake.setState(lib::IntakeState::In);
 
   pros::Task task([&]() {
-    pros::delay(700); intake.setState(lib::IntakeState::Idle);
+    pros::delay(800); intake.setState(lib::IntakeState::Idle);
   });
   chassis.swing(-47, true, 0, swing, 127, false, true, true);
   
@@ -139,15 +139,15 @@ void ringSide() {
   chassis.moveToPoint(-16, 30, linear, heading, false);
   chassis.turn(0, turning, 127, false, true);
   chassis.moveToPoint(-18, 48, linear, heading, false);
-  chassis.move(-6, linear, heading, 110, false, true);
+  chassis.move(-6, linear, heading, 127, false, true);
 
-  chassis.turn(135, turning, 127, false, true, true);
-  intake.setState(lib::IntakeState::Out);
+  chassis.turn(135, turning, 127, false, true);
+
+  intake.sort_override = true;
+  sorter.extend();
+
   lift.setState(lib::LiftState::LowScore);
-  chassis.moveToPoint(37, 0, linear, heading);
-
-  turning.exit_condition_set(75, 1, 150, 3, 150, 500);
-  linear.exit_condition_set(150, .25, 300, .75, 150, 500);
+  chassis.moveToPoint(37.5, -2, linear, heading);
 
   chassis.turn(180, turning, 127, false, true);
   chassis.move(10, linear, heading, 127, false, true);

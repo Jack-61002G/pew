@@ -112,6 +112,7 @@ void Chassis::moveToPose(Point target, PID linearPid, PID angularPid, bool backw
     return;
   }
 
+
   Point targetPoint = target;
   if (team == 2) {
     target.x = -target.x;
@@ -162,7 +163,7 @@ void Chassis::moveToPose(Point target, PID linearPid, PID angularPid, bool backw
     leftMotors->move(leftPower);
     rightMotors->move(rightPower);
 
-    if(lateralError < 7 && std::abs(prevLateralError) - std::abs(lateralError) < 0){break;}
+    //if(lateralError < 7 && std::abs(prevLateralError) - std::abs(lateralError) < 0){break;}
 
     prevLateralError = lateralError;
 

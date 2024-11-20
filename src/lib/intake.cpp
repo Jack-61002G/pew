@@ -51,9 +51,9 @@ void Intake::loop() {
       }
     }
 
-    if (!sort_override && pros::millis() - sort_time < 150) {
+    if (pros::millis() - sort_time < 150 && !sort_override) {
       sort->extend();
-    } else {
+    } else if (!sort_override) {
       sort->retract();
     }
 

@@ -108,11 +108,11 @@ void Chassis::turn(double target, PID turningPid, float maxSpeed, bool async, bo
     rightMotors->move(-output);
 
     // if we went past the target
-    if (fast) {
-      if (fabs(constrain180(imu->get_rotation())) > fabs(target)) {
-        break;
-      }
-    }
+    //if (fast) {
+    //  if (fabs(constrain180(imu->get_rotation())) > fabs(target)) {
+    //    break;
+    //  }
+    //}
 
     pros::delay(10);
   }
@@ -170,11 +170,11 @@ void Chassis::swing(double target, bool side, float multiplier, PID turningPid, 
       rightMotors->move(-output * multiplier);
     }
 
-    if (fast) {
-      if (fabs(constrain180(imu->get_rotation())) > fabs(target)) {
-        break;
-      }
-    }
+    //if (fast) {
+    //  if (fabs(constrain180(imu->get_rotation())) > fabs(target)) {
+    //    break;
+    //  }
+    //}
 
     pros::delay(10);
   }

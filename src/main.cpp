@@ -61,6 +61,8 @@ void opcontrol() {
 
   chassis.team = 1;
   lights.team = 1;
+  
+  intake.sort_override = false;
 
   lights.startTimer();
   float liftTarget = -1;

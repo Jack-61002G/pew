@@ -40,7 +40,7 @@ inline pros::adi::Pneumatics pisstake('C', false);
 
 
 inline PID linear(10, 0.0, 34);
-inline PID heading(2.8, 0, 21, 0);
+inline PID heading(2.8, 0, 22, 0);
 inline PID turning(2.875, 0.003, 20, 15);
 inline PID swing(3.2, 0.003, 22, 15);
 inline PID mtp(4, 0.003, 20, 15);
