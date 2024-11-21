@@ -16,7 +16,7 @@ void Intake::loop() {
 
   while (true) {
     // Intake jam logic
-    if (std::abs(motors->get_actual_velocity_all()[0]) < 10 && getState() != IntakeState::Idle && !pisstake.is_extended()) {
+    if (std::abs(motors->get_actual_velocity_all()[0]) < 5 && getState() != IntakeState::Idle && !pisstake.is_extended()) {
       if (jamStartTime == 0) {
         // First time detecting slow velocity
         jamStartTime = pros::millis();

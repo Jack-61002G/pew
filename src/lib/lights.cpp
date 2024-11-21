@@ -168,7 +168,7 @@ void lib::Lights::loop() {
 
     std::vector<RGB> blue = interpolateColors(120, 300, 40);
     std::vector<RGB> red = interpolateColors(330, 390, 40);
-    std::vector<RGB> skills = interpolateColors(255, 345, 40);
+    std::vector<RGB> skills = red; //interpolateColors(260, 338, 40);
 
     std::vector<RGB> warning1 = interpolateColors(100, 180, 40);
     std::vector<RGB> warning2 = interpolateColors(50, 140, 40);
@@ -246,7 +246,6 @@ void lib::Lights::loop() {
             }
         }
 
-
         // Update left strip
         for (int i = 0; i < 40; i++) {
             int colorIndex = (i + offset) % 40;
@@ -264,7 +263,7 @@ void lib::Lights::loop() {
 
 
         // update indicator
-        if (indicator) {
+        if (clamp.is_extended()) {
             for (int i = 0; i < 40; i++) {
                 int colorIndex = (i + offset) % 40;
                 indicatorLed1.set_pixel(stripColors[colorIndex], i);

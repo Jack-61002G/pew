@@ -8,7 +8,7 @@
 
 namespace lib {
 
-enum class LiftState {Stored, Recieve, LowScore, Score};
+enum class LiftState {Stored, Recieve, Score, LowScore};
 
   //pid constant struct
   struct PIDConstants {
@@ -22,7 +22,7 @@ class Lift : public StateMachine<LiftState, LiftState::Stored>, public ryan::Tas
 private:
   std::shared_ptr<pros::MotorGroup> motors;
   const float DOWN_ANGLE = 0;
-  const float MID_ANGLE = 20;
+  const float MID_ANGLE = 25;
   const float MIDD_ANGLE = 100;
   const float UP_ANGLE = 127 ;
 

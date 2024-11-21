@@ -18,7 +18,6 @@ private:
 
 public:
     int team = 0;
-    int indicator = 0;
     int startTime = -1;
 
     void startTimer() { startTime = pros::millis(); }

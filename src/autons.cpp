@@ -29,6 +29,12 @@ void clampAt(float distance) {
 
 void skills() {
 
+
+  turning.exit_condition_set(75, 1, 150, 3, 300, 500);
+  linear.exit_condition_set(150, .25, 300, 1, 300, 500);
+  swing.exit_condition_set(75, 2, 150, 6, 300, 500);
+
+
   intake.setState(lib::IntakeState::In);
   pros::delay(750);
   intake.setState(lib::IntakeState::Idle);
@@ -41,17 +47,17 @@ void skills() {
 
   pros::delay(250);
   intake.setState(lib::IntakeState::In);
+  chassis.turn(0, turning);
   chassis.moveToPoint(-24, 38, linear, heading, false, 80);
 
-  pros::delay(750);
-  lift.setState(lib::LiftState::Recieve);
+  pros::Task tasky([&]() {pros::delay(800); lift.setState(lib::LiftState::Recieve);});
 
   chassis.moveToPoint(-59, 68, linear, heading, false, 80);
   pros::delay(500);
   chassis.move(-9, linear, heading);
   intake.setState(lib::IntakeState::Idle);
 
-  chassis.moveToPoint(-64, 63, linear, heading);
+  chassis.moveToPoint(-64, 63.5, linear, heading);
   lift.setState(lib::LiftState::Score);
 
   pros::delay(300);
@@ -61,6 +67,7 @@ void skills() {
   intake.setState(lib::IntakeState::In);
   chassis.moveToPoint(-48, 4, linear, heading, false, 55);
   chassis.move(-12, linear, heading);
+  chassis.turn(-90, turning);
   chassis.moveToPoint(-65, 16, linear, heading);
   chassis.moveToPoint(-71, 1, linear, heading, true);
   clamp.retract();
@@ -73,17 +80,17 @@ void skills() {
 
   pros::delay(250);
   intake.setState(lib::IntakeState::In);
+  chassis.turn(0, turning);
   chassis.moveToPoint(24, 38, linear, heading, false, 80);
 
-  pros::delay(500);
-  lift.setState(lib::LiftState::Recieve);
+  pros::Task tasky2([&]() {pros::delay(800); lift.setState(lib::LiftState::Recieve);});
 
   chassis.moveToPoint(59, 68, linear, heading, false, 80);
   pros::delay(500);
   chassis.move(-11, linear, heading);
   intake.setState(lib::IntakeState::Idle);
 
-  chassis.moveToPoint(64, 63.5, linear, heading);
+  chassis.moveToPoint(64, 63, linear, heading);
   lift.setState(lib::LiftState::Score);
 
   pros::delay(300);
@@ -105,18 +112,23 @@ void skills() {
   chassis.moveToPoint(1.5, 113.5, linear, heading, true, 80);
 
   intake.setState(lib::IntakeState::In);
+  chassis.turn(-135, turning);
   chassis.moveToPoint(-24, 90, linear, heading, false, 80);
   chassis.moveToPoint(-48, 90, linear, heading, false, 80);
 
   chassis.moveToPoint(-48, 116, linear, heading, false, 60);
   chassis.move(-8, linear, heading);
   chassis.moveToPoint(-60, 114, linear, heading, false, 60);
-  chassis.move(-10, linear, heading);
-  intake.setState(lib::IntakeState::Idle);
-  doinker.extend();
-  chassis.moveToPoint(-60, 120, linear, heading);
-  chassis.swing(135, true, 0, turning);
   chassis.move(-12, linear, heading);
+  chassis.turn(150, turning);
+  clamp.retract();
+  chassis.move(2, linear, heading, 110, false, true);
+  chassis.turn(-30, turning);
+  intake.setState(lib::IntakeState::In);
+  lift.setState(lib::LiftState::Recieve);
+  chassis.move(24, linear, heading);
+
+  chassis.move(-48, linear, heading);
 }
 
 
@@ -161,67 +173,42 @@ void ringSide() {
 
 
 void mogoRush() {
-  chassis.moveToPoint(-0.5, -33, linear, heading, true, 127, false, true);
+
+  // rush mogo
+  chassis.moveToPoint(5, -33, linear, heading, true, 127, false, true);
   pros::Task task([&]() {
-    pros::delay(700); clamp.extend();
+    pros::delay(650); clamp.extend();
   });
-  chassis.moveToPoint(9, -47, linear, heading, true, 60);
+  chassis.moveToPoint(8.5, -45.5, linear, heading, true, 58);
   intake.setState(lib::IntakeState::In);
-  
+
+  // hold stack ring in intake
   pros::delay(300);
   pros::Task task2([&]() {
     pros::delay(900); intake.setState(lib::IntakeState::Idle);
   });
-  chassis.moveToPoint(10, -27, linear, heading, false, 100, false);
-  chassis.move(-3, linear, heading);
+  chassis.moveToPoint(13, -24, linear, heading, false, 100, false);
+  chassis.move(-3, linear, heading, 127, false, true);
 
-  chassis.turn(80, turning, 127, false, true);
+  // drop first mogo in a convenient spot
+  chassis.turn(120, turning, 127, false, true);
   clamp.retract();
 
   chassis.turn(-90, turning, 127, false, true);
   
+  // get second mogo
   pros::Task task3([&]() {
-    pros::delay(680); clamp.extend();
+    pros::delay(690); clamp.extend();
   });
-  chassis.moveToPoint(32, -29, linear, heading, true, 60);
+  chassis.moveToPoint(32.5, -29, linear, heading, true, 60);
   intake.setState(lib::IntakeState::In);
   
-  pros::Task taskonebillion([&]() {
-    pros::delay(750); intake.setState(lib::IntakeState::Idle);
-  });
-  pros::delay(500);
+  pros::delay(1000);
 
-  if (chassis.team == 2) {
-    chassis.moveToPoint(0, -8, linear, heading);
-    doinker.extend();
-    pros::delay(500);
-  
-    chassis.moveToPoint(-8, 10, linear, heading);
-    
-    chassis.turn(0, turning);
-    chassis.turn(-90, turning);
-  } else {
-    chassis.moveToPoint(16, 0, linear, heading);
-    doinker.extend();
-    chassis.turn(10, turning);
-    pros::delay(500);
-  
-    chassis.moveToPoint(0, 10, linear, heading);
-    chassis.turn(135, turning);
-  }
-
-  doinker.retract();
-  pros::delay(500);
-  intake.setState(lib::IntakeState::In);
-  chassis.turn(-45, turning, 127, false, true);
-  chassis.moveToPoint(-14, 14, linear, heading);
-  chassis.move(-12, linear, heading, 127, false, true);
-  chassis.turn(-45, turning, 127, false, true);
-  chassis.moveToPoint(-1, 18, linear, heading, true);
-  clamp.retract();
+  lift.setState(lib::LiftState::LowScore);
+  chassis.turn(135, turning, 127, false, true);
+  chassis.move(14, linear, heading, 127, false, true);
   intake.setState(lib::IntakeState::Idle);
-  chassis.move(12, linear, heading);
-  chassis.turn(180, turning, 127, false, true);
 }
 
 
@@ -238,9 +225,6 @@ void blueRingSide() {
 
   ringSide();
 }
-
-
-
 void redRush() {
   chassis.team = 1;
   lights.team = 1;
